@@ -1,0 +1,19 @@
+*//    ILBOCKP0                                                         04000018
+CKP0     TITLE     'ILBOCKP0'                                           08000018
+ILBOCKP0 CSECT                                                          12000018
+         STM   14,12,96(13)            SAVE REGS                        16000018
+         BALR  2,0                                                      20000018
+         USING *,2                                                      24000018
+         ST    13,SAVE+4                                                28000018
+         LA    13,SAVE                                                  32000018
+         ST    1,PARM                                                   36000018
+         MVI   PARM,X'80'                                               40000018
+         LA    1,PARM                                                   44000018
+         SVC   63                                                       48000018
+         L     13,SAVE+4                                                52000018
+         LM    14,12,96(13)            RESTORE REGS                     56000018
+         BCR   15,14                                                    60000018
+*                                                                       64000018
+PARM     DC    F'0'                                                     68000018
+SAVE     DC    18F'0'                                                   72000018
+         END                                                            76000018

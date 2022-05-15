@@ -1,0 +1,85 @@
+1XMU0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOXMU0  SD  0001 000000 0000AA
+1XMU0     ILBOXMU0                                                                                              PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      2 *        ILBOXMV0   CALLING SEQ... L    15,V(ILBOXMV0)                  02000018
+                                       3 *                                                                       03000018
+                                       4 *        LEVEL  180     09/14/66                                        04000018
+                                       5 *                                                                       05000018
+                                       6 *FUNCTION 0 THIS ROUTINE MULTIPLIES TWO 30-DECIMAL-DIGIT NUMBERS TO     06000018
+                                       7 *   PRODUCE A 60-DECIMAL-DIGIT PRODUCT.                                 07000018
+                                       8 *ENTRY POINT 0 ILBOXMUL, CALLING SEQUENCE IS 0  ZAP   96(16,13),MPLIER  08000018
+                                       9 *                                              ZAP   112(16,13),MPCAND  09000018
+                                      10 *                                              L      15,V(ILBOXMUL)    10000018
+                                      11 *                                               BALR  14,15             11000018
+                                      12 *INPUT 0 30-DIGIT INTERNAL DECIMAL MULTIPLIER AND MULTIPLICAND.         12000018
+                                      13 *         REG13 IS INITIALIZED BY CALLER TO POINT TO START OF TGT.      13000018
+                                      14 *OUTPUT0  60-DIGIT INTERNAL DECIMAL PRODUCT AT 128(32,13).              14000018
+                                      15 *EXTERNAL ROUTINES 0 NONE                                               15000018
+                                      16 *EXITS-NORMAL 0 BY   BC   15,14                                         16000018
+                                      17 *      ERROR  0 NONE                                                    17000018
+                                      18 *WORK AREAS 0 BYTES  96-111 OF TGT CONTAIN THE INPUT  MULTIPLIER.       18000018
+                                      19 *             BYTES 112-127 OF TGT CONTAIN THE INPUT  MULTIPLICAND.     19000018
+                                      20 *             BYTES 128-159 OF TGT CONTAIN THE OUTPUT PRODUCT.          20000018
+                                      21 *             BYTES 160-163 OF TGT IS A TEMPRORARY WORK AREA.           21000018
+                                      22 *ATTRIBUTES 0 REENTRANT CODE. INPUT SIGNS ARE EXPECTED TO BE C,F OR D.  22000018
+                                      23 *                                                                       23000018
+                                      24 *                                                                       24000018
+ 000000                               25 ILBOXMU0 START 0                                                        25000018
+                             0000D    26 R13      EQU   13                                                       26000018
+                             0000E    27 R14    EQU   14                                                         27000018
+                             0000F    28 R15    EQU   15                                                         28000018
+                             00000    29          USING *,R15                           BASE REGISTER            29000018
+ 000000 D100 D0A2 D07F 000A2 0007F    30          MVN   FIELDX(1,R13),WORKA+31(R13)   SAVE MCAND SIGN            30000018
+ 000006 D700 D0A2 D06F 000A2 0006F    31          XC    FIELDX(1,R13),WORKA+15(R13)   X-OR MLIER SIGN            31000018
+ 00000C 940F D0A2      000A2          32          NI    FIELDX(R13),HEXF             LIKE SIGNS 0, UNLIKE 1      32000018
+ 000010 F877 D079 D078 00079 00078    33          ZAP   WORKA+25(8,R13),WORKA+24(8,R13)  CREATE MCAND-RIGHT      33000018
+ 000016 920C D078      00078          34          MVI   WORKA+24(R13),PLUS              PLUS SIGN FOR MCAND-LEFT 34000018
+ 00001A F177 D071 D070 00071 00070    35          MVO   WORKA+17(8,R13),WORKA+16(8,R13)  CREATE MCAND-LEFT       35000018
+ 000020 F877 D069 D068 00069 00068    36          ZAP   WORKA+9(8,R13),WORKA+8(8,R13)    CREATE MLIER-RIGHT      36000018
+ 000026 920C D068      00068          37          MVI   WORKA+8(R13),PLUS               PLUS SIGN FOR MLIER-LEFT 37000018
+ 00002A F177 D061 D060 00061 00060    38          MVO   WORKA+1(8,R13),WORKA(8,R13)      CREATE MLIER-LEFT       38000018
+ 000030 94FC D070      00070          39          NI    WORKA+16(R13),HEXFC             FORCE MLIER PLUS         39000018
+ 000034 94FC D080      00080          40          NI    WORKA+32(R13),HEXFC             FORCE MCAND PLUS         40000018
+ 000038 F8F7 D091 D079 00091 00079    41          ZAP   WORKA+49(16,R13),WORKA+25(8,R13) MOVE MCAND-RIGHT        41000018
+ 00003E FCF7 D091 D069 00091 00069    42          MP    WORKA+49(16,R13),WORKA+9(8,R13)  PROD1 IS MLIER-R BY MCA 42000018
+ 000044 920C D088      00088          43          MVI   WORKA+40(R13),PLUS              PLUS SIGN FOR PROD1-L    43000018
+ 000048 F177 D081 D091 00081 00091    44          MVO   WORKA+33(8,R13),WORKA+49(8,R13)  SAVE PROD1-L            44000018
+ 00004E F8F7 D089 D079 00089 00079    45          ZAP   WORKA+41(16,R13),WORKA+25(8,R13) MOVE MCAND-RIGHT        45000018
+ 000054 FCF7 D089 D061 00089 00061    46          MP    WORKA+41(16,R13),WORKA+1(8,R13)  PROD2 IS MLIER-L BY MCA 46000018
+ 00005A FAF7 D089 D081 00089 00081    47          AP    WORKA+41(16,R13),WORKA+33(8,R13) ADD PROD2 TO PROD1-L    47000018
+ 000060 F8F7 D079 D071 00079 00071    48          ZAP   WORKA+25(16,R13),WORKA+17(8,R13) MOVE MCAND-LEFT         48000018
+ 000066 FCF7 D079 D069 00079 00069    49          MP    WORKA+25(16,R13),WORKA+9(8,R13)  PROD3 IS MLIER-R BY MCA 49000018
+ 00006C FAFF D079 D089 00079 00089    50          AP    WORKA+25(16,R13),WORKA+41(16,R13) ADD PROD2 TO PROD3     50000018
+ 000072 F187 D090 D081 00090 00081    51          MVO   WORKA+48(9,R13),WORKA+33(8,R13)  MOVE PROD3-R TO FIN POS 51000018
+ 000078 F187 D080 D079 00080 00079    52          MVO   WORKA+32(9,R13),WORKA+25(8,R13)  PUT SIGN ON PROD3-L     52000018
+ 00007E F8F7 D061 D061 00061 00061    53          ZAP   WORKA+1(16,R13),WORKA+1(8,R13)   MOVE MPLIER-LEFT        53000018
+ 000084 FCF7 D061 D071 00061 00071    54          MP    WORKA+1(16,R13),WORKA+17(8,R13)  PROD4 IS MLIER-L BY MCA 54000018
+ 00008A FAF8 D061 D080 00061 00080    55          AP    WORKA+1(16,R13),WORKA+32(9,R13)  ADD PROD3-L TO PROD4    55000018
+ 000090 F1FF D062 D061 00062 00061    56          MVO   WORKA+2(16,R13),WORKA+1(16,R13)  SHIFT PROD4 HALF BYTE R 56000018
+1XMU0     ILBOXMU0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000096 D207 D098 D099 00098 00099    57          MVC   WORKA+56(8,R13),WORKA+57(R13)    MOVE PROD1-R TO FIN POS 57000018
+ 00009C F1FE D081 D062 00081 00062    58          MVO   WORKA+33(16,R13),WORKA+2(15,R13) MOVE PROD4 TO FIN POSIT 58000018
+ 0000A2 D600 D09F D0A2 0009F 000A2    59          OC    WORKA+63(1,R13),FIELDX(R13)      ADD CORRECT ALGEBRAIC S 59000018
+ 0000A8 07FE                          60          BCR   15,R14                          RETURN                   60000018
+                             00060    61 WORKA  EQU   96                                                         61000018
+                             000A2    62 FIELDX EQU   WORKA+66                                                   62000018
+                             0000C    63 PLUS   EQU   12                             X'0C'                       63000018
+                             0000F    64 HEXF   EQU   15                             X'0F'                       64000018
+                             000FC    65 HEXFC  EQU   252                            X'FC'                       65000018
+                                      66        END                                                              66000018
+1XMU0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    4
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT         67
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                         6
+ TOTAL RECORDS PRINTED                        85

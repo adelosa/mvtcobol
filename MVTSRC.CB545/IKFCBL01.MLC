@@ -1,0 +1,24 @@
+         PRINT ON                                                       00010000
+ SGIKF000 1,0,1,1,1,1,00,                                              X00020000
+               60,2768,81920,1,0,0,0,0,0,0,1                            00030000
+*                                                                       00040000
+*SGIKF000 PARAMETER LEGEND (IN ORDER SPECIFIED ABOVE):                  00050000
+* &SOURCE 1=PRINT SOURCE LISTING / 0=DON'T PRINT                        00060000
+* &DECK   1=PUNCH OBJECT DECK / 0=DON'T PUNCH                           00070000
+* &LOAD   1=CREATE LOAD MODULE / 0=DON'T CREATE                         00080000
+* &SEQCHK 1=CHECK SEQUENCE NUMBERS / 0=DON'T CHECK                      00090000
+* &FLAGEW 1=FLAG WARNING LEVEL ERRORS / 0=DON'T FLAG WARNINGS           00100000
+* &LIB    1=COPY&BASIS USED / 0=COPY&BASIS NOT USED                     00110000
+* &SPACE  00=SINGLE / 10=DOUBLE / 01=TRIPLE  LISTINGS                   00120000
+* &LINE   LINES PER PRINTED PAGE (10-99)                                00130000
+* &BUF    STORAGE FOR BUFFER SUB-ALLOCATION (2768-99999)                00140000
+* &SIZE   TOTAL STORAGE AVAILABLE (81920-9999999)                       00150000
+* &QUOT   1=APOSTROPHE (') / 0=QUOTE (") DELINEATES LITERALS            00160000
+* &DMAP   1=PRINT DATA MAP / 0=DON'T PRINT                              00170000
+* &SUPMAP 1=SUPPRESS DMAP/PMAP IF E ERRORS / 0=DON'T SUPPRESS           00180000
+* &PMAP   1=PRINT GENERATED INSTRUCTIONS / 0=DON'T PRINT                00190000
+* &TRUNC  1=PIC CLAUSE DETERMINES MOVES / 0=STORAGE DETERMINES          00200000
+* &XREF   1=PRINT XREF / 0=DON'T PRINT                                  00210000
+* &CLIST  1=PRINT CONDENSED LIST / 0=DON'T PRINT                        00220000
+* &VERB   1=PRINT VERBS ON OBJECT LIST / 0=DON'T PRINT                  00230000
+ END                                                                    00240000

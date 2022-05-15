@@ -1,0 +1,84 @@
+1PTV0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOPTV0  SD  0001 000000 000078
+ ILBOPTV1  LD       000000        0001
+ ILBOPTV2  LD       000018        0001
+1PTV0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *$MODULE       ILBOPTV0                                                 01000020
+                                       2 *//    ILBOPTV0                                                         02000020
+1PTV0     ILBOPTV0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000000                                4 ILBOPTV0 CSECT                                                          04000020
+                                       5          ENTRY ILBOPTV1,ILBOPTV2                                        05000020
+ 000000                                6 ILBOPTV1 DS    0H                                                       06000020
+                             00000     7          USING *,R15                                                    07000020
+                             00000     8          USING TGT,R13                                                  08000020
+ 000000 9148 2011      00011           9          TM    17(DCB),X'48'           IS DEVICE A PRINTER?             09000020
+ 000004 07EE                          10          BCR   NOTONE,R14              NO, RETURN                       10000020
+ 000006 5020 D060      00060          11          ST    DCB,SAVE                                                 11000020
+ 00000A 9140 D060      00060          12          TM    SAVE,X'40'              ARE WE 1 PUTL AHEAD?             12000020
+ 00000E 4710 F016      00016          13          BO    HARDWAY                 NO                               13000020
+ 000012 94EF 202C      0002C          14          NI    44(DCB),X'EF'           TURN OFF CHANNEL 12 BIT          14000020
+ 000016                               15 HARDWAY  DS    0H                                                       15000020
+ 000016 07FE                          16          BR    R14                     RETURN                           16000020
+ 000018                               17 ILBOPTV2 DS    0H                                                       17000020
+ 000018 9148 2011      00011          18          TM    17(DCB),X'48'           IS DEVICE A PRINTER?             18000020
+ 00001C 07E1                          19          BCR   NOTONE,R1               NO, TAKE NO-EOP EXIT             19000020
+ 00001E 5020 D060      00060          20          ST    DCB,SAVE                                                 20000020
+ 000022 9140 D060      00060          21          TM    SAVE,X'40'              ARE WE 1 PUTL AHEAD?             21000020
+ 000026 4710 F038      00038          22          BO    HARDER                  NO                               22000020
+ 00002A                               23 TEST     DS    0H                                                       23000020
+ 00002A 9110 202C      0002C          24          TM    44(DCB),X'10'           CHANNEL 12?                      24000020
+ 00002E 07E1                          25          BCR   NOTONE,R1               BRANCH TO NO-EOP-GN              25000020
+ 000030 94EF 202C      0002C          26          NI    44(DCB),X'EF'       TURN OFF CHANNEL 12 BIT        34210 26000020
+ 000034 1810                          27          LR    R1,R0                                                    27000020
+ 000036 07F1                          28          BR    R1                      BRANCH TO EOP-GN                 28000020
+ 000038                               29 HARDER   DS    0H                                                       29000020
+ 000038 90EC D060      00060          30          STM   R14,R12,SAVE            SAVE REGISTERS                   30000020
+ 00003C 94EF 202C      0002C          31          NI    44(DCB),X'EF'           TURN OFF CHANNEL 12 BIT          31000020
+ 000040 5620 F074      00074          32          O     DCB,SIGNAL              SIGNAL TO ILBOERR0 IF I/O ERROR  32000020
+ 000044 1812                          33          LR    R1,DCB                                                   33000020
+ 000046 58F2 0030      00030          34          L     R15,48(DCB)             ADDRESS OF PUT MODULE            34000020
+ 00004A 05EF                          35          BALR  R14,R15                 PUTL                             35000020
+ 00004C 9180 2024      00024          36          TM    36(DCB),X'80'           F OR U TYPE RECORD?              36000020
+ 000050 47E0 F068      00068          37          BNO   BCKUPV                  NO                               37000020
+ 000054 58F2 004C      0004C          38          L     R15,76(DCB)             BACKUP RECADR                    38000020
+ 000058 4BF2 0052      00052          39          SH    R15,82(DCB)             X                                39000020
+ 00005C 50F2 004C      0004C          40          ST    R15,76(DCB)             X                                40000020
+ 000060                               41 COMEBACK DS    0H                                                       41000020
+ 000060 98EC D060      00060          42          LM    R14,R12,SAVE            RESTORE REGISTERS                42000020
+ 000064 47F0 F02A      0002A          43          B     TEST                                                     43000020
+ 000068                               44 BCKUPV   DS    0H                                                       44000020
+ 000068 D701 1000 1000 00000 00000    45          XC    0(2,R1),0(R1)           ZERO OUT CNTRL WORD              45000020
+ 00006E 47F0 F060      00060          46          B     COMEBACK                                                 46000020
+ 000074                               47          DS    0F                                                       47000020
+ 000074 80000000                      48 SIGNAL   DC    X'80000000'                                              48000020
+                             00002    49 DCB      EQU   2                                                        49000020
+                             0000E    50 NOTONE   EQU   14                                                       50000020
+                             00000    51 R0       EQU   0                                                        51000020
+                             00001    52 R1       EQU   1                                                        52000020
+                             00005    53 WK       EQU   5                                                        53000020
+                             0000C    54 R12      EQU   12                                                       54000020
+                             0000D    55 R13      EQU   13                                                       55000020
+                             0000E    56 R14      EQU   14                                                       56000020
+                             0000F    57 R15      EQU   15                                                       57000020
+ 000000                               58 TGT      DSECT                                                          58000020
+1PTV0     ILBOPTV0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000000                               59          DS    96C                                                      59000020
+ 000060                               60 SAVE     DS    F                                                        60000020
+ 000000                               61          END   ILBOPTV0                                                 61000020
+1PTV0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    5
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT         61
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                         6
+ TOTAL RECORDS PRINTED                        84

@@ -1,0 +1,221 @@
+*//    ILBOVCO0                                                         00400018
+VCO0     TITLE     'ILBOVCO0'                                           00800018
+*        ILBOVCO0   CALLING SEQ... L    15,V(ILBOVCO0)                  01200018
+*                                                                       01600018
+*        LEVEL  180     09/14/66                                        02000018
+*                                                                       02400018
+*FUNCTION 0 THIS ROUTINE COMPARES TWO OPERANDS, ONE OR BOTH OF WHICH    02800018
+*   ARE VARIABLE IN LENGTH. THEY MAY EXCEED 256 BYTES IN LENGTH.        03200018
+*ENTRY POINT 0 ILBOVCOM ,CALLING SEQUENCE IS                            03600018
+*                             L    15,V(ILBOVCOM)                       04000018
+*                             BALR 1,15                                 04400018
+*                             DC   XL10'OPERAND A INFORMATION'          04800018
+*                             DC   XL10'OPERAND B INFORMATION'          05200018
+*                                                                       05600018
+*   WHERE THE 10-BYTE OPERAND INFORMATION FIELD HAS ONE OF THE FOLLOW-  06000018
+*   ING TWO FORMATS 0-                                                  06400018
+*                          1. FIXED LENGTH                              06800018
+*                             DC   XL1'TYPE CODE '        SEE BELOW     07200018
+*                             DC   XL3'LENGTH OF ITEM'                  07600018
+*                             DC   AL4(ADDRESS OF POINTER IN TASK       08000018
+*                                     GLOBAL TABLE OR POINTER TO        08400018
+*                                     PROGRAM GLOBAL TABLE)             08800018
+*                             DC   XL2'DISPLACEMENT'                    09200018
+*                          2. VARIABLE LENGTH             SEE BELOW     09600018
+*                             DC   XL1'TYPE CODE'                       10000018
+*                             DC   AL3(POINTER TO CELL IN TASK GLOBAL   10400018
+*                                     TABLE THAT CONTAINS THE LENGTH)   10800018
+*                             DC   AL4(ADDRESS OF POINTER IN THE TASK   11200018
+*                                     GLOBAL TABLE)                     11600018
+*                             DC   XL2'DISPLACEMENT'                    12000018
+*   THE TYPE CODE BITS ARE0 BIT0   FIGURATIVE CONSTANT                  12400018
+*                              1   NOT USED                             12800018
+*                              2   VARIABLE LENGTH                      13200018
+*                              3   DIRECT POINTER TO THE PROGRAM GLOBAL 13600018
+*                                  TABLE (FOR A LITERAL)                14000018
+*                           4-7   NOT USED                              14400018
+*INPUT 0 AS EXPLAINED ABOVE.                                            14800018
+*OUTPUT0 CONDITION CODE IS SET TO INDICATE WHETHER OPERAND-A IS LESS    15200018
+*   THEN, EQUAL TO, OR GREATER THAN OPERAND-B.                          15600018
+*EXTERNAL ROUTINES 0 NONE                                               16000018
+*EXIT-NORMAL 0    BC    15,20(1)                                        16400018
+*     ERROR  0    NONE                                                  16800018
+*WORK AREA 0 BYTES 96-100 OF TGT.                                       17200018
+*ATTRIBUTES 0 REENTRANT CODE.  BLANK IS X'40'                           17600018
+*                                                                       18000018
+*                                                                       18400018
+ILBOVCO0 START 0                                                        18800018
+PNTA   EQU   2                                                          19200018
+PNTB   EQU   3                                                          19600018
+LENA   EQU   4                                                          20000018
+LENB   EQU   5                                                          20400018
+CMPLEN EQU   6                                                          20800018
+PNTEND EQU   7                                                          21200018
+*                                                                       21600018
+R0     EQU   0                                                          22000018
+R1     EQU   1                                                          22400018
+R2     EQU   2                                                          22800018
+R3     EQU   3                                                          23200018
+R4     EQU   4                                                          23600018
+R5     EQU   5                                                          24000018
+R6     EQU   6                                                          24400018
+R7     EQU   7                                                          24800018
+R8     EQU   8                                                          25200018
+R9     EQU   9                                                          25600018
+R10    EQU   10                                                         26000018
+R11    EQU   11                                                         26400018
+R12    EQU   12                                                         26800018
+R13    EQU   13                                                         27200018
+R14    EQU   14                                                         27600018
+R15    EQU   15                                                         28000018
+WRKREG EQU   8                                                       CS 28400018
+WRK    EQU   96                                                      CS 28800018
+*                                                                       29200018
+         USING *,R15                                                    29600018
+         STM   R14,R12,SAVE(R13)    SAVE CALLING REGS                   30000018
+       MVC   WRK(1,R13),4(R1) MOVE REG CODE TO WORK                  CS 30400018
+       OI    WRK(R13),X'20'   SET UP FOR PNTA - REG2                 CS 30800018
+       IC    WRKREG,WRK(R13)  PUT CODE IN WORK REG                   CS 31200018
+       EX    WRKREG,LDREG     LOAD BASE TO PNTA                      CS 31600018
+       AH    PNTA,6(R1)       ADD DISP                               CS 32000018
+       MVC   WRK(1,R13),14(R1) SAME CODING AS                        CS 32400018
+       OI    WRK(R13),X'30'      ABOVE 5 LINES ONLY                  CS 32800018
+       IC    WRKREG,WRK(R13)      FOR PNTB IN                        CS 33200018
+       EX    WRKREG,LDREG          REG 3                             CS 33600018
+       AH    PNTB,16(R1)                                             CS 34000018
+         TM    0(R1),X'80'       TEST A-FIELD FIGCON                    34400018
+       BC    1,PRBSUB          YES - GO TEST B-PARAM                    34800018
+PARAMA   TM    0(R1),X'10'       TEST DIRECT TGT                        35200018
+       BC    1,GETLNA          YES                                      35600018
+       L     PNTA,0(PNTA)      NO - LOAD BL IN TGT                      36000018
+         AH    PNTA,8(R1)        ADD DISP                               36400018
+GETLNA   MVC   ALLIGN(4,R13),0(R1) LOAD LENGTH                          36800018
+         L     LENA,ALLIGN(R13)    OR VLC                               37200018
+         TM    0(R1),X'20'       TEST VL                                37600018
+       BC    1,VLA             YES                                      38000018
+       SLL   LENA,8            NO - CLEAR HI 8 BITS                     38400018
+       SRL   LENA,8            FROM LENGTH                              38800018
+       BC    15,PARAMB        GO TEST B-PARAM                           39200018
+VLA    MVC   WRK(1,R13),4(R1) MOVE REG CODE TO WORK                  CS 39600018
+       OI    WRK(R13),X'40'   SET UP FOR LENA - REG 4                CS 40000018
+       IC    WRKREG,WRK(R13)  PUT CODE IN WORK REG                   CS 40400018
+       EX    WRKREG,LDREG     LOAD BASE TO LENA                      CS 40800018
+       AH    LENA,2(R1)       ADD DISP TO POINT TO VLC               CS 41200018
+       LH    LENA,0(LENA)     LOAD LENGTH IN VLC                     CS 41600018
+       LTR     LENA,LENA                                                42000018
+       BC    7,PARAMB                                                   42400018
+         TM    10(R1),X'20'         IS B A VL.                          42800018
+       BC    14,PARAMB                                                  43200018
+         MVC   ALLIGN(4,R13),10(R1)    YES, LOAD VLC.                   43600018
+         L     LENB,ALLIGN(R13)                                         44000018
+       LH    LENB,0(LENB)                                               44400018
+       LTR   LENB,LENB           VLC OF BOTH A AND B = 0, SET           44800018
+       BC    8,EXIT                CONDITION CODE TO EQUAL AND EXIT.    45200018
+       BC    7,COMP1                                                    45600018
+*                                                                       46000018
+PARAMB   TM    10(R1),X'80'      TEST B-FIELD FIGCON                    46400018
+       BC    1,BFIG            YES - GO TO FIGB RT                      46800018
+         TM    10(R1),X'10'       NO - TEST DIRECT POINTER              47200018
+       BC    1,GETLNB          YES                                      47600018
+PRBSUB L     PNTB,0(PNTB)      NO - LOAD BL IN TGT                      48000018
+         AH    PNTB,18(R1)       ADD DISP                               48400018
+GETLNB   MVC   ALLIGN(4,R13),10(R1) LOAD LENGTH                         48800018
+         L     LENB,ALLIGN(R13)     OR VLC                              49200018
+         TM    10(R1),X'20'      TEST VL                                49600018
+       BC    1,VLB             YES                                      50000018
+       SLL   LENB,8            NO -CLEAR HI 8 BITS                      50400018
+       SRL   LENB,8             FROM LENGTH                             50800018
+       BC    15,TSTFIG        GO TEST IF A-FLD IS FIGCON                51200018
+VLB    MVC   WRK(1,R13),14(R1) MOVE REG CODE TO WORK                 CS 51600018
+       OI    WRK(R13),X'50'    SET UP FOR LENB - REG 5               CS 52000018
+       IC    WRKREG,WRK(R13)   PUT CODE IN WORK REG                  CS 52400018
+       EX    WRKREG,LDREG      LOAD BASE TO LENB                     CS 52800018
+       AH    LENB,12(R1)       ADD DISP TO POINT TO VLC              CS 53200018
+       LH    LENB,0(LENB)      LOAD LENGTH IN VLC                    CS 53600018
+       LTR   LENB,LENB                                                  54000018
+       BC    7,TSTFIG                                                   54400018
+         TM    0(R1),X'20'                                              54800018
+       BC    14,TSTFIG                                                  55200018
+         MVC   ALLIGN(4,R13),0(R1)   A IS A VLC, LOAD VLC.              55600018
+         L     LENA,ALLIGN(R13)                                         56000018
+       LH    LENA,0(LENA)                                               56400018
+       LTR   LENA,LENA           VLC OF BOTH A AND B = 0, SET           56800018
+       BC    8,EXIT               CONDITION CODE TO EQUAL AND EXIT.     57200018
+       BC    7,COMP1                                                    57600018
+TSTFIG   TM    0(R1),X'80'       TEST A-FLD FIGCON                      58000018
+       BC    1,AFIG                                                     58400018
+* MAIN COMPARE ROUTINE                                                  58800018
+COMP1  CR    LENA,LENB        COMPARE FIELD LENGTH.                     59200018
+       BC    4,ALESSB         A SHORTER THAN B                          59600018
+       BC    2,AGRTRB         A LONGER THAN B                           60000018
+* A LEN = B LEN                                                         60400018
+       LR    CMPLEN,LENA                                                60800018
+         BAL   R14,COMPEQ        LINK TO SUBROUTINE TO COMP EQ LENGTHS  61200018
+       BC    15,EXIT          CONDITION CODE SET                        61600018
+* A-LENGTH LESS THAN B                                                  62000018
+ALESSB LR    CMPLEN,LENA      LENGTH A DETERMINES COMP LENGTH           62400018
+       LR    PNTEND,PNTB      SAVE PNTB IN CASE OF EQ VALUE COMP        62800018
+       LTR   LENA,LENA                                                  63200018
+       BC    8,COMPB                                                    63600018
+         BAL   R14,COMPEQ        LINK TO COMP                           64000018
+       BC    7,EXIT           COND CODE SET - HI OR LOW                 64400018
+COMPB  AR    PNTEND,LENA      EQ, COMP EXCESS B FIELD CHARACTERS TO     64800018
+       LR    CMPLEN,LENB       BLANKS.  CMPLEN CONTAINS NO. OF CHARS    65200018
+       SR    CMPLEN,LENA      AND PNTEND CONTAINS POINTER               65600018
+         BAL   R14,COMPBL        GO COMP TO BLANKS                      66000018
+       BC    8,EXIT           EQ COMP TO BLANKS - COND CODE IS EQ       66400018
+         LNR   R14,R14            A-FLD LESS THAN B-FLD - CHNGE COND CO 66800018
+       BC    15,EXIT          EXIT                                      67200018
+* A LENGTH GREATER THAN B LENGTH                                        67600018
+AGRTRB LR    CMPLEN,LENB      B-LENGTH DETERMINES COMP                  68000018
+       LR    PNTEND,PNTA      SAVE A-FIELD POINTER TO TEST EXTRA CHARS  68400018
+       LTR   LENB,LENB                                                  68800018
+       BC    8,COMPA                                                    69200018
+         BAL   R14,COMPEQ        LINK TO COMP EQ LENGTHS                69600018
+       BC    7,EXIT            UNEQUAL COMP - COND CODE SET             70000018
+COMPA  AR    PNTEND,LENB      EQ, COMPARE EXCESS A FIELD                70400018
+       LR    CMPLEN,LENA        CHARACTERS TO BLANKS. CMPLEN CONTAINS   70800018
+       SR    CMPLEN,LENB        LENGTH. PNTEND IS PNTR                  71200018
+         BAL   R14,COMPBL        GO COMP TO BLANKS                      71600018
+       BC    15,EXIT          COND CODE SET - EXIT                      72000018
+*                                                                       72400018
+COMPEQ CH    CMPLEN,H256      COMPARE LENGTH TO 256                     72800018
+       BC    2,GRT256          GRTR THAN 256                            73200018
+         BCTR  CMPLEN,R0          LESS OR EQ                            73600018
+       EX    CMPLEN,COMPAB    COMPARE                                   74000018
+         BCR   15,R14            RETURN TO MAIN LINE                    74400018
+GRT256 CLC   0(256,PNTA),0(PNTB) COMP 256 BYTES                         74800018
+       BC    7,EXIT           IF UNEQUAL, EXIT                          75200018
+       LA    PNTA,256(PNTA)    OTHERWISE, UP POINTERS                   75600018
+       LA    PNTB,256(PNTB)    DECREMENT LENGTH                         76000018
+       SH    CMPLEN,H256       REPEAT                                   76400018
+       BC    15,COMPEQ         LOOP                                     76800018
+*                                                                       77200018
+COMPAB CLC   0(0,PNTA),0(PNTB)                                          77600018
+*                                                                       78000018
+COMPBL CLI   0(PNTEND),X'40'  COMPARE TO A BLANK                        78400018
+         BCR   7,R14             EXIT IF UNEQUAL                        78800018
+       LA    PNTEND,1(PNTEND) ADD 1 TO POINTER                          79200018
+       BCT   CMPLEN,COMPBL    SUBTR 1 FROM LENGTH, REPEAT IF NOT ZERO   79600018
+         BCR   15,R14            WHEN LENGTH IS ZERO, RETURN            80000018
+*                                                                       80400018
+* A-FIELD FIGCON                                                        80800018
+AFIG   CLC   0(1,PNTA),0(PNTB) COMP ONE BYTE TO FIGCON                  81200018
+       BC    7,EXIT           IF UNEQUAL, EXIT                          81600018
+       LA    PNTB,1(PNTB)     UP POINTER BY 1                           82000018
+       BCT   LENB,AFIG        REPEAT LOOP                               82400018
+       BC    15,EXIT          EXIT WHEN LENB IS ZERO                    82800018
+* B-FIELD FIGCON                                                        83200018
+BFIG   CLC   0(1,PNTA),0(PNTB) SAME                                     83600018
+       BC    7,EXIT             AS                                      84000018
+       LA    PNTA,1(PNTA)        A-FIELD                                84400018
+       BCT   LENA,BFIG            FIGCON                                84800018
+EXIT     LM    R14,R12,SAVE(R13)         RESTORE CALLING REGS           85200018
+         BC    15,20(R1)                                                85600018
+* CONSTANTS AND EQUATES                                                 86000018
+LDREG  LR    R0,R0             LOAD BASE                             CS 86400018
+H256   DC    H'256'                                                     86800018
+SAVE     EQU   12                                                       87200018
+ALLIGN EQU   96                                                         87600018
+       END                                                              88000018
+         EJECT                                                          88400018

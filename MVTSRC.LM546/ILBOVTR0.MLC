@@ -1,0 +1,94 @@
+*//    ILBOVTR0                                                         01000018
+VTR0     TITLE     'ILBOVTR0'                                           02000018
+*        ILBOVTR0   CALLING SEQ... L    15,V(ILBOVTR0)                  03000018
+*                                                                       04000018
+*                                                                       05000018
+*        LEVEL  180     09/14/66                                        06000018
+*                                                                       07000018
+*FUNCTION 0 THIS ROUTINE PROCESSES THE TRANSFORM STATEMENTS WHEN THE    08000018
+*   FIELD IS VARIABLE IN LENGTH. A 256-BYTE TRANSFORM TABLE IS USED.    09000018
+*ENTRY POINT 0 ILBOVTRN, CALLING SEQUENCE IS0-                          10000018
+*                             L    2,V(ILBOTRAN)   TRANSFORM TABLE      11000018
+*                             L    15,V(ILBOVTRN)                       12000018
+*                             BALR 1,15                                 13000018
+*                             DC   XL10'OPERAND INFORMATION'            14000018
+*   WHERE THE OPERAND INFORMATION FIELD HAS THE FOLLOWING FORMAT 0      15000018
+*                             DC   XL1'TYPE CODE'     SEE BELOW         16000018
+*                             DC   AL3(POINTER TO CELL IN TASK GLOBAL   17000018
+*                                     TABLE THAT CONTAINS THE LENGTH)   18000018
+*                             DC   AL4(ADDRESS OF POINTER IN THE TASK   19000018
+*                                     GLOBAL TABLE)                     20000018
+*                             DC   XL2'DISPLACEMENT'                    21000018
+*   THE TYPE CODE BITS ARE BIT 0   NOT USED                             22000018
+*                              1   TRACE ITEM    (N/A HERE)             23000018
+*                              2   VARIABLE LENGTH                      24000018
+*                              3   DIRECT POINTER (FOR LITERAL OR TALLY 25000018
+*                            4-5   NOT USED                             26000018
+*                              6   INTERNAL DECIMAL ITEM    (N/A HERE)  27000018
+*                              7   BINARY ITEM              (N/A HERE)  28000018
+*INPUT 0 SEE ABOVE                                                      29000018
+*OUTPUT 0 N/A                                                           30000018
+*EXTERNAL ROUTINES 0 USES THE TRANSFORM TABLE (ILBOTRAN),ADDRESS OF     31000018
+*   WHICH IS GIVEN IN THE CALLING SEQUENCE BY THE CALLER.               32000018
+*EXITS-NORMAL 0 BY   BC   15,10(1)                                      33000018
+*      ERROR  0 NONE                                                    34000018
+*ATTRIBUTES 0 SERIALLY REUSABLE                                         35000018
+*                                                                       36000018
+ILBOVTR0 START 0                                                        37000018
+*                                                                       38000018
+R0     EQU   0                                                          39000018
+R1     EQU   1                                                          40000018
+R2     EQU   2                                                          41000018
+R3     EQU   3                                                          42000018
+R4     EQU   4                                                          43000018
+R5     EQU   5                                                          44000018
+R6     EQU   6                                                          45000018
+R7     EQU   7                                                          46000018
+R8     EQU   8                                                          47000018
+R9     EQU   9                                                          48000018
+R10    EQU   10                                                         49000018
+R11    EQU   11                                                         50000018
+R12    EQU   12                                                         51000018
+R13    EQU   13                                                         52000018
+R14    EQU   14                                                         53000018
+R15    EQU   15                                                         54000018
+WRK    EQU   96                                                      CS 55000018
+WRKREG EQU   5                                                       CS 56000018
+         USING *,R15             SET BASE                               57000018
+         STM   R14,R12,SAVE(R13)                                        58000018
+       MVC   WRK(1,R13),4(R1) MOVE REG CODE TO WORK                  CS 59000018
+       OI    WRK(R13),X'30'   SET UP REG3 FOR VAR LENGTH             CS 60000018
+       IC    WRKREG,WRK(R13)  PUT CODE IN WORK REG                   CS 61000018
+       EX    WRKREG,LDREG     LOAD BASE INTO REG3                    CS 62000018
+       AH    R3,2(R1)         ADD DISP TO POINT TO VLC               CS 63000018
+       LH    R3,0(R3)         LOAD VALUE IN VLC TO REG3              CS 64000018
+       NI    WRK(R13),X'0F'   TURN OFF REG3 BITS                     CS 65000018
+       OI    WRK(R13),X'40'   SET UP FOR REG 4                       CS 66000018
+       IC    WRKREG,WRK(R13)  PUT CODE IN WORK REG                   CS 67000018
+       EX    WRKREG,LDREG     LOAD BASE TO REG 4                     CS 68000018
+       AH    R4,6(R1)         ADD DISP                               CS 69000018
+         TM    0(R1),X'10'       TEST DIRECT POINTER                    70000018
+       BC    1,LOOP            YES                                      71000018
+         L     R4,0(R4)            NO LOAD BL                           72000018
+         AH    R4,8(R1)            ADD DISPLACEMENT                     73000018
+LOOP     CH    R3,H256           IS LENGTH GREATER THAN 256             74000018
+       BC    2,GRT256          YES                                      75000018
+         LTR   R3,R3              TEST ZERO LENGTH                      76000018
+       BC    8,EXIT            YES - EXIT                               77000018
+         BCTR  R3,R0              SUBTR 1 TO EX                         78000018
+         EX    R3,TRANS          EXECUTE TRANSFORM                      79000018
+EXIT     LM    R14,R12,SAVE(R13)                                        80000018
+         LA    R1,10(R1)          ADD 10 TO RETURN REG                  81000018
+         BCR   15,R1             EXIT                                   82000018
+GRT256   TR    0(256,R4),0(R2)    TRANS 256 BYTES                       83000018
+         AH    R4,H256           UP DATA POINTER                        84000018
+         SH    R3,H256           DECR LENGTH                            85000018
+       BC    15,LOOP          REPEAT LOOP                               86000018
+TRANS    TR    0(0,R4),0(R2)      EXECUTE TRANSLATE                     87000018
+LDREG  LR    R0,R0            LOAD BASE                              CS 88000018
+*                                                                       89000018
+H256   DC    H'256'                                                     90000018
+SAVE     EQU   12                                                       91000018
+ALLIGN EQU   96                                                         92000018
+       END                                                              93000018
+         EJECT                                                          94000018

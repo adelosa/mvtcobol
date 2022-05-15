@@ -1,0 +1,250 @@
+*//    ILBOSPA0                                                         00300018
+SPA0     TITLE     'ILBOSPA0'                                           00600018
+ILBOSPA0 CSECT                                                          00900018
+         USING *,ADDRSSNG                                               01200018
+         USING PARAMLST,PL                                              01500018
+         USING WRKAREA,STORADR                                          01800018
+         STM   14,12,WRK(SA)           SAVE REGISTERS                   02100018
+         LR    ADDRSSNG,R15            ESTABLISH ADDRESSABILITY         02400018
+         LR    PL,R1                   PL=ADDRESS OF PARAMETER LIST     02700018
+         LA    STORADR,WRK+60(SA)      STORADR=ADDRESS OF WORKNG STRAGE 03000018
+         L     RECADR,RECAREA          ADDRESS OF RECORD                03300018
+         SR    INTEGER,INTEGER                                          03600018
+         IC    INTEGER,N+3             INTEGER=N= NUMBER OF LINES       03900018
+         MVI   FIRST,1                 FIRST TIME THRU                  04200018
+         OI    DCBADR,X'80'            SIGNAL TO ILBOERR0 IF I/O ERROR  04500018
+         L     DCB,DCBADR                                               04800018
+         TM    OPTNBYTE,FTYPE          F TYPE RECORD                    05100018
+         BC    NOTONE,NOTFTYPE         NO,  U, V, OR S TYPE             05400018
+         LH    L,82(DCB)               L=LRECL                          05700018
+         BC    UNCOND,A                                                 06000018
+NOTFTYPE L     L,RCDLNGTH              L=RCDLNGTH                       06300018
+A        MVI   MOVE,0                                                   06600018
+         MVI   LAST,1                                                   06900018
+         MVI   BLANKS,0                                                 07200018
+         TM    OPTNBYTE,MNEUM          MNEUMONIC OPTION                 07500018
+         BC    NOTONE,X2               NO                               07800018
+         LR    COUNT,INTEGER                                            08100018
+         BC    UNCOND,B                                                 08400018
+X2       CH    INTEGER,=H'3'           INTEGER GREATER THAN 3           08700018
+         BC    NOTHI,X3                NO                               09000018
+         LA    COUNT,3                 YES,MAXIMUM VALUE IS 3           09300018
+         MVI   LAST,0                  LAST=0                           09600018
+         BC    UNCOND,X4                                                09900018
+X3       LR    COUNT,INTEGER           COUNT=INTEGER                    10200018
+X4       TM    OPTNBYTE,AFTER          AFTER OPTION                     10500018
+         BC    ZERO,X5                 NO, BEFORE OPTION                10800018
+         TM    OPTNBYTE,MIXING         MIXED FILE                       11100018
+         BC    ZERO,X6                 NO                               11400018
+         MVI   LAST,0                  YES, LAST=0                      11700018
+         BC    UNCOND,C                                                 12000018
+X6       LA    WK,ASATBL               CODE=ASA EQUIVALENT OF COUNT     12300018
+X7       AR    WK,COUNT                                                 12600018
+         MVC   CODE,0(WK)                                               12900018
+         BC    UNCOND,D                                                 13200018
+X5       TM    FIRST,1                 FIRST=1                          13500018
+         BC    ZERO,C                                                   13800018
+         LA    WK,MACHTBL              CODE=MACHINE EQUIV OF COUNT      14100018
+         BC    UNCOND,X7                                                14400018
+C        LA    WK,SPCIMTBL             CODE=SPACE IMMED EQUIV OF COUNT  14700018
+         BC    UNCOND,X7                                                15000018
+D        TM    OPTNBYTE,AFTER          BEFORE OPTION                    15300018
+         BC    ONE,X8                  NO                               15600018
+         TM    FIRST,1                 YES, FIRST=1                     15900018
+         BC    NOTONE,F                NO, BRANCH                       16200018
+G        MVI   MOVE,1                  MOVE=1                           16500018
+         MVI   FIRST,0                 FIRST=0                          16800018
+         LR    FROMADR,RECADR          FROMADR=RECADR                   17100018
+         LR    RECLEN,L                RECLEN=L                         17400018
+         BC    UNCOND,CHKSTYPE                                          17700018
+X8       TM    LAST,1                  LAST=1                           18000018
+         BC    ONE,G                   YES LAST=1 AND AFTER OPTION      18300018
+         TM    OPTNBYTE,MIXING         AFTER AND MIXING                 18600018
+         BC    ONE,F                   YES                              18900018
+         MVI   BLANKS,1               SET SW TO INDICATE MOVE BLANK RCD 19200018
+         MVI   MOVE,1                                                   19500018
+F        TM    OPTNBYTE,FTYPE          F TYPE RECORD                    19800018
+         BC    NOTONE,F1                                                20100018
+         LR    RECLEN,L                RECLEN=L                         20400018
+         BC    UNCOND,E                                                 20700018
+F1       LA    RECLEN,18               NO, RECLEN=18                    21000018
+CHKSTYPE TM    OPTNBYTE,STYPE          SPANNED RECORDS                  21300018
+         BC    NOTONE,E                NO                               21600018
+         TM    BLANKS,1                YES, BLANK RCD                   21900018
+         BC    ONE,BLNKLINE                                             22200018
+         LR    FROMADR,RECADR          NO                               22500018
+         MVC   0(1,FROMADR),CODE       MOVE CARRIAGE CONTROL CHAR       22800018
+         BC    UNCOND,E                                                 23100018
+BLNKLINE TM    OPTNBYTE,REPORTCD       REPORT RECORD WITH CODE?         23400018
+         BC    ONE,REPCODE             YES,                             23700018
+         LA    FROMADR,BLANKREC+1                                       24000018
+         MVC   0(1,FROMADR),CODE       MOVE CARRIAGE CONTROL CHAR       24300018
+         BC    UNCOND,E                                                 24600018
+REPCODE  LA    FROMADR,BLANKREC                                         24900018
+         MVC   0(1,FROMADR),0(RECADR)  MOVE REPORT CODE                 25200018
+         MVC   1(1,FROMADR),CODE       MOVE CARRIAGE CONTROL CHAR       25500018
+E        LR    R1,DCB                                                   25800018
+         TM    OPTNBYTE,FTYPE                                           26100018
+         BC    ONE,X10                 YES                              26400018
+         TM    OPTNBYTE,VTYPE                                           26700018
+         BC    NOTONE,X11              NO                               27000018
+         LA    WK,4(RECLEN)            V TYPE RCD                       27300018
+         STH   WK,82(DCB)              LRECL                            27600018
+         BC    UNCOND,X10                                               27900018
+X11      TM    OPTNBYTE,UTYPE                                           28200018
+         BC    NOTONE,X11A             NO                               28500018
+         STH   RECLEN,82(DCB)          YES, LRECL                       28800018
+         BC    UNCOND,X10                                               29100018
+X11A     STH   RECLEN,90(DCB)          S TYPE RCD                       29400018
+         LR    R0,FROMADR              POINT TO RECORD                  29700018
+X10      DS    0H                                                       30000018
+         L     R15,48(DCB)             GET ADDRESS OF WRITE ROUTINE     30300018
+         BALR  RETRG,R15                                                30600018
+         TM    OPTNBYTE,STYPE          SPANNED RECORDS                  30900018
+         BC    ONE,NOMOVE              YES, SKIP MOVE                   31200018
+         TM    OPTNBYTE,VTYPE                                           31500018
+         BC    NOTONE,X12              NO                               31800018
+         MVC   0(2,R1),82(DCB)         YES, INITIALIZE CONTROL WORD     32100018
+         LA    R1,4(R1)                                                 32400018
+X12      TM    OPTNBYTE,REPORTCD       REPORT RCD WITH CODE             32700018
+         BC    ONE,RPTCDRCD            YES                              33000018
+         MVC   0(1,R1),CODE            MOVE CARRIAGE CONTROL CHARACTER  33300018
+         LA    R1,1(R1)                INCREMENT BUFFER ADDRESS         33600018
+         LA    FROMADR,1(FROMADR)      INCREMENT FROM ADDRESS           33900018
+         SH    RECLEN,=H'1'            DECREASE LENGTH OF RECORD        34200018
+X20      TM    MOVE,1                  IS A MOVE NECESSARY              34500018
+         BC    NOTONE,NOMOVE           NO                               34800018
+         TM    BLANKS,1                YES, MOVE BLANK RCD              35100018
+         BC    NOTONE,X16              NO                               35400018
+         MVI   0(R1),C' '              YES                              35700018
+         LR    FROMADR,R1              *                                36000018
+         LA    R1,1(R1)                *                                36300018
+         SH    RECLEN,=H'1'            *                                36600018
+X16      CH    RECLEN,=H'256'                                           36900018
+         BC    HI,X13                  LENGTH GREATER THAN 256          37200018
+         LR    WK,RECLEN               LENGTH NOT GREATER THAN 256      37500018
+         SH    WK,=H'1'                SUBTRACT 1 FOR EXECUTE           37800018
+         BC    UNCOND,X14                                               38100018
+X13      LA    WK,255                  SET LENGTH=256-1 FOR EXECUTE     38400018
+X14      EX    WK,MVC                  MOVE MAX OF 256 BYTES OF RECORD  38700018
+         SH    RECLEN,=H'256'          IS MOVE COMPLETE                 39000018
+         BC    NOTHI,NOMOVE            YES                              39300018
+         AH    R1,=H'256'              NO, INCREMENT ADDRESSES          39600018
+         AH    FROMADR,=H'256'                                          39900018
+         BC    UNCOND,X16              GO BACK AND MOVE SOME MORE       40200018
+NOMOVE   SR    INTEGER,COUNT           INTEGER=INTEGER-COUNT            40500018
+         BC    LO,EXIT                 INTEGER LESS THAN ZERO           40800018
+         BC    HI,A                    INTEGER GREATER THAN ZERO        41100018
+         TM    OPTNBYTE,X'90'          INTEGER=0, MIXING AND AFTER?     41400018
+         BC    NOTONE,EXIT             NO                               41700018
+         CLI   CODE,1                                                   42000018
+         BE    EXIT                                                     42300018
+         MVI   CODE,X'01'              YES, SET CODE TO SUPPRESS SPACE  42600018
+         MVI   LAST,1                  LAST=1                           42900018
+         BC    UNCOND,D                                                 43200018
+RPTCDRCD MVC   1(1,R1),CODE            MOVE CODE TO BUFFER+1            43500018
+         MVC   0(1,R1),0(RECADR)       MOVE REPORT CODE TO BUFFER       43800018
+         LA    R1,2(R1)                INCREMENT BUFFER POINTER         44100018
+         LA    FROMADR,2(FROMADR)      INCREMENT 'FROM' POINTER         44400018
+         SH    RECLEN,=H'2'            SUBTRACT 2 FROM LENGTH           44700018
+         BC    UNCOND,X20              GO TO MOVE                       45000018
+B        LA    WK,MNEUMTBL             TRANSLATE COUNT TO SKIP TO CHNL  45300018
+         AR    WK,COUNT                                                 45600018
+         TM    OPTNBYTE,AFTER          AFTER OPTION                     45900018
+         BC    ONE,X18                 YES                              46200018
+X17      MVC   CODE,0(WK)              NO, SET CODE                     46500018
+         BC    UNCOND,G                                                 46800018
+X18      TM    OPTNBYTE,MIXING         FILE MIXED                       47100018
+         BC    ONE,X19                 YES                              47400018
+         LA    WK,15(WK)               NO                               47700018
+         BC    UNCOND,X17                                               48000018
+X19      LA    WK,30(WK)                                                48300018
+         MVC   CODE,0(WK)                                               48600018
+         LTR   COUNT,COUNT             SUPPRESS SPACING                 48900018
+         BC    NOTZER,F                NO                               49200018
+         NI    OPTNBYTE,X'7F'          YES, TURN OFF MIXING BIT         49500018
+         BC    UNCOND,F                                                 49800018
+EXIT     DS    0H                                                       50100018
+         L     FREEREG1,36(DCB)        ADDRESS OF EXITLIST              50400018
+         NI    35(FREEREG1),0          TURN OFF BIT SIGNAL TO ILBOERR0  50700018
+         LM    14,12,WRK(SA)           RESTORE REGISTERS                51000018
+         BCR   UNCOND,RETRG            BRANCH BACK TO INLINE CODE       51300018
+*                        REGISTER ASSIGNMENTS                           51600018
+*                        *                                              51900018
+*                        *                                              52200018
+*                        *                                              52500018
+*                        *                                              52800018
+R0       EQU   0         *                                              53100018
+R1       EQU   1         *             USED FOR I/O                     53400018
+DCB      EQU   2         *                                              53700018
+RECLEN   EQU   3         *                                              54000018
+FROMADR  EQU   4         *                                              54300018
+FREEREG1 EQU   5         *                                              54600018
+RECADR   EQU   6         *                                              54900018
+L        EQU   7         *                                              55200018
+COUNT    EQU   8         *                                              55500018
+INTEGER  EQU   9         *                                              55800018
+STORADR  EQU   10        *             ADDRESS IN TGT/SGT FOR TMP STORG 56100018
+PL       EQU   11        *             ADDRESS OF PARAMETER LIST        56400018
+ADDRSSNG EQU   12        *             ADDRESSABILITY                   56700018
+SA       EQU   13        *             SAVE ADDRESS                     57000018
+WK       EQU   14        *             WORK REGISTER                    57300018
+RETRG    EQU   14        *                                              57600018
+R15      EQU   15        *                                              57900018
+*                        *                                              58200018
+*                        *                                              58500018
+*                        *                                              58800018
+*                        *                                              59100018
+UNCOND   EQU   15                                                       59400018
+ZERO     EQU   8                                                        59700018
+NOTZER   EQU   7                                                        60000018
+ONE      EQU   1                                                        60300018
+NOTONE   EQU   14                                                       60600018
+MIXED    EQU   4                                                        60900018
+LO       EQU   4                                                        61200018
+EQ       EQU   8                                                        61500018
+HI       EQU   2                                                        61800018
+NOTLO    EQU   11                                                       62100018
+NOTEQ    EQU   7                                                        62400018
+NOTHI    EQU   13                                                       62700018
+AFTER    EQU   X'10'                                                    63000018
+MIXING   EQU   X'80'                                                    63300018
+MNEUM    EQU   X'40'                                                    63600018
+REPORTCD EQU   X'20'                                                    63900018
+VTYPE    EQU   X'08'                                                    64200018
+FTYPE    EQU   X'04'                                                    64500018
+UTYPE    EQU   X'02'                                                    64800018
+STYPE    EQU   X'01'                                                    65100018
+WRK      EQU   96                                                       65400018
+*                            READ ONLY STORAGE                          65700018
+*                                    *                                  66000018
+*                                    *                                  66300018
+*                                    *                                  66600018
+*                                    *                                  66900018
+MVC      MVC   0(0,R1),0(FROMADR)    *                                  67200018
+ASATBL   DC    C'+ 0-'               * SKIP 0,1,2,3 LINES AND PRINT     67500018
+MACHTBL  DC    X'01091119'           * PRINT AND SKIP 0,1,2,3 LINES     67800018
+SPCIMTBL DC    X'030B131B'           * SPACE IMMEDIATE 0,1,2,3 LINES    68100018
+MNEUMTBL DC    X'01899199A1A9B1'     * BEFORE OPTION                    68400018
+         DC    X'B9C1C9D1D9E1'       * *                                68700018
+         DC    C'VW'                 * *                                69000018
+         DC    C'+123456789ABCVW'    * AFTER OPTION                     69300018
+         DC    X'018B939BA3ABB3'     * SKIP TO CHANNEL IMMEDIATE        69600018
+         DC    X'BBC3CBD3DBE3'       * *                                69900018
+BLANKREC DS    XL2                                                      70200018
+         DC    17C' '                                                   70500018
+         LTORG                                                          70800018
+PARAMLST DSECT                                                          71100018
+RECAREA  DS    0F                                                       71400018
+OPTNBYTE DS    XL1                                                      71700018
+         DS    XL3                                                      72000018
+N        DS    F                                                        72300018
+DCBADR   DS    F                                                        72600018
+RCDLNGTH DS    F                                                        72900018
+WRKAREA  DSECT                                                          73200018
+FIRST    DS    XL1                                                      73500018
+LAST     DS    XL1                                                      73800018
+MOVE     DS    XL1                                                      74100018
+CODE     DS    XL1                                                      74400018
+BLANKS   DS    XL1                                                      74700018
+         END                                                            75000018

@@ -1,0 +1,697 @@
+*$MODULE       PHASE6A                                                  00100020
+IKF6A01  CSECT                                                          00200020
+*                                                                       00300020
+*                                  PHASE IDENTIFICATION                 00400020
+*                                                                       00500020
+PH6A     TITLE 'IKFCBL6A'                                               00600020
+*   INPUT      DN/PN REFS ON SYSUT3                                     00700020
+*        DN DEFS ON SYSUT1                                              00800020
+*        PN DEFS ON SYSUT1 (FOLLOWING DN DEFS)                          00900020
+       EJECT                                                            01000020
+*  EQUATES                                                              01100020
+R0       EQU   0              PARAMETER REGISTERS                       01200020
+R1       EQU   1                                                        01300020
+R2       EQU   2                                                        01400020
+R3       EQU   3                                                        01500020
+RW1      EQU   4              WORK REGS                                 01600020
+RW2      EQU   5                                                        01700020
+RW3      EQU   6                                                        01800020
+RET2     EQU   7                                                        01900020
+RW5      EQU   8                                                        02000020
+INPUTR   EQU   9              POINTS TO INPUT ELEMENT                   02100020
+COSREG   EQU   10             POINTS TO COMMON                          02200020
+R11      EQU   11                                                       02300020
+BASE     EQU   12             BASE REG                                  02400020
+R13      EQU   13             SAVE AREA ADDR                            02500020
+R14      EQU   14             RETURN REG                                02600020
+R15      EQU   15                                                       02700020
+LOW      EQU   4                   FOUR                                 02800020
+NOTEQUAL EQU   7                   SEVEN                                02900020
+EQUAL    EQU   8                   EIGHT                                03000020
+REFLN    EQU   5                   LENGTH OF REF ELEMENT                03100020
+DNLN     EQU   5              LENGTH OF TDNREF TBL ENTRY                03200020
+PNLN     EQU   4                   LENGTH OF TPNREF TBL ENTRY           03300020
+     EJECT                                                              03400020
+IKFCBL6A DS    0H                                                       03500020
+         STM   R14,R12,DX12(R13)        SAVE REGISTERS                  03600020
+         LR    R2,R13         GET HIGHER SAVE AREA ADDR                 03700020
+         BALR  BASE,R0         ESTABLISH ADDRESABILITY                  03800020
+         USING *,BASE                                                   03900020
+         USING COS,COSREG                                               04000020
+         USING INREC,INPUTR                                             04100020
+         B     PH6A                BRANCH AROUND ID                     04200020
+        DC     C'IKFCBL6A'              PHASE NAME                      04300020
+         DC    C'B'                    BUILD                            04400020
+         DC    X'20'                   NUMBER IN HEX                    04500020
+PH6A     LA    R13,SAVE6A         GET LOWER SA ADDRESS                  04600020
+         ST    R2,DX4(R13)     PROVIDE BACK CHAINING(REQUIRED)          04700020
+         ST    R13,DX8(R2)     PROVIDE FORWARD CHAINING                 04800020
+         L     COSREG,DX0(R1)  GET COMMON TABLE ADDR                    04900020
+*                                                                       05000020
+* PRINT HEADER LINE                                                     05100020
+*                                                                       05200020
+         BALR  R0,COSREG           EJECT                                05300020
+         DC    X'D6'               EJECT A PAGE                         05400020
+         MVI   OUTBUF,XX40          BLANK OUTPUT LINE                   05500020
+         MVC   OUTBUF+NX1(L119),OUTBUF OF PRINT FIELD                   05600020
+         MVC   OUTBUF+NX45(L'HDG),HDG GENERATE HEADER LINE              05700020
+         BAL   RW2,PRINTLN         BLANK LINE                           05800020
+         BAL   RW2,PRINTLN         BLANK LINE                           05900020
+         BAL   RW2,PRINTLN         BLANK LINE                           06000020
+         MVC   OUTBUF(L'NAMEMSG),NAMEMSG                                06100020
+         MVC   OUTDEF(L'DEFMSG),DEFMSG                                  06200020
+         MVC   OUTREF(D9),HDG+NX6  MOVE HEADER LINELD                   06300020
+* SAVE 4000 BYTES FOR THE SYSTEM                                        06400020
+         L     R15,AGETALL         GET ADDR OF SUBRTN TO GET CORE       06500020
+         BALR  R14,R15             BRANCH                               06600020
+* UPON RETURN R0 CONTAINS STARTING ADDR, R1 LENGTH                      06700020
+         ST    R0,TBLADDR          INITIALIZE POINTERS                  06800020
+         ST    R0,TBLENTRY         CURRENT ENTRY ADDRESS                06900020
+         AR    R0,R1               END OF TABLE                         07000020
+         ST    R0,TBLEND           SAVE                                 07100020
+*                                                                       07200020
+*                                                                       07300020
+* READ DATA/FILE NAME REFERENCE ELEMENTS                                07400020
+*   FORMAT     //DDDDDD CCCC//                                          07500020
+*   WHERE DDDDDD V DICT PTR OR PN NUMBER (IF BIT 0 IN CCCC IS ONE)      07600020
+*         CCCC = CARD NUMBER                                            07700020
+READREF  BALR  R0,COSREG           CALL PH00                            07800020
+         DC    X'03'               READ FROM SYSUT3                     07900020
+         BC    EQUAL,EOFDN         BTANCH - EOF                         08000020
+         LR    INPUTR,R0      GET ADDRESS OF AN ELEMENT                 08100020
+         CLI   DX0(INPUTR),XX77     IS XREF TO BE PRODUCED              08200020
+         BE    EOFDN               NO,BR THEN EXIT                      08300020
+NEXTREF  CLI   DX0(INPUTR),XXFF    HAS END OF BLOCK BEEN REACHED ?      08400020
+         BC    EQUAL,READREF       YES, READ NEXT BLOCK                 08500020
+         L     R2,TBLENTRY         GET CURRENT ENTRY ADDR               08600020
+         C     R2,TBLEND           TABLE OVERFOW                        08700020
+         BC    NOTLOW,OVFLOW       YES,BR                               08800020
+         MVC   DX0(REFLN,R2),DX0(INPUTR) MAKE AN ENTRY IN REFTBL        08900020
+         LA    R2,REFLN(R2)        POINT TO NEXT ENTRY                  09000020
+         ST    R2,TBLENTRY         SAVE                                 09100020
+         LA    INPUTR,REFLN(INPUTR)  POINT TO NEXT ELEMENT              09200020
+         CLI   DX0(INPUTR),XX77    IS XREF TO BE PRODUCED               09300020
+         BE    EOFDN         NO,BR THEN EXIT                            09400020
+        B     NEXTREF             PROCESS NEXT ENTRY                    09500020
+         EJECT                                                          09600020
+EOFDN    DS    0H                                                       09700020
+         MVC   ZERDSPL(DICTSZ,R2),ZEROS MOVE ZEROS IN AT END OF TBL     09800020
+         BAL   R14,SORT            SORT REFTBL                          09900020
+         TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  10000020
+         BC    ONES,EOF1           YES,BR                               10100020
+*                                                                       10200020
+* PRINT XREF DICTIONARY FOR DATA/FILE NAMES                             10300020
+*                                                                       10400020
+         L     R1,TBLADDR          GET REFTBL ADDRESS                   10500020
+         LR    RW1,R1              YES,SEARCH USING DICT PTR AS SAR     10600020
+         L     RW3,TBLENTRY        GET CURRENT ENTRY ADDRESS            10700020
+         CR    RW1,RW3             ANY ENTRIES IN REFTBL                10800020
+         BC    EQUAL,EXIT          EXIT,NAMES ARE NOT REFERENCED        10900020
+XREFDN1  EQU   *                                                        11000020
+         BALR  R0,COSREG           READ DN DEFS                         11100020
+INFILE   DC    X'01'                                                    11200020
+         BC    EQUAL,EXIT          EOF BR                               11300020
+         LR    INPUTR,R0                                                11400020
+XREFDN2  CLI   DX0(INPUTR),XXFF     END OF BLOCK                        11500020
+         BC    EQUAL,XREFDN1       YES,READ NEXT BLOCK                  11600020
+         CLI   DX0(INPUTR),XX2C     IS THIS A CARD NUMB.                11700020
+         BC    EQUAL,XREFDN8        YES,BR                              11800020
+         CLI   INDNID,XX4C          IS THIS PN DEF                      11900020
+         BC    EQUAL,XREFPN        YES,BR                               12000020
+         CLI   DX0(INPUTR),XX48     IS THIS A DN DEF                    12100020
+         BC    NOTEQUAL,ERROR      NO,ERROR BRANCH                      12200020
+         TM    SWITCHX,FSTDN       IS THIS 1ST DN DEF ELMNT             12300020
+         BC    ONES,XREFDN20       NO,BR                                12400020
+         OI    SWITCHX,FSTDN       INDICATE-DN DEFS ARE PRESENT         12500020
+         BAL   RW2,PRINTLN         PRINT SUB-TITLE FOR DATA NAMES       12600020
+         BAL   RW2,PRINTLN         SPACE                                12700020
+XREFDN20 DS    0H                                                       12800020
+         NI    SWITCHX,XXFF-PNDEF   SET DN DEF INDICATOR                12900020
+         TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  13000020
+         BC    EQUAL,XREFDN3        NO,BR                               13100020
+         SR    R3,R3               YES,WRITE DN DEF ELMNT               13200020
+         IC    R3,INDNLN           GET LNGTH OF DN DEF ELMNT            13300020
+         LA    R3,DX7(R3)                                               13400020
+         LR    R2,INPUTR           SPECIFY ADDR OF DN DEF ELMNT         13500020
+         BAL   R14,OUTPUT          WRITE ON OUTFILE                     13600020
+XREFDN3  DS    0H                                                       13700020
+         MVC   HOLD(LX3),INDNDICT   GET SEARCH ARG                      13800020
+         MVC   SARG(LX3),HOLD       SAVE SEARCH ARG                     13900020
+         BAL   R14,SEARCH          FIND REFS                            14000020
+         B     XREFDN4             BR,FOUND                             14100020
+XREFDN4  DS    0H                                                       14200020
+         TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  14300020
+         BC    EQUAL,XREFDN40      NO,BR                                14400020
+XREFDN35 DS    0H                                                       14500020
+         C     RW1,TBLENTRY        ARE ALL REFS PROCESSED ?             14600020
+         BC    NOTLOW,XREFDN7      EX,BR                                14700020
+         CLC   INDNDICT(D3),DX0(RW1) ARE ALL REFS PROCD                 14800020
+         BC    NOTEQUAL,XREFDN7    YES,BR                               14900020
+         TM    DX3(RW1),XX80        IS CURRENT REF ENTRY A PN R         15000020
+         BC    EQUAL,XREFDN39      NO,DN REF-PROCESS IT                 15100020
+XREFDN38 LA    RW1,REFLN(RW1)      IGNORE PN REFS,POINT TO NEXT ENT     15200020
+         B     XREFDN35            PROCESS NEXT ENTRY                   15300020
+XREFDN39 DS    0H                                                       15400020
+         MVC   REFOUT+NX1(D2),DX3(RW1) EXTR REF CARD NO.                15500020
+         LA    R3,DX3               SPECIFY LNGTH OF CARD NMBR ELMNT    15600020
+         LA    R2,REFOUT                                                15700020
+         BAL   R14,OUTPUT          WRITE CARD NMBR ON OUTFILE           15800020
+         B     XREFDN38            NEXT ENTRY                           15900020
+XREFDN40 DS    0H                                                       16000020
+         SR    RW2,RW2                                                  16100020
+         IC    RW2,INDNLN          GET LENGTH OF SOURCE NAME            16200020
+         BCTR  RW2,R0              LN-1                                 16300020
+         EX    RW2,MOVEDN          MVC  OUTBUF(1),INDNM                 16400020
+         MVC   HOLD(LX2),INDNCRD    GET CARD NO. FROM DN DEF            16500020
+         BAL   R14,PRINT           PRINT                                16600020
+XREFDN7  DS    0H                                                       16700020
+         SR    RW2,RW2                                                  16800020
+         IC    RW2,INDNLN          GET LN OF NAME                       16900020
+         LA    INPUTR,DX7(RW2,INPUTR) POINT TO NEXT DN DEF              17000020
+         B     XREFDN2             NEXT DN DEF                          17100020
+XREFDN8  LR    R2,INPUTR           SPECIFY ADDR OF CARD NMBR ELMNT      17200020
+         LA    R3,DX3               SPECIFY LENGTH                      17300020
+         BAL   R14,OUTPUT          WRITE CARD NMBR ELMNT                17400020
+         LA    INPUTR,DX3(INPUTR)   POINT TO NEXT ELMNT ON INFILE       17500020
+         B     XREFDN2             PROCESS NEXT                         17600020
+*                                                                       17700020
+*                                                                       17800020
+*    PRINT XREF DICTIONARY FOR PROCEDURE NAMES                          17900020
+*                                                                       18000020
+XREFPN   DS    0H                                                       18100020
+         OI    SWITCHX,PNDEF       SET PN DEF INDICATOR                 18200020
+         TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  18300020
+         BC    ONES,XREFPN90       YES,BR                               18400020
+         TM    SWITCHX,FSTPN       IS CURRENT PN 1ST PN                 18500020
+         BC    ONES,XREFPN12       NO,BR                                18600020
+         OI    SWITCHX,FSTPN       INDICATE-1ST PN DEF PROCESSED        18700020
+         TM    SWITCHX,FSTDN       WERE DN DEFS PRESENT                 18800020
+         BC    EQUAL,XREFPN10      YES,BR                               18900020
+         BAL   R14,GENPROC         GENERATE SUB-TITLE                   19000020
+         B     XREFPN12            BRANCH                               19100020
+XREFPN10 BAL   R14,GENPROC1        GENERATE SUB-TITLE                   19200020
+XREFPN12 DS    0H                                                       19300020
+         TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  19400020
+         BC      EQUAL,XREFPN2      NO,BR                               19500020
+         SR    R3,R3               YES,GET LNGTH OF PN DEF ELMNT        19600020
+         IC    R3,INPNLN                                                19700020
+         LA    R3,DX6(R3)                                               19800020
+         LR    R2,INPUTR           SPECIFY ADDR OF ELMNT                19900020
+         BAL   R14,OUTPUT          WRITE PN DEF ON OUTFILE              20000020
+XREFPN2  DS    0H                                                       20100020
+         MVI   HOLD,XX00                                                20200020
+         MVC   HOLD+NX1(D2),INPNNO GET SEARCH ARGUMENT                  20300020
+         MVC   SARG(LX3),HOLD       SAVE SEARCH ARG                     20400020
+         BAL   R14,SEARCH          SEARCH RTN                           20500020
+         B     XREFPN5             FOUND,BR                             20600020
+XREFPN5  DS    0H                                                       20700020
+         TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  20800020
+         BC    R8,XREFPN53          NO,BR                               20900020
+XREFPN51 C     RW1,TBLENTRY        ARE ALL REFS PROCESSED               21000020
+         BC    NOTLOW,XREFPN9      YES,BR                               21100020
+         CLC   INPNNO(D2),DX1(RW1) ARE ALL REFS PROCD                   21200020
+         BC    NOTEQUAL,XREFPN9    YES,BR                               21300020
+         TM    DX3(RW1),XX80        IS THIS PN REF                      21400020
+         BC    ONES,XREFPN52       YES,BR                               21500020
+XREFXYZ  LA    RW1,REFLN(RW1)      IGNORE DN REFS,POINT TO NEXT TBL     21600020
+         B     XREFPN51            NEXT TBL                             21700020
+XREFPN52 MVC   REFOUT+NX1(D2),DX3(RW1) EXTR REFS FROM TABLE             21800020
+         LA    R3,DX3               LNGTH                               21900020
+         LA    R2,REFOUT           ADDR                                 22000020
+         BAL   R14,OUTPUT          WRITE REF CRD NMBR                   22100020
+         B     XREFXYZ             POINT TO NEXT TBL ENTRY              22200020
+XREFPN53 DS    0H                                                       22300020
+         SR    RW2,RW2                                                  22400020
+         IC    RW2,INPNLN          GET LENGTH OF SOURCE NAME            22500020
+         BCTR  RW2,R0               LN-1                                22600020
+         EX    RW2,MOVEPN          MVC  OUTBUF(1),INPNM                 22700020
+         MVC   HOLD(LX2),INPNCRD    GET CARD NO.                        22800020
+         BAL   R14,PRINT           GENERATE A REFERENCE                 22900020
+XREFPN9  SR    RW2,RW2                                                  23000020
+         IC    RW2,INPNLN          GET LENGTH OF NAME                   23100020
+         LA    INPUTR,DX6(RW2,INPUTR) POINT TO NEXT PN DEF              23200020
+         B     XREFDN2             NEXT DN DEF                          23300020
+XREFPN90 TM    SWITCHX,FSTDN       WERE DN'S PRESENT                    23400020
+         BC    EQUAL,XREFPN10      NO,BR                                23500020
+         B     XREFPN12            YES,BR                               23600020
+*******************************************************************     23700020
+*       OUTPUT RTN                                                      23800020
+*******************************************************************     23900020
+OUTPUT   BALR  R0,COSREG           CALL PH00                            24000020
+OUTFILE  DC    X'00'                                                    24100020
+         BR    R14                 RETURN                               24200020
+*******************************************************************     24300020
+EXIT     DS    0H                                                       24400020
+         TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  24500020
+         BC    EQUAL,EXIT2         NO,BRANCH  EOJ                       24600020
+         L     INPUTR,SAVEIN       RESTORE REFS ADDR                    24700020
+         MVC   TBLENTRY(LX4),TBLADDR RESTORE CURRENT ENTRY ADDR         24800020
+         B     NEXTREF             NEXT REF                             24900020
+ERROR    MVC   OUTBUF(L'ERRMSG),ERRMSG                             PH6A 25000020
+         BAL   RW2,PRINTLN         PRINT ERROR MSG                 PH6A 25100020
+EXIT2    DS    0H                                                       25200020
+         TM    SWITCH+NX1,DOPH7     IS NEXT PHASE TO BE EXECUTED        25300020
+         BC    EQUAL,EXIT3         NO,EOJ-RETURN                        25400020
+         BALR  R0,COSREG           LINK TO NEXT PHASE                   25500020
+         DC    X'A0'               LOAD NEXT PHASE                      25600020
+EXIT3    BALR  R0,COSREG           EOJ                                  25700020
+         DC    X'B0'               EOJ                                  25800020
+*******************************************************************     25900020
+         EJECT                                                          26000020
+*                                                                       26100020
+*        TABLE OVERFLOW ROUTINE                                         26200020
+*                                                                       26300020
+OVFLOW   DS    0H                                                       26400020
+         OI    SWITCHX,TBLOVFL     SET OVERFLOW SWITCH                  26500020
+         ST    INPUTR,SAVEIN       SAVE REFS ADDR                       26600020
+         BAL   R14,SORT            SORT RTN                             26700020
+         SR    RW1,RW1                                                  26800020
+         IC    RW1,OVFLCTR         GET TBL OVFL CTR                     26900020
+         LTR   RW1,RW1             IS THIS 1ST TBL OVFL                 27000020
+         BC    EQUAL,OVFLOW5       YES,BRANCH                           27100020
+         TM    OVFLCTR,XX01         IS OVFL CTR ODD                     27200020
+         BC    EQUAL,OVFLOW4       NO,EVEN-BRANCH                       27300020
+         BALR  R0,COSREG           CALL PH00                            27400020
+         DC    X'61'               REWIND UT1                           27500020
+         DC    X'00'               INDICATE-READ WAS LAST ON UT1        27600020
+         BALR  R0,COSREG           CALL PH00                            27700020
+         DC    X'64'               REWIND UT4                           27800020
+         DC    X'01'               INDICATE-WRITE WAS LAST ON UT4       27900020
+         MVI   INFILE,XX04          YES,SWAP FILE ASSIGNMENT            28000020
+         MVI   OUTFILE,XX11                                             28100020
+         B     OVFLOW10            BRANCH                               28200020
+OVFLOW4  BALR  R0,COSREG           REWIND                               28300020
+         DC    X'61'               UT1                                  28400020
+         DC    X'01'               INDICATE-WRITE WAS LAST ON UT1       28500020
+         BALR  R0,COSREG           REWIND                               28600020
+         DC    X'64'               UT4                                  28700020
+         DC    X'00'               INDICATE-READ WAS LAST ON UT4        28800020
+OVFLOW5  MVI   INFILE,XX01          SWAP FILE ASSIGNMENT                28900020
+         MVI   OUTFILE,XX14                                             29000020
+OVFLOW10 LA    RW1,DX1(RW1)         BUMP OVERFL. CTR                    29100020
+         STC   RW1,OVFLCTR                                              29200020
+         B     XREFDN1             READ NEXT DN                         29300020
+EOF1     DS    0H                                                       29400020
+*   IF OVFLCTR IS ODD-UT4 CONTAINS DEFS FOLLOWED BY REFS                29500020
+*   IF OVFLCTR IS EVEN-UT1 CONTAINS DEFS FOLLOWED BY REFS               29600020
+         TM    OVFLCTR,XX01         ARE DEFS/REFS ON UT4                29700020
+         BC    ONES,EOF2           YES,BR                               29800020
+         MVI   REWFILE,XX61         NO,REWIND UT1                       29900020
+         MVI   RDFILE,XX01          READ UT1                            30000020
+LASTRW   BALR  R0,COSREG           REWIND                               30100020
+REWFILE  DC    X'00'               UT1 OR UT4                           30200020
+         DC    X'01'               INDICATE-WRITE WAS LAST ON FILE      30300020
+LASTRD   BALR  R0,COSREG           READ UT1 OR UT4                      30400020
+RDFILE   DC    X'00'               FILE TO BE READ CONSTANT             30500020
+         B     EOF3                EOF BR                               30600020
+EOF2     MVI   REWFILE,XX64         REWIND UT4                          30700020
+         MVI   RDFILE,XX04          READ UT4                            30800020
+         B     LASTRW              REWIND                               30900020
+EOF3     BC    EQUAL,EOF40         EOF BRANCH                           31000020
+         LR    INPUTR,R0                                                31100020
+LASTLOOP CLI   DX0(INPUTR),XXFF     IS THIS END OF BLOCK IND.           31200020
+         BC    EQUAL,LASTRD        YES,READ NET REC                     31300020
+         CLI   DX0(INPUTR),XX2C     IS THIS A CARD NMBR ELMNT(REF)      31400020
+         BC    EQUAL,EOF30         YES,BR                               31500020
+         TM    SWITCHX,NAME        WAS DEF FOLLOWED BY REFS             31600020
+         BC    ONES,EOF10          NO,BR                                31700020
+         CLI   OUTBUF,XX40          IS LINE READY TO BE WRITTEN         31800020
+         BC    NOTEQUAL,EOF10      SEARCH FOR MORE                      31900020
+         CLI   DX0(INPUTR),XX4C     IS THIS A PN DEF                    32000020
+         BC    EQUAL,EOF20         YES,BR                               32100020
+         CLI   DX0(INPUTR),XX48     IS THIS A DN DEF                PH6 32200020
+         BC    NOTEQUAL,ERROR      NO,ERROR BRANCH                      32300020
+         NI    SWITCHX,XXFF-PNDEF   DN DEF IS BEEING PROCESSED SW       32400020
+         SR    RW2,RW2                                                  32500020
+         IC    RW2,INDNLN          GET NAME LNGTH                       32600020
+         BCTR  RW2,R0              LN-1                                 32700020
+         EX    RW2,MOVEDN                                               32800020
+         MVC   HOLD(LX2),INDNCRD    GET DEF CARD NMBR                   32900020
+         MVC   SARG(LX3),INDNDICT   GET SARG                            33000020
+         LA    RW2,DX1(RW2)         RESTORE L-&T&                       33100020
+         LA    INPUTR,DX7(INPUTR,RW2) POINT TO NEXT ELMNT               33200020
+EOF8     BAL   RW2,CONVERT         CONVERT DEF CARD NMBR                33300020
+         MVC   OUTDEF(LX5),HOLD2+NX1 AND PLACE IN OUTPUT BUFFER         33400020
+         OI    SWITCHX,NAME                                             33500020
+         B     LASTLOOP            LOOP FOR NEXT ELMNT                  33600020
+EOF10    MVC   HOLD(LX3),SARG       GET SEARCH ARG                      33700020
+         BAL   R14,SEARCH          SEARCH RTN                           33800020
+         B     EOF15               BR,FOUND                             33900020
+         TM    SWITCHX,NAME                                             34000020
+         BC    ONES,EOF12          BRANCH                               34100020
+         BAL   RW2,PRINTLN         NO MORE REFS,PRINT A LINE            34200020
+         B     LASTLOOP            LOOP FOR NEXT ELMNT                  34300020
+EOF12    MVI   OUTBUF,XX40          BLANK NAME AND DEF                  34400020
+         MVC   OUTBUF+NX1(D38),OUTBUF OUTBUF OF PRINTE LINE             34500020
+EOF13    DS    0H                                                       34600020
+         NI    SWITCHX,XXFF-NAME    NO NAME IN OUTBUF                   34700020
+         B     LASTLOOP            LOOP FOR NEXT ELMNT                  34800020
+*          GENERATE REFS IN OUTBUF                                      34900020
+EOF15    BAL   R14,PRINT1          GENERATE REFS                        35000020
+         B     EOF13               BRANCH                               35100020
+EOF20    OI    SWITCHX,PNDEF       PN DEF BEEING PROCESSED              35200020
+         TM    SWITCHX,FSTPN       IS CURRENT PN 1ST PN                 35300020
+         BC    ONES,EOF27          NO.BRANCH                            35400020
+         OI    SWITCHX,FSTPN       SET 1ST PN PROCESSED SW              35500020
+         TM    SWITCHX,FSTDN       WERE DN'S PRESENT                    35600020
+         BC    R8,EOF27             NO,BR                               35700020
+         BAL   R14,GENPROC         YES,GENERATE SUB-TITLE               35800020
+EOF27    DS    0H                                                       35900020
+         SR    RW2,RW2                                                  36000020
+         IC    RW2,INPNLN          GET LNGTH                            36100020
+         BCTR  RW2,R0              LN-1                                 36200020
+         EX    RW2,MOVEPN                                               36300020
+         MVC   HOLD(LX2),INPNCRD    GET CARD NMBR(DEF)                  36400020
+         MVI   SARG,XX00            SPECIFY SEARCH ARG                  36500020
+         MVC   SARG+NX1(D2),INPNNO GET PN NUMBER                        36600020
+         LA    RW2,DX1(RW2)         RESTORE LNGTH                       36700020
+         LA    INPUTR,DX6(INPUTR,RW2) POINT TO NEXT ELMNT               36800020
+         B     EOF8                EOF BR                               36900020
+EOF30    NI    SWITCHX,XXFF-NAME                                        37000020
+         BAL   R14,PRINT0          GENERATE REFS                        37100020
+         B     LASTLOOP            LOOP FOR NEXT ELMNT                  37200020
+EOF40    DS    0H                                                       37300020
+         MVC   HOLD(LX3),SARG       GET SEARCH ARG                      37400020
+         BAL   R14,SEARCH          LAST TIME SEARCH                     37500020
+         BAL   R14,PRINT1          FOUND,GENERATE REF                   37600020
+         CLI   OUTBUF,XX40          IS OUTBUF BLANK                     37700020
+         BC    EQUAL,EXIT2         YES,EOF                              37800020
+         BAL   RW2,PRINTLN         PRINT LAST LINE                      37900020
+         B     EXIT2               EOJ                                  38000020
+      EJECT                                                             38100020
+*                                                                       38200020
+*        SORT REFTBL ROUTINE                                            38300020
+*                                                                       38400020
+SORT     DS    0H                                                       38500020
+         L     R1,TBLADDR          GET STARTING ADDR                    38600020
+         L     R2,TBLENTRY         GET CURRENT ENTRY ADDR               38700020
+         SR    R2,R1               SIZE OF REFTBL                       38800020
+         LTR   R2,R2               ANY ENTRIES IN TDNREF                38900020
+         BCR   EQUAL,R14           RETURN                               39000020
+         LR    RW1,R1              YES,GET STARTING ADDR                39100020
+         LA    RW3,DX0(R1,R2)       END+1                               39200020
+SORTDN1  LA    RW2,DNLN(RW1)       NEXT ENTRY ADDR                      39300020
+         CR    RW1,RW3             ALL DONE                             39400020
+         BCR   EQUAL,R14            YES,RETURN                          39500020
+SORTDN2  CR    RW2,RW3             IS CURRENT PASS FINISHED             39600020
+         BC    LOW,SORTDN3         NO,BRANCH                            39700020
+         LA    RW1,DNLN(RW1)       YES, START NEXT PASS                 39800020
+         B     SORTDN1             NEXT ENTRY                           39900020
+SORTDN3  CLC   ZERDSPL(D3,RW1),ZERDSPL(RW2) ARE ENTRIES ORDERED         40000020
+         BC    LOW,SORTDN4         YES, LOOP AGAIN                      40100020
+         BC    EQUAL,SORTDN5       EQUAL, SORT CARD NUMBERS             40200020
+         MVC   HOLD(DNLN),ZERDSPL(RW1) NO, MOVE HI TO SAVE AREA         40300020
+         MVC   ZERDSPL(DNLN,RW1),ZERDSPL(RW2)  MOVE NEW LOW TO FIRST    40400020
+         MVC   ZERDSPL(DNLN,RW2),HOLD MOVE SAVED TO NEW LOW             40500020
+SORTDN4  LA    RW2,DNLN(RW2)       BUMP POINTER                         40600020
+         B     SORTDN2             NEXT PASS                            40700020
+SORTDN5  DS    0H                                                       40800020
+         MVC   HOLD(D2),DX3(RW1)   GET CD ENT FROM NXT ENDTRY           40900020
+         NI    HOLD,XX7F            GET RID OF EVENTUAL PN REF BIT      41000020
+         MVC   HOLD+NX2(D2),DX3(RW2) GET CD NO. FROM NXT ENT            41100020
+         NI    HOLD+NX2,XX7F                                            41200020
+         CLC   HOLD(D2),HOLD+NX2   ARE CD NUMBERS ALSO IN ORDER         41300020
+         BC    NOTHI,SORTDN4       YES, LOOP AGAIN                      41400020
+         OC    HOLD(D2),DX3(RW1)   RESTORE PN REF BIT                   41500020
+         OC    HOLD+NX2(D2),DX3(RW2) RESTORE PN REF BIT                 41600020
+         MVC   DX3(D2,RW2),HOLD    SWAP CARD NUMBERS                    41700020
+         MVC   DX3(D2,RW1),HOLD+NX2 OF ADJOINING FIELDS                 41800020
+         B     SORTDN4             LOOP AGAIN                           41900020
+*                                                                       42000020
+*******************************************************************     42100020
+*        BINARY SEARCH RTN                                              42200020
+*******************************************************************     42300020
+*   INPUT-HOLD CONTAINING SEARCH ARG                                    42400020
+*   OUTPUT-RW1=FOUND ENTRY ADDR                                         42500020
+*                                                                       42600020
+SEARCH   DS    0H                                                       42700020
+         STM   R0,R15,SAVEINTR      SAVE                                42800020
+         SR    RW1,RW1             INITIALIZE CTR                       42900020
+         L     R1,TBLENTRY         GET CURRENT ENTRY ADDR               43000020
+         S     R1,TBLADDR          COMPUTE SIZE                         43100020
+         LTR   R1,R1               ANY ENTRIES IN REFTBL                43200020
+         BC    EQUAL,NOTFOUND      NO,BRANCH                            43300020
+         SR    R0,R0                                                    43400020
+         D     R0,FIVE             COMPUTE NUMB OF ENTRIES-1            43500020
+         BCTR  R1,R0               REDUCE BY ONE                        43600020
+SRCHLOOP CR    R1,RW1              ALL DONE                             43700020
+         BC    LOW,NOTFOUND        BR - NOT FOUND                       43800020
+         LA    RW2,DX0(RW1,R1)      COMPUTE A LOOP CTRL CTR             43900020
+         SRL   RW2,DX1                                                  44000020
+         LR    R3,RW2                                                   44100020
+         SR    R2,R2                                                    44200020
+         M     R2,FIVE             COMPUTE MIDDLE POINT ADDR            44300020
+         L     RW3,TBLADDR         GET ADDR OF TBL                      44400020
+         AR    RW3,R3              ADD DISPLACEMENT TO MIDDLE POINT     44500020
+         CLC   HOLD(D3),DX0(RW3)   FOUND                                44600020
+         BC    EQUAL,HIT           YES,BRANCH                           44700020
+         BC    HI,HIGH             BR, HIGH                             44800020
+         LR    R1,RW2                                                   44900020
+         BCTR  R1,R0                REDUCE LOOP CONTROL CTR             45000020
+         B     SRCHLOOP            LOOP FOR NEXT PASS                   45100020
+HIGH     LR  RW1,RW2                                                    45200020
+         LA    RW1,DX1(RW1)         BUMP CTR                            45300020
+         B     SRCHLOOP            LOOP FOR NEXT PASS                   45400020
+HIT      LR    RW1,RW3             GET ENTRY ADDR                       45500020
+FINDFST  C     RW1,TBLADDR         FIND 1ST ENTRY EQUAL SEARCH ARG      45600020
+         BC    EQUAL,SRCHRET       RETURN 1ST ENTADDR IN RW1            45700020
+         LR    RW2,RW1                                                  45800020
+         S     RW2,FIVE            GET ADDR OF LOWER ENTRY              45900020
+         CLC   DX0(D3,RW1),DX0(RW2) IS LOW ENT ALSO EQ TO SEA ARG       46000020
+         BC    NOTEQUAL,SRCHRET    NO,RETURN                            46100020
+         LR    RW1,RW2             YES,GET NEXT LOWER ENTRY ADDR        46200020
+         B     FINDFST             BR                                   46300020
+SRCHRET  LR    RW2,RW1             GET 1ST ENTRY ADDR                   46400020
+SRCHRET1 C     RW2,TBLENTRY                                             46500020
+         BC    NOTLOW,NOTFOUND     BR,ENTRY FOUND                       46600020
+         CLC   HOLD(D3),DX0(RW2)   FOUND                                46700020
+         BC    NOTEQUAL,NOTFOUND   BR,ENTRY FOUND                       46800020
+         TM    SWITCHX,PNDEF       ARE PN DEFS BEEING PROCESSED         46900020
+         BC    ONES,SRCHRET9       YES,BR                               47000020
+         TM    DX3(RW2),XX80        IS ENTRY A PN REF                   47100020
+         BC    ONES,SRCHRET8       YES,IGNORE THIS ENTRY                47200020
+SRCHRET2 LM    R0,R3,SAVEINTR       RESTORE ALL REGS EXEPT RW1          47300020
+         LM    R5,R15,SAVEINTR+NX20                                     47400020
+         BR    R14                 RETURN                               47500020
+SRCHRET8 LA    RW2,DX5(RW2)         POINT TO NEXT TBL ENTRY             47600020
+         B     SRCHRET1            SEARCH AGAIN                         47700020
+SRCHRET9 TM    DX3(RW2),XX80        IS THIS A PN REF                    47800020
+         BC    ONES,SRCHRET2       YES,CORRECT ENTRY                    47900020
+         B     SRCHRET8            BR,ENTRY FOUND IS NOT OF REQ. KI     48000020
+NOTFOUND LM    R0,R15,SAVEINTR      RESTORE                             48100020
+         BR    R14                 RETURN                               48200020
+*******************************************************************     48300020
+*        PRINT ROUTINE                                                  48400020
+*******************************************************************     48500020
+*  INPUT:HOLD CONTAINING CARD NO. OF DEFINITION                         48600020
+*   RW1 CONTAINING ADDR OF CURRENT ENTRY IN REFTBL                      48700020
+*   INPUTR CONTAINING ADDR OF A CARD NUMBER ELEMENT                     48800020
+PRINT    DS    0H                                                       48900020
+         BAL   RW2,CONVERT         CONVERT CARD NUMBER                  49000020
+         MVC   OUTDEF(D5),HOLD2+NX1 GET CONV CARD NUMBER                49100020
+PRINT0   TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  49200020
+         BC    EQUAL,PRINT1        NO,BRANCH                            49300020
+PRINT01  CLI   DX0(INPUTR),XX2C     ARE ALL CARD NMBR ELMNTS PROCESS    49400020
+         BCR   NOTEQUAL,R14        0&SZN&U9N-                           49500020
+         LR    RW1,INPUTR          INITIALIZE RW1                       49600020
+         BCTR  RW1,R0              SUBT ONE                             49700020
+         BCTR  RW1,R0              SUBT ONE                             49800020
+         BAL   RET2,PRINT3         GENERATE A REFERENCE                 49900020
+         LA    INPUTR,DX3(INPUTR)   POINT TO NEXT ELEMENT               50000020
+         B     PRINT01             PRINT NEXT ELMNT                     50100020
+PRINT1   DS    0H                                                       50200020
+         LA    RET2,PRINT1         SPECIFY RET ADDR                     50300020
+         C     RW1,TBLENTRY        ARE ALL REFS PROCESSED               50400020
+         BC    NOTLOW,PRINT15      YES,BRANCH TO PRINT ROUTINE          50500020
+         CLC   SARG(D3),DX0(RW1)   ARE ALL REFS PROCD                   50600020
+         BC    NOTEQUAL,PRINT15    YES,BR TO PRINT ROUTIEN              50700020
+PRINT3   DS    0H                                                       50800020
+         CLC   REFCTR(LX1),MAXREF   HAS MAX. OF REFS BEEN REACHED       50900020
+         BC    LOW,*+NX8           NO SKIP PRINT ROUTINE                51000020
+         BAL   RW2,PRINTLN         YES,PRINT A LINE                     51100020
+         TM    SWITCHX,PNDEF       IS PN DEF BEEING PROCESSED           51200020
+         BC    ONES,PRINT10        YES,BR                               51300020
+         TM    DX3(RW1),XX80        IS THIS A PN REF                    51400020
+         BC    ONES,PRINT6         YES,IGNORE THIS ENTRY                51500020
+PRINT5   DS    0H                                                       51600020
+         MVC   HOLD(D2),DX3(RW1)   GET REF CAD NUMBER                   51700020
+         NI    HOLD,XX7F            GET RID OF EVENTUAL PN REF BIT      51800020
+         BAL   RW2,CONVERT         CONVERT CARD NUMBER                  51900020
+         L     RW5,CUREF           GET ADDR OF NEXT REF IN OUTBUF       52000020
+         MVC   DX0(D5,RW5),HOLD2+NX1 GET CONV CARD NUMBER               52100020
+         LA    RW5,DX7(RW5)         POINT TO NEXT REF                   52200020
+         ST    RW5,CUREF           SAVE                                 52300020
+         IC    RW5,REFCTR          GET NO. OF REFS                      52400020
+         LA    RW5,DX1(RW5)         BUMP CTR                            52500020
+         STC   RW5,REFCTR                                               52600020
+PRINT6   LA    RW1,DX5(RW1)         POINT T- N&0T TBL E-T-0             52700020
+         BR    RET2                RETURN                               52800020
+PRINT10  TM    DX3(RW1),XX80        IS THIS A PN REF                    52900020
+         BC    EQUAL,PRINT6        NO,IGNORE ENTRY                      53000020
+         B     PRINT5              YES,GENERATE A REF CRD NUMBR         53100020
+PRINT15  BAL   RW2,PRINTLN         PRINT A LINE                         53200020
+         BR    R14                 RETURN                               53300020
+*******************************************************************     53400020
+PRINTLN  LA    R2,OUTREC           SPECIFY LINE ADDR                    53500020
+         LA    R3,DX120             SPECIFY SIZE                        53600020
+         BALR  R0,COSREG           PRINT A LINE                         53700020
+         DC    X'16'               WRITE OUT FIELD                      53800020
+         BALR  R0,COSREG           CALL PH00                            53900020
+         DC    X'86'               WRITE ON SYSOUT                      54000020
+         MVI   OUTBUF,XX40          BLANK OUTPUT BUFFER                 54100020
+         MVC   OUTBUF+NX1(L119),OUTBUF FOR PRINT LINE                   54200020
+         LA    RW5,OUTREF          RE-INITIALIZE                        54300020
+         ST    RW5,CUREF                                                54400020
+         NI    REFCTR,XX00                                              54500020
+         BR    RW2                 RETURN                               54600020
+*******************************************************************     54700020
+CONVERT  DS    0H                                                       54800020
+         LH    RW5,HOLD            CONVERT CARD NO. TO DEC              54900020
+         CVD   RW5,HOLD                                                 55000020
+         L     R0,HOLD+NX4                                              55100020
+         SRL   R0,DX4              GET RID OF SIGNN                     55200020
+         ST    R0,HOLD+NX4                                              55300020
+         UNPK  HOLD2(LX7),HOLD+NX5(LX4)                                 55400020
+         BR    RW2                 RETURN                               55500020
+*******************************************************************     55600020
+MOVEDN   MVC   OUTBUF(LX1),INDNM                                        55700020
+MOVEPN   MVC   OUTBUF(LX1),INPNM                                        55800020
+*******************************************************************     55900020
+GENPROC  DS    0H                                                       56000020
+         BAL   RW2,PRINTLN         SPACE BETWEEN DATA AND PROC NAME     56100020
+         BAL   RW2,PRINTLN         SPACE A LINE                         56200020
+GENPROC1 MVC   OUTBUF(L'PROC),PROC                                      56300020
+         MVC   OUTBUF+NX9(D6),NAMEMSG+NX4 PRINT HEADER                  56400020
+         MVC   OUTDEF(L'DEFMSG),DEFMSG                                  56500020
+         MVC   OUTREF(D9),HDG+NX6 PRINT HEADER                          56600020
+         BAL   RW2,PRINTLN         PRINT SUB-TITLE FOR PROC NAMES       56700020
+         BAL   RW2,PRINTLN         SPACE                                56800020
+         BR    R14                 RETURN                               56900020
+         EJECT                                                          57000020
+*******************************************************************     57100020
+*      OUTPUT BUFFER-120 BYTES                                          57200020
+OUTREC   DC    C' '                CARRIAGE CTRL                   PH6A 57300020
+OUTBUF   DS    CL30           SOURCE NAME                               57400020
+         DS    CL3                 SPACE                                57500020
+OUTDEF   DS    CL5            DEF                                       57600020
+         DS    CL6                 SPACE                                57700020
+OUTREF   DS    CL75                ROOM FOR 11 REFS                     57800020
+*                                                                       57900020
+HOLD     DS    D                                                        58000020
+HOLD2    DS    2F                                                       58100020
+CUREF    DC    A(OUTREF)                                                58200020
+SAVE6A   DS    18F                                                      58300020
+SAVEINTR DS    16F                 INTERNAL SA                          58400020
+SAVEIN   DS    F                                                        58500020
+FIVE     DC    A(REFLN)            LENGTH OF REFTBL ENTRY               58600020
+TBLADDR  DC    A(0)                STARTING ADDR OF REF TBL             58700020
+TBLEND   DC    A(0)                HIGHEST ENTRY IN REFTBL              58800020
+TBLENTRY DC    A(0)                CURRENT ENTRY IN REFTBL              58900020
+SARG     DS    CL3                 SEARCH ARG SAVE AREA                 59000020
+MAXREF   DC    X'0B'               MAXIMUM NMBR OF REFS PER LINE        59100020
+REFCTR   DC    X'00'               CURRENT NO. OF REFS PER LINE         59200020
+SWITCHX  DC    X'00'                                                    59300020
+TBLOVFL  EQU   X'80'               TABLE OVERFLOW SWITCH                59400020
+PNDEF    EQU   X'40'               PN DEFS ARE BEING PROCESSED SW       59500020
+NAME     EQU   X'20'               NAME AND DEF ALREADY IN OUTBUF       59600020
+FSTDN    EQU   X'10'               1ST DN DEF PROCESSED-SWITCH          59700020
+FSTPN    EQU   X'08'               1ST PN DEF PROCESSED-SWITCH          59800020
+OVFLCTR  DC    X'00'               TABLE OVERFL. CTR                    59900020
+REFOUT   DC    X'2C0000'                                                60000020
+ZEROS    DC    X'000000'           END-TABLE ZERO CONSTANT              60100020
+HDG      DC    C'CROSS-REFERENCE DICTIONARY'                            60200020
+NAMEMSG  DC    C'DATA NAMES'                                            60300020
+PROC     DC    C'PROCEDURE'                                             60400020
+DEFMSG   DC    C'DEFN'                                                  60500020
+ERRMSG   DC    C'**INVALID TEXT PASSED TO PH6A**'                  PH6A 60600020
+     EJECT                                                              60700020
+INREC    DSECT                                                          60800020
+INDNID   DS    C                   48-DN DEF ID BYTE                    60900020
+INDNCRD  DS    2C             CARD NO.                                  61000020
+INDNDICT DS    3C             DICTIONARY POINTER                        61100020
+INDNLN   DS    1C             LENGTH OF NAME THAT FOLLOWS               61200020
+INDNM    DS    1C             SOURCE NAME                               61300020
+         ORG   INREC                                                    61400020
+INPNID   DS    C                   4C-PN DEF ID BYTE                    61500020
+INPNNO   DS    2C             PN NO.                                    61600020
+INPNCRD  DS    2C             CARD NO.                                  61700020
+INPNLN   DS    1C             LENGTH OF PN THAT FOLLOWS                 61800020
+INPNM    DS    1C             SOURCE PN                                 61900020
+         IHBCOB                                                         62000020
+R4       EQU   4                                                        62100020
+R5       EQU   5                                                        62200020
+R7       EQU   7                                                        62300020
+R8       EQU   8                                                        62400020
+R10      EQU   10                                                       62500020
+R12      EQU   12                                                       62600020
+BLANK    EQU   X'40'                                                    62700020
+DICTSZ   EQU   3                                                        62800020
+CARDSZ   EQU   2                                                        62900020
+SZCODE48 EQU   1                                                        63000020
+ZERDSPL  EQU   0                                                        63100020
+FILE1    EQU   X'01'                                                    63200020
+DX0      EQU   0                                                        63300020
+DX1      EQU   1                                                        63400020
+NX1      EQU   1                                                        63500020
+NX2      EQU   2                                                        63600020
+DX2      EQU   2                                                        63700020
+DX3      EQU   3                                                        63800020
+DX4      EQU   4                                                        63900020
+NX4      EQU   4                                                        64000020
+LX4      EQU   4                                                        64100020
+DX5      EQU   5                                                        64200020
+NX5      EQU   5                                                        64300020
+DX6      EQU   6                                                        64400020
+NX6      EQU   6                                                        64500020
+DX7      EQU   7                                                        64600020
+LX7      EQU   7                                                        64700020
+DX8      EQU   8                                                        64800020
+NX8      EQU   8                                                        64900020
+NX9      EQU   9                                                        65000020
+DX12     EQU   12                                                       65100020
+NX20     EQU   20                                                       65200020
+NX45     EQU   45                                                       65300020
+DX120    EQU   120                                                      65400020
+XX40     EQU   X'40'                                                    65500020
+XX77     EQU   X'77'                                                    65600020
+XXFE     EQU   X'FE'                                                    65700020
+XXFF     EQU   X'FF'                                                    65800020
+XX2C     EQU   X'2C'                                                    65900020
+XX4C     EQU   X'4C'                                                    66000020
+XX48     EQU   X'48'                                                    66100020
+XX80     EQU   X'80'                                                    66200020
+XX00     EQU   X'00'                                                    66300020
+XX01     EQU   X'01'                                                    66400020
+XX04     EQU   X'04'                                                    66500020
+XX11     EQU   X'11'                                                    66600020
+XX14     EQU   X'14'                                                    66700020
+XX61     EQU   X'61'                                                    66800020
+XX64     EQU   X'64'                                                    66900020
+XX7F     EQU   X'7F'                                                    67000020
+XC0      EQU   C'0'                                                     67100020
+ONES     EQU   1                                                        67200020
+HI       EQU   2                                                        67300020
+NOTLOW   EQU   10                                                       67400020
+NOTHI    EQU   12                                                       67500020
+D1       EQU   1                                                        67600020
+D2       EQU   2                                                        67700020
+D3       EQU   3                                                        67800020
+D4       EQU   4                                                        67900020
+D5       EQU   5                                                        68000020
+D6       EQU   6                                                        68100020
+D7       EQU   7                                                        68200020
+D8       EQU   8                                                        68300020
+D9       EQU   9                                                        68400020
+D10      EQU   10                                                       68500020
+D11      EQU   11                                                       68600020
+D12      EQU   12                                                       68700020
+D13      EQU   13                                                       68800020
+D38      EQU   38                                                       68900020
+L119     EQU   119                                                      69000020
+L83      EQU   83                                                       69100020
+LX1      EQU   1                                                        69200020
+LX2      EQU   2                                                        69300020
+LX3      EQU   3                                                        69400020
+LX5      EQU   5                                                        69500020
+         END                                                            69600020
+         END                                                            69700020

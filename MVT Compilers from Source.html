@@ -1,0 +1,1473 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: http://www.jaymoseley.com/hercules/compilers/mvtsource.htm
+Subject: MVT Compilers from Source
+Date: Sun, 15 May 2022 10:59:25 -0000
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--5v7IAsVfTEpTTdF0dKrGT1HYc4NYs3432QqjwpPngo----"
+
+
+------MultipartBoundary--5v7IAsVfTEpTTdF0dKrGT1HYc4NYs3432QqjwpPngo----
+Content-Type: text/html
+Content-ID: <frame-9F7EA81757B9E12B4FC7546D60408607@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://www.jaymoseley.com/hercules/compilers/mvtsource.htm
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
+=3Dwindows-1252"><link rel=3D"stylesheet" type=3D"text/css" href=3D"cid:css=
+-760eeb26-690d-4d9d-9222-a06115da4dfa@mhtml.blink" />
+
+<title>MVT Compilers from Source</title>
+<meta name=3D"GENERATOR" content=3D"Microsoft FrontPage 4.0">
+<meta name=3D"ProgId" content=3D"FrontPage.Editor.Document">
+
+
+
+</head>
+
+<body bgcolor=3D"#FFFFCC">
+<blockquote>
+  <h1 align=3D"center"> MVT Compilers from Source</h1>
+</blockquote>
+<p align=3D"left">&nbsp;</p>
+<p align=3D"left">In October, 2008 I started working toward building the MV=
+T
+compilers from the available source.&nbsp; At that time I only completed th=
+e
+work on the Sort/Merge, which seemed to be the primary interest of everyone
+involved at the time.&nbsp; I made that available when it was complete from=
+ another link
+on this site.&nbsp; Because of a recent post on the Turnkey-MVS group I
+resurrected the partial work I had already done towards the remaining MVT
+compilers and have placed the
+results on this page.&nbsp; I was able to recover what I had started for CO=
+BOL
+and RPG, and then completed them to the same state as the Sort/Merge.&nbsp;=
+ I
+intended to include FORTRAN G and FORTRAN H, but ran into problems, the det=
+ails
+of which I elaborate more on below.</p>
+<p align=3D"left">As I was working on this, I dedicated a 3350 volume to th=
+e
+project and, since I have the space on the server for this site, I am makin=
+g the
+entire volume image available for download.&nbsp; However, if you are only
+interested in a particular compiler, I have made DSSDUMP format tapes avail=
+able
+for each of the compilers, so no one is required to download more than they=
+ are
+interested in.&nbsp; The links to the individual tapes are located in the
+section corresponding to each compiler below.</p>
+<p align=3D"left">The 3350 volume contains its own User Catalog, into which=
+ all
+the datasets on the volume are catalogued.&nbsp; The volume and a jobstream=
+ to
+import the User Catalog are available from <a href=3D"http://www.jaymoseley=
+.com/hercules/downloads/archives/mvtsrc.tar.gz">mvtsrc.tar.gz</a>
+ (24.1 MB)&nbsp; [MD5: 05470d014896e805526bd822b2580ad8].&nbsp; An annotate=
+d VTOC listing for the
+volume may be viewed at: <a href=3D"http://www.jaymoseley.com/hercules/comp=
+ilers/mvtsrcvtoc.htm" target=3D"_blank"> MVTSRC.3350
+VTOC</a>.&nbsp; Download the archive, extract the volume image into the
+directory where you store your MVS DASD volume images, and submit the impor=
+t
+jobstream to import the User Catalog into your Master Catalog.&nbsp; If you
+prefer to utilize compressed DASD images, run the DASDCOPY utility to compr=
+ess the
+volume image.</p>
+<p align=3D"left">&nbsp;</p>
+<p align=3D"left"><b><font color=3D"#FF0000">June 2016 Update</font></b> - =
+Phil
+Roberts pointed out to me that the MTS distributions included some source f=
+or
+the MVT FORTRAN compilers. I was able to retrieve the source for the IEYUNF
+module, which was the only roadblock to assembling the FORTRAN G compiler f=
+rom
+source.&nbsp; The copy of IEYUNF that had been available prior to this was
+truncated following line 128 of the source.&nbsp; The 128 lines we had were
+identical to the first 128 lines of the IEYUNF module from the MTS
+distribution.&nbsp; Although the other source for the other FORTRAN G modul=
+es on
+the MTS distribution had been modified to run under MTS, it is likely that =
+this
+source is the original source.&nbsp; Therefore I have added FORTRAN G (and =
+a few
+days later, FORTRAN H) to this
+page.&nbsp; As with the other MVT material, I cannot verify that object/loa=
+d
+modules built from source are a 100% match with the object/load modules obt=
+ained
+from the Rick Fochtman CD-ROM.&nbsp;&nbsp;</p>
+<p align=3D"left">I have been away from this project for a long time, but w=
+ith
+Phil's help I have now added the two FORTRAN compilers to the material
+here.&nbsp; I hope to devote more time to this project in the future, hopef=
+ully
+soon, but at least this may provide a starting point for anyone else who wa=
+nts
+to attempt comparison of the object/load modules generated from source vers=
+us
+that installed from the object libraries included with OS/360 MVT.</p>
+<p align=3D"left">If you had already downloaded this DASD volume and instal=
+led it
+on your MVS system, you may upgrade to the latest version by simply downloa=
+ding
+the current archive, with Hercules/MVS shut down unpack it placing the DASD
+volume image in the location where your previous mvtsrc.3350 volume was
+(replacing it), and then IPL MVS.&nbsp; It is not necessary to re-import th=
+e
+catalog to have access to the new datasets on the volume.</p>
+<p align=3D"left">&nbsp;</p>
+<h2 align=3D"left">ALGOL</h2>
+<p align=3D"left">I have not included the ALGOL compiler, simply because To=
+m
+Armstrong has completely refurbished the compiler and provided it to the
+Hercules' community.&nbsp; It is available from this site at <a href=3D"htt=
+p://www.jaymoseley.com/hercules/compilers/algol.htm">ALGOL</a>.</p>
+<p align=3D"left">&nbsp;</p>
+<h2 align=3D"left">COBOL</h2>
+<p align=3D"left">The datasets related to the COBOL compiler are:</p>
+<blockquote>
+  <table border=3D"1" width=3D"75%">
+    <tbody><tr>
+      <th width=3D"20%">
+        <pre><font size=3D"3"><b>Dataset</b></font></pre>
+      </th>
+      <th width=3D"20%">
+        <pre><font size=3D"3"><b>Attributes</b></font></pre>
+      </th>
+      <th width=3D"20%">
+        <pre><font size=3D"3"><b>Allocation</b></font></pre>
+      </th>
+      <th width=3D"20%">
+        <pre><font size=3D"3"><b>Contents</b></font></pre>
+      </th>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.CB545</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/9440</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>456 Tracks/2 Dir Blocks/12 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>ALC source loaded from Rick Fochtman's CD<=
+/b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.COBLIB</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>U/13030</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>15 Tracks/13 Dir Blocks/73 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>COBOL library built from source</b></font>=
+</pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.COBOL.CNTL</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/9440</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>30 Tracks/5 Dir Blocks/5 Members</b></font=
+></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>jobstreams to assemble, link, delink, and =
+run a test compile</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.COBOL.LISTINGS</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FBA/121/9438</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>900 Tracks/4 Dir Blocks/58 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>listings from the assemble and link jobs</=
+b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.COBOL.LOAD</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>U/19069</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>30 Tracks/5 Dir Blocks/12 Members</b></fon=
+t></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>load modules built from the source</b></fo=
+nt></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.COBOL.MACLIB</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/19040</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>30 Tracks/10 Dir Blocks/3 Members</b></fon=
+t></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>macros required to assemble the source</b>=
+</font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.COBOL.OBJECT</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>45 Tracks/5 Dir Blocks/56 Members</b></fon=
+t></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>object decks from assembling each source m=
+odule</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.COBOL.XOBJECT</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>F/80/80</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>30 Tracks/5 Dir Blocks/56 Members</b></fon=
+t></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>object decks from delinking the original l=
+oad modules</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.LM546</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>42 Tracks/12 Dir Blocks/44 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>ALC source loaded from Rick Rochtman's CD<=
+/b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SYS1.COBLIB</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>U/13030</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>90 Tracks/40 Dir Blocks/73 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>COBOL library from MVT System Generation</=
+b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SYS1.MACLIB</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>810 Tracks/100 Dir Blocks/381 Members</b><=
+/font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>Macro Library from MVT System Generation</=
+b></font></pre>
+      </td>
+    </tr>
+  </tbody></table>
+</blockquote>
+<p align=3D"left">A DSSDUMP format tape containing these eleven datasets an=
+d a
+jobstream to restore the tape (using DSSREST) is available in the archive <=
+a href=3D"http://www.jaymoseley.com/hercules/downloads/archives/mvtcobol.ta=
+r.gz">mvtcobol.tar.gz</a>
+ (6.8 MB)&nbsp; [MD5: 572c1371029187b723eae0a4e8a6b319].&nbsp; DSSREST is
+available on <a href=3D"http://www.jaymoseley.com/hercules/compilers/syscpk=
+.htm">SYSCPK</a>.&nbsp; The restore jobstream is
+written to restore to a 3350 volume with VOL=3DSER=3DMVTSRC, so you may nee=
+d to adjust parameters if
+your target volume is not 3350.</p>
+<p align=3D"left">The source for IKFCBL01 is generated during MVT System
+Generation and is determined by settings for default compile time options, =
+which
+are specified in the MVT Stage 1 jobstream.&nbsp;
+I have included the System Generation macro and an annotated source member =
+that
+will allow you to alter this source module to conform to your requirements.=
+</p>
+<p align=3D"left">I have not completed a suitable comparison of the assembl=
+ed
+source to the distributed load modules, but my conclusion is that they do n=
+ot
+match.&nbsp; The compiler built from the source performs as expected in the
+tests I have completed.&nbsp; I include the SYS1.MACLIB from MVT, because a=
+ny
+meaningful attempt to compare the output from the compiled source to the lo=
+ad
+modules taken from a freshly generated MVT system will more closely match i=
+f the
+MVT system macros are used.&nbsp; Assembling the source using the MVS
+SYS1.MACLIB is guaranteed to result in object/load modules that are differe=
+nt
+from those that are the product of MVT System Generation.</p>
+<p align=3D"left">&nbsp;</p>
+<h2 align=3D"left">FORTRAN G</h2>
+<p align=3D"left">The datasets related to the FORTRAN G compiler are:</p>
+<blockquote>
+  <table border=3D"1" width=3D"75%" height=3D"288">
+    <tbody><tr>
+      <th width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>Dataset</b></font></pre>
+      </th>
+      <th width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>Attributes</b></font></pre>
+      </th>
+      <th width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>Allocation</b></font></pre>
+      </th>
+      <th width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>Contents</b></font></pre>
+      </th>
+    </tr>
+    <tr>
+      <th width=3D"20%" height=3D"19">
+        <div align=3D"left">
+          <pre><font size=3D"3"><b>MVTSRC.FORTG.CNTL</b></font></pre>
+        </div>
+      </th>
+      <td width=3D"20%" height=3D"19">
+        <pre><font size=3D"3"><b>FB/80/9440</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"19">
+        <pre><font size=3D"3"><b>30 Tracks/5 Dir Blocks/5 Members</b></font=
+></pre>
+      </td>
+      <td width=3D"20%" height=3D"19">
+        <pre><font size=3D"3"><b>jobstreams to assemble, link, delink, and =
+run a test compile</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.FORTG.LISTINGS</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>FBA/121/9438</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>600 Tracks/10 Dir Blocks/92 Members</b></f=
+ont></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>listings from the assemble and link jobs</=
+b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.FORTG.LOAD</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>U/19069</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>30 Tracks/5 Dir Blocks/6 Members</b></font=
+></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>load modules built from the source</b></fo=
+nt></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.FORTG.MACLIB</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>FB/80/19040</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>60 Tracks/10 Dir Blocks/111 Members</b></f=
+ont></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>macros required to assemble the source</b>=
+</font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"17">
+        <pre><font size=3D"3"><b>MVTSRC.FORTG.OBJECT</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"17">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"17">
+        <pre><font size=3D"3"><b>30 Tracks/5 Dir Blocks/90 Members</b></fon=
+t></pre>
+      </td>
+      <td width=3D"20%" height=3D"17">
+        <pre><font size=3D"3"><b>object decks from assembling each source m=
+odule</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.FORTG.XOBJECT</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>F/80/80</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>45 Tracks/5 Dir Blocks/76 Members</b></fon=
+t></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>object decks from delinking the original l=
+oad modules</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.FORTLIB</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>U/13030</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>30 Tracks/30 Dir Blocks/66 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>FORTRAN library built from source</b></fon=
+t></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.FO520</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>180 Tracks/4 Dir Blocks/13 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>ALC source loaded from Rick Fochtman's CD<=
+/b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.LM501</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>74 Tracks/20 Dir Blocks/78 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>ALC source loaded from Rick Fochtman's CD<=
+/b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.SYS1.FORTLIB</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>U/13030</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>120 Tracks/40 Dir Blocks/163 Members</b></=
+font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>FORTRAN library from MVT System Generation=
+</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.SYS1.MACLIB</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>810 Tracks/100 Dir Blocks/381 Members</b><=
+/font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>Macro Library from MVT System Generation</=
+b></font></pre>
+      </td>
+    </tr>
+  </tbody></table>
+</blockquote>
+<p align=3D"left">A DSSDUMP format tape containing these eleven datasets an=
+d a
+jobstream to restore the tape (using DSSREST) is available in the archive <=
+a href=3D"http://www.jaymoseley.com/hercules/downloads/archives/mvtfortg.ta=
+r.gz">mvtfortg.tar.gz</a>
+(3.9 MB)&nbsp; [MD5: d6c020373956f18859b418fd7240c571].&nbsp; DSSREST is
+available on <a href=3D"http://www.jaymoseley.com/hercules/compilers/syscpk=
+.htm">SYSCPK</a>.&nbsp; The restore jobstream is
+written to restore to a 3350 volume with VOL=3DSER=3DMVTSRC, so you may nee=
+d to adjust parameters if
+your target volume is not 3350.</p>
+<p align=3D"left">I have not completed a suitable comparison of the assembl=
+ed
+source to the distributed load modules, but my conclusion is that they do n=
+ot
+match.&nbsp; The compiler built from the source performs as expected in the
+tests I have completed.&nbsp; I include the SYS1.MACLIB from MVT, because a=
+ny
+meaningful attempt to compare the output from the compiled source to the lo=
+ad
+modules taken from a freshly generated MVT system will more closely match i=
+f the
+MVT system macros are used.&nbsp; Assembling the source using the MVS
+SYS1.MACLIB is guaranteed to result in object/load modules that are differe=
+nt
+from those that are the product of MVT System Generation.</p>
+<p align=3D"left">&nbsp;</p>
+<h2 align=3D"left">FORTRAN H</h2>
+<p align=3D"left">The datasets related to the FORTRAN H compiler are:</p>
+<blockquote>
+  <table border=3D"1" width=3D"75%" height=3D"288">
+    <tbody><tr>
+      <th width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>Dataset</b></font></pre>
+      </th>
+      <th width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>Attributes</b></font></pre>
+      </th>
+      <th width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>Allocation</b></font></pre>
+      </th>
+      <th width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>Contents</b></font></pre>
+      </th>
+    </tr>
+    <tr>
+      <th width=3D"20%" height=3D"19">
+        <div align=3D"left">
+          <pre><font size=3D"3"><b>MVTSRC.FORTH.CNTL</b></font></pre>
+        </div>
+      </th>
+      <td width=3D"20%" height=3D"19">
+        <pre><font size=3D"3"><b>FB/80/9440</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"19">
+        <pre><font size=3D"3"><b>30 Tracks/5 Dir Blocks/5 Members</b></font=
+></pre>
+      </td>
+      <td width=3D"20%" height=3D"19">
+        <pre><font size=3D"3"><b>jobstreams to assemble, link, delink, and =
+run a test compile</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.FORTH.LISTINGS</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>VBA/137/9416</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>900 Tracks/10 Dir Blocks/134 Members</b></=
+font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>listings from the assemble and link jobs</=
+b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.FORTH.LOAD</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>U/19069</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>30 Tracks/5 Dir Blocks/1 Member</b></font>=
+</pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>load module built from the source</b></fon=
+t></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.FORTH.MACLIB</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>FB/80/19040</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>15 Tracks/5 Dir Blocks/3 Members</b></font=
+></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>macros required to assemble the source</b>=
+</font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"17">
+        <pre><font size=3D"3"><b>MVTSRC.FORTH.OBJECT</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"17">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"17">
+        <pre><font size=3D"3"><b>79 Tracks/10 Dir Blocks/133 Members</b></f=
+ont></pre>
+      </td>
+      <td width=3D"20%" height=3D"17">
+        <pre><font size=3D"3"><b>object decks from assembling each source m=
+odule</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.FORTH.XOBJECT</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>F/80/80</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>75 Tracks/7 Dir Blocks/133 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>object decks from delinking the original l=
+oad modules</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.FORTLIB</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>U/13030</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>30 Tracks/30 Dir Blocks/66 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>FORTRAN library built from source</b></fon=
+t></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.FO500</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>180 Tracks/4 Dir Blocks/13 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>ALC source loaded from Rick Fochtman's CD<=
+/b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>MVTSRC.SYS1.MACLIB</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>810 Tracks/100 Dir Blocks/381 Members</b><=
+/font></pre>
+      </td>
+      <td width=3D"20%" height=3D"18">
+        <pre><font size=3D"3"><b>Macro Library from MVT System Generation</=
+b></font></pre>
+      </td>
+    </tr>
+  </tbody></table>
+</blockquote>
+<p align=3D"left">A DSSDUMP format tape containing these nine datasets and =
+a
+jobstream to restore the tape (using DSSREST) is available in the archive <=
+a href=3D"http://www.jaymoseley.com/hercules/downloads/archives/mvtforth.ta=
+r.gz">mvtforth.tar.gz</a>
+(3.8 MB)&nbsp; [MD5: f53ba72fe3bd53c74f16a52e31a954d9].&nbsp; DSSREST is
+available on <a href=3D"http://www.jaymoseley.com/hercules/compilers/syscpk=
+.htm">SYSCPK</a>.&nbsp; The restore jobstream is
+written to restore to a 3350 volume with VOL=3DSER=3DMVTSRC, so you may nee=
+d to adjust parameters if
+your target volume is not 3350.</p>
+<p align=3D"left">A significant portion of the FORTRAN H compiler is writte=
+n in
+FORTRAN code and must be compiled with FORTRAN H <b>with</b> the undocument=
+ed <b>XL</b>
+parm specified.&nbsp; It is also necessary to specify OPT=3D02 to compile s=
+ome of
+the modules, so I elected to compile all of the FORTRAN code with OPT=3D02.=
+&nbsp;
+I do not think I would have figured out all the required permutations witho=
+ut
+the help of Phil Roberts.&nbsp; Phil was also able to track down the
+documentation (such as there is) for the XL compiler option:&nbsp; <a href=
+=3D"https://www.slac.stanford.edu/vault/collvault/greylit/cgtm/CGTM51.pdf" =
+target=3D"_blank">www.slac.stanford.edu/vault/collvault/greylit/cgtm/CGTM51=
+.pdf</a></p>
+<p align=3D"left">Note: the library modules (MVTSRC.FORTLIB) are built with=
+ the
+FORTRAN G compiler and are not re-built by the jobstreams for FORTRAN H.</p=
+>
+<p align=3D"left">I have not completed a suitable comparison of the assembl=
+ed
+source to the distributed load modules, but my conclusion is that they do n=
+ot
+match.&nbsp; The compiler built from the source performs as expected in the
+tests I have completed.&nbsp; I include the SYS1.MACLIB from MVT, because a=
+ny
+meaningful attempt to compare the output from the compiled source to the lo=
+ad
+modules taken from a freshly generated MVT system will more closely match i=
+f the
+MVT system macros are used.&nbsp; Assembling the source using the MVS
+SYS1.MACLIB is guaranteed to result in object/load modules that are differe=
+nt
+from those that are the product of MVT System Generation.</p>
+<p align=3D"left">&nbsp;</p>
+<h2 align=3D"left">PL/I</h2>
+<p align=3D"left">I have not included the PL/I compiler, because Tom Armstr=
+ong is
+also working on updating it, as he did the ALGOL compiler.&nbsp; From state=
+ments
+he has made about the work in progress, I know that there are severe proble=
+ms
+involved in attempting to build the compiler from the source we have, so th=
+ere
+is simply not much point in providing the source at this point.&nbsp; Hopef=
+ully
+Tom will soon release the updated version of PL/I to share with the Hercule=
+s
+community.</p>
+<p align=3D"left">&nbsp;</p>
+<h2 align=3D"left">RPG</h2>
+<p align=3D"left">The datasets related to the RPG compiler are:</p>
+<blockquote>
+  <table border=3D"1" width=3D"75%">
+    <tbody><tr>
+      <th width=3D"20%">
+        <pre><font size=3D"3"><b>Dataset</b></font></pre>
+      </th>
+      <th width=3D"20%">
+        <pre><font size=3D"3"><b>Attributes</b></font></pre>
+      </th>
+      <th width=3D"20%">
+        <pre><font size=3D"3"><b>Allocation</b></font></pre>
+      </th>
+      <th width=3D"20%">
+        <pre><font size=3D"3"><b>Contents</b></font></pre>
+      </th>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.RG038</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/9440</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>192 Tracks/4 Dir Blocks/56 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>ALC source loaded from Rick Fochtman's CD<=
+/b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.RPG.CNTL</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/9440</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>30 Tracks/5 Dir Blocks/5 Members</b></font=
+></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>jobstreams to assemble, link, delink, and =
+run a test compile</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.RPG.LISTINGS</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FBA/121/9438</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>330 Tracks/4 Dir Blocks/57 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>listings from the assemble and link jobs</=
+b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.RPG.LOAD</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>U/19069</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>30 Tracks/6 Dir Blocks/27 Members</b></fon=
+t></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>load modules built from the source</b></fo=
+nt></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.RPG.OBJECT</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>15 Tracks/4 Dir Blocks/56 Members</b></fon=
+t></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>object decks from assembling each source m=
+odule</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.RPG.XOBJECT</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>F/80/80</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>45 Tracks/4 Dir Blocks/56 Members</b></fon=
+t></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>object decks from delinking the original l=
+oad modules</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SYS1.MACLIB</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>810 Tracks/100 Dir Blocks/381 Members</b><=
+/font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>Macro Library from MVT System Generation</=
+b></font></pre>
+      </td>
+    </tr>
+  </tbody></table>
+</blockquote>
+<p align=3D"left">A DSSDUMP format tape containing these seven datasets and=
+ a
+jobstream to restore the tape (using DSSREST) is available in the archive <=
+a href=3D"http://www.jaymoseley.com/hercules/downloads/archives/mvtrpg.rar"=
+>mvtrpg.rar</a>
+(3.2 MB)&nbsp; [MD5: 15e88f72fcbfd9def3816c7e469b8ef4].&nbsp; DSSREST is
+available on <a href=3D"http://www.jaymoseley.com/hercules/compilers/syscpk=
+.htm">SYSCPK</a>.&nbsp; The restore jobstream is
+written to restore to a 3350 volume with VOL=3DSER=3DMVTSRC, so you may nee=
+d to adjust parameters if
+your target volume is not 3350.</p>
+<p align=3D"left">I have not completed a suitable comparison of the assembl=
+ed
+source to the distributed load modules, but my conclusion is that they do n=
+ot
+match.&nbsp; The compiler built from the source performs as expected in the
+tests I have completed.&nbsp; I include the SYS1.MACLIB from MVT, because a=
+ny
+meaningful attempt to compare the output from the compiled source to the lo=
+ad
+modules taken from a freshly generated MVT system will more closely match i=
+f the
+MVT system macros are used.&nbsp; Assembling the source using the MVS
+SYS1.MACLIB is guaranteed to result in object/load modules that are differe=
+nt
+from those that are the product of MVT System Generation.</p>
+<p align=3D"left">&nbsp;</p>
+<h2 align=3D"left">SORT/MERGE</h2>
+<p align=3D"left">The datasets related to the SORT/MERGE utility are:</p>
+<blockquote>
+  <table border=3D"1" width=3D"75%">
+    <tbody><tr>
+      <th width=3D"20%">
+        <pre><font size=3D"3"><b>Dataset</b></font></pre>
+      </th>
+      <th width=3D"20%">
+        <pre><font size=3D"3"><b>Attributes</b></font></pre>
+      </th>
+      <th width=3D"20%">
+        <pre><font size=3D"3"><b>Allocation</b></font></pre>
+      </th>
+      <th width=3D"20%">
+        <pre><font size=3D"3"><b>Contents</b></font></pre>
+      </th>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SM023</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/9440</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>630 Tracks/13 Dir Blocks/252 Members</b></=
+font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>ALC source loaded from Rick Fochtman's CD<=
+/b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SORT.CNTL</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/9440</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>30 Tracks/5 Dir Blocks/5 Members</b></font=
+></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>jobstreams to assemble, link, delink, and =
+run a test compile</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SORT.LISTINGS</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FBA/121/9438</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>330 Tracks/4 Dir Blocks/57 Members</b></fo=
+nt></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>listings from the assemble and link jobs</=
+b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SORT.LOAD</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>U/19069</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>30 Tracks/6 Dir Blocks/27 Members</b></fon=
+t></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>load modules built from the source</b></fo=
+nt></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SORT.MACLIB</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/19040</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>10 Tracks/2 Dir Blocks/10 Members</b></fon=
+t></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>macros required to assemble the source</b>=
+</font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SORT.OBJECT</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>30 Tracks/52 Dir Blocks/250 Members</b></f=
+ont></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>object decks from assembling each source m=
+odule</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SORT.PROCLIB</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/19040</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>4 Tracks/2 Dir Blocks/2 Members</b></font>=
+</pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>JCL procedures to execute SORT/MERGE</b></=
+font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SORT.XOBJECT</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>F/80/80</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>60 Tracks/36 Dir Blocks/250 Members</b></f=
+ont></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>object decks from delinking the original l=
+oad modules</b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SORTLIB</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>U/13030</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>30 Tracks/36 Dir Blocks/214 Members</b></f=
+ont></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>SORT library built from the source</b></fo=
+nt></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SYS1.MACLIB</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>FB/80/3120</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>810 Tracks/100 Dir Blocks/381 Members</b><=
+/font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>Macro Library from MVT System Generation</=
+b></font></pre>
+      </td>
+    </tr>
+    <tr>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>MVTSRC.SYS1.SORTLIB</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>U/13030</b></font></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>90 Tracks/40 Dir Blocks/214 Members</b></f=
+ont></pre>
+      </td>
+      <td width=3D"20%">
+        <pre><font size=3D"3"><b>SORT library from MVT System Generation</b=
+></font></pre>
+      </td>
+    </tr>
+  </tbody></table>
+</blockquote>
+<p align=3D"left">A DSSDUMP format tape containing these eleven datasets an=
+d a
+jobstream to restore the tape (using DSSREST) is available in the archive <=
+a href=3D"http://www.jaymoseley.com/hercules/downloads/archives/mvtsort.rar=
+">mvtsort.rar</a>
+(9.1 MB)&nbsp; [MD5: 534ef4970912ec979b21420a33905059].&nbsp; DSSREST is
+available on <a href=3D"http://www.jaymoseley.com/hercules/compilers/syscpk=
+.htm">SYSCPK</a>.&nbsp; The restore jobstream is
+written to restore to a 3350 volume with VOL=3DSER=3DMVTSRC, so you may nee=
+d to adjust parameters if
+your target volume is not 3350.</p>
+<p align=3D"left">I have not completed a suitable comparison of the assembl=
+ed
+source to the distributed load modules, but my conclusion is that they do n=
+ot
+match.&nbsp; The Sort/Merge utility built from the source performs as expec=
+ted
+in the tests I have completed.&nbsp; I include the SYS1.MACLIB from MVT, be=
+cause
+any meaningful attempt to compare the output from the compiled source to th=
+e
+load modules taken from a freshly generated MVT system will more closely ma=
+tch
+if the MVT system macros are used.&nbsp; Assembling the source using the MV=
+S
+SYS1.MACLIB is guaranteed to result in object/load modules that are differe=
+nt
+from those that are the product of MVT System Generation.</p>
+<hr>
+<p>I hope that you have found my instructions useful.&nbsp; If you have
+questions that I can answer to help expand upon the information I have incl=
+uded here, please don't hesitate to send them to me:</p>
+<p><img border=3D"0" src=3D"http://www.jaymoseley.com/hercules/images/dinom=
+ail.gif" width=3D"172" height=3D"75"></p>
+<hr>
+<p align=3D"center"><input type=3D"BUTTON" value=3D"Back to Previous Page">=
+<a href=3D"http://www.jaymoseley.com/hercules/index.html" class=3D"button">=
+Return
+to Site Home Page</a>&nbsp;</p>
+<hr>
+<font face=3D"Arial">This page was last updated on <!--webbot bot=3D"Timest=
+amp"
+s-type=3D"EDITED" s-format=3D"%B %d, %Y" startspan -->July 14, 2020<!--webb=
+ot bot=3D"Timestamp" endspan i-CheckSum=3D"14240" -->.</font>
+
+
+</body></html>
+------MultipartBoundary--5v7IAsVfTEpTTdF0dKrGT1HYc4NYs3432QqjwpPngo----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: cid:css-760eeb26-690d-4d9d-9222-a06115da4dfa@mhtml.blink
+
+@charset "windows-1252";
+
+a.button { display: block; width: 310px; height: 30px; background-color: la=
+wngreen; text-align: center; border-radius: 5px; color: black; font-size: 2=
+4px; font-family: helvetica; }
+------MultipartBoundary--5v7IAsVfTEpTTdF0dKrGT1HYc4NYs3432QqjwpPngo----
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://www.jaymoseley.com/hercules/images/dinomail.gif
+
+R0lGODlhEwF0APcAAAAAAAAAKQAAQgAAWgAAawAAcwgAAAgAcwgAewgIWggIewgQYxAACBAIGBAQ
+CBgQCBgQUhgQaxgQexgQhBgYCBgYGBghCBghIRghWiEYayEhjCkICCkQGCkhGCkhKSkhnCkpWikp
+aykpeykpnCkpnCkxKTEpazEpjDExvTE5ITE5jDkhEDkhKTkpYzkxMTkxezkxnDk5MTk5OTk5azk5
+jEIQGEIhGEIxGEIxKUI5IUJCQkJCWkJCa0JCe0JCjEJClEJCnEJCpUpCKUpCvUpKnEpSa0pSe1Ix
+KVJCKVJKOVJKjFJSUlJSpVJajFoxKVo5OVpCKVpCQlpCUlpSMVpSQlpaIVpaQlpaWlpae1pjQmNS
+EGNalGNapWNatWN7SmsxMWtCQmtSMWtSQmtaUmtjQmtrlGtrpWtrxnNCKXNCOXNKUnNra3NzUnNz
+tXNzvXtaQntaUntrQntzlHtzpXtzxnt7e3uEpXuEtYRaIYRaMYRaQoRrUoR7QoR7UoSExoSMjISM
+zpRSKZRSOZRjQpRjWpRrMZRrSpRzMZRzQpRzWpRze5R7e5SEQpSEUpSUjJSUtZSUtZSUxpSUzpSU
+3pSU55xKIZxjUpxrMZxrQpxzUpxzWpyc3qVaOaVjKaVzY6WEUqWEY6WEe6WEhKWMY6WU3qWcWqWc
+a6Wc76WlpaWlzqWl3q2MUq2t57VzMbVzObVzUrV7SrV7Y7WMUrWMY7WUe7WttbW1zrW13r17Y72c
+a72cc72lY72la72le729tb295729973GxsZra8ZzUsZ7QsZ7a8aMY8a9zs6EY86Ma86Ue86ca86c
+a86le86ljM6ta861e861jM7G3s7G987Oxs7Ozs7O1s7W987enNaMc9a9jNbW1t6Uc96le96llN61
+c97e3t7e797e/+eMc+eUc+ele+eljOe1e+e1lOe9e+e9jOe9nOfv1ufv3ufv5+f31u+Ue++le/eU
+e/elc/eljPetpfe9e/e9jPe9nPfOa/fOe/fOjPfOnPf35/f39////yH5BAEAAP8ALAAAAAATAXQA
+AAj+AP8JHEiwoMGDCBMqXMiwocOHECNKnEixosWLGDNq3Mixo8ePIEOKHEmypMmTKFOqXMmypcuX
+MGPKnEmzps2bOHPq3Mmzp8+fQIMKHUq0qNGjSJMqXcq0aVJ/UMGBc0e1qtWrWLNq3cq1q1ev4dq5
+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
+gU2Y8G0Yk73t+A4BCAA7
+
+------MultipartBoundary--5v7IAsVfTEpTTdF0dKrGT1HYc4NYs3432QqjwpPngo------

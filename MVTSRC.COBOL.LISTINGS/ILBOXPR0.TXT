@@ -1,0 +1,260 @@
+1XPR0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOXPR0  SD  0001 000000 000258
+ ILBOXMU0  ER  0002
+ ILBOXDI0  ER  0003
+1XPR0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *$MODULE       ILBOXPR0                                                 00400020
+                                       2 *//    ILBOXPR0                                                         00800020
+1XPR0     ILBOXPR0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      4 *        ILBOXPR0   CALLING SEQ... L    15,V(ILBOXPR0)                  01600020
+                                       5 *                                                                       02000020
+                                       6 *        LEVEL  180     09/14/66                                        02400020
+                                       7 *                                                                       02800020
+                                       8 *FUNCTION 0 THIS ROUTINE EXPONENTIATES ANY 30-DIGIT PACKED DECIMAL BASE 03200020
+                                       9 *   TO A BINARY EXPONENT.                                               03600020
+                                      10 *ENTRY POINT 0 ILBOXPWR , CALLING SEQUENCE IS 0-                        04000020
+                                      11 *                            ZAP   96(16,13),BASE(L)                    04400020
+                                      12 *                            L     0,EXPONENT                           04800020
+                                      13 *                            L     15,V(ILBOXPWR)                       05200020
+                                      14 *                            BALR  14,15                                05600020
+                                      15 *                            DC    XL1'NO. OF DECIMAL PLACES IN BASE'   06000020
+                                      16 *                            DC    XL1'NO. OF DECIMAL PLACES IN RESULT' 06400020
+                                      17 *INPUT 0 SEE ABOVE. REG 13 IS INITIALIZED BY CALLER TO POINT TO START   06800020
+                                      18 *   OF TGT.                                                             07200020
+                                      19 *OUTPUT 0 A 16-BYTE PACKED DECIMAL NUMBER AT 96(13).                    07600020
+                                      20 *   0 ** 0 = 1   ,   0 ** N = 0.                                        08000020
+                                      21 *   0 ** -N= LARGEST PACKED DECIMAL NUMBER.                             08400020
+                                      22 *EXTERNAL ROUTINES 0 ILBOXMUL - PACKED DECIMAL MULTIPLICATION ROUTINE.  08800020
+                                      23 *                    ILBOXDIV - PACKED DECIMAL DIVISION ROUTINE.        09200020
+                                      24 *EXITS -NORMAL 0 BY  BCR  15,14                                         09600020
+                                      25 *       ERROR  0 NO ERROR INDICATION IS GIVEN, EXITS BY  BCR  15,14     10000020
+                                      26 *WORK AREAS 0 BYTES 96-252 OF TGT.                                      10400020
+                                      27 *ATTRIBUTES 0 SERIALLY REUSABLE.                                        10800020
+                                      28 *                                                                       11200020
+ 000000                               29 ILBOXPR0 START 0                                                        11600020
+                             0000D    30 R13      EQU   13                                                       12000020
+                             0000E    31 R14      EQU   14                                                       12400020
+                             0000F    32 R15      EQU   15                                                       12800020
+                             00000    33 R0       EQU   0                                                        13200020
+                             00001    34 R1       EQU   1                                                        13600020
+                             00002    35 R2       EQU   2                                                        14000020
+                             00003    36 R3       EQU   3                                                        14400020
+                             00004    37 R4       EQU   4                                                        14800020
+                             00005    38 R5       EQU   5                                                        15200020
+                             00006    39 R6       EQU   6                                                        15600020
+                             00008    40 EQ       EQU   8                                                        16000020
+                             00007    41 NOTEQ    EQU   7                                                        16400020
+                             00004    42 NEG      EQU   4                                                        16800020
+                             0000B    43 NOTNEG   EQU   11                                                       17200020
+                             00004    44 LO       EQU   4                                                        17600020
+                             00002    45 HI       EQU   2                                                        18000020
+                             0000D    46 NOTHI    EQU   13                                                       18400020
+                             00008    47 ZERO     EQU   8                                                        18800020
+                             00001    48 ONES     EQU   1                                                        19200020
+                             0000F    49 UNCOND   EQU   15                                                       19600020
+                                      50 *                                                                       20000020
+                                      51          EXTRN ILBOXMU0                                                 20400020
+                                      52          EXTRN ILBOXDI0                                                 20800020
+                                      53 *                                                                       21200020
+                             00000    54          USING WC,R13                                                   21600020
+                             00000    55          USING *,R15                                                    22000020
+ 000000 90E6 D0DC      000DC          56          STM   R14,R6,RS14                                              22400020
+ 000004 F9F3 D060 F24C 00060 0024C    57          CP    96(16,R13),ZEROS(4)                                      22800020
+ 00000A 4770 F04C      0004C          58          BC    NOTEQ,XP010                                              23200020
+1XPR0     ILBOXPR0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000000E 1200                          59          LTR   R0,R0               BASE = 0,                            23600020
+ 000010 4780 F026      00026          60          BC    ZERO,ANS1              AND EXP= 0, GIVE ANS =1.          24000020
+ 000014 4740 F03A      0003A          61          BC    NEG,ANS9            BASE=0, EXP=NEG NO, GIVE ANS= 9'S.   24400020
+ 000018 D70F D060 D060 00060 00060    62 ANS0     XC    96(16,R13),96(R13)                                       24800020
+ 00001E 920C D06F      0006F          63          MVI   111(R13),X'0C'      BASE=0, EXP=POS NO. GIVE ANS=0.      25200020
+ 000022 47F0 F23C      0023C          64          BC    UNCOND,EXIT1                                             25600020
+                                      65 *                                                                       26000020
+ 000026 D70F D090 D090 00090 00090    66 ANS1     XC    144(16,R13),144(R13)                                     26400020
+ 00002C 921C D09F      0009F          67          MVI   159(R13),X'1C'                                           26800020
+ 000030 D201 D0D8 F24C 000D8 0024C    68          MVC   DEC(2),ZEROS                                             27200020
+ 000036 47F0 F15E      0015E          69          BC    UNCOND,XP100                                             27600020
+                                      70 *                                                                       28000020
+ 00003A 9299 D060      00060          71 ANS9     MVI   96(R13),X'99'                                            28400020
+ 00003E D20D D061 D060 00061 00060    72          MVC   97(14,R13),96(R13)                                       28800020
+ 000044 929C D06F      0006F          73          MVI   111(R13),X'9C'      GIVE ANS =9'S.                       29200020
+ 000048 47F0 F23C      0023C          74          BC    UNCOND,EXIT1                                             29600020
+                                      75 *                                                                       30000020
+ 00004C 1020                          76 XP010    LPR   R2,R0               GET ABSOLUTE VALUE OF EXPONENT.      30400020
+ 00004E 4780 F026      00026          77          BC    ZERO,ANS1                                                30800020
+ 000052 9200 D0D8      000D8          78          MVI   DEC,0                                                    31200020
+ 000056 D200 D0D9 E000 000D9 00000    79          MVC   DEC+1(1),0(R14)     SAVE NO. OF DECIMALS IN PRODUCT.     31600020
+ 00005C F8FF D0C4 D060 000C4 00060    80          ZAP   SAVE(16),96(16,R13)                                      32000020
+ 000062 F8FF D090 D060 00090 00060    81          ZAP   144(16,R13),96(16,R13)                                   32400020
+ 000068 5B20 F254      00254          82 XP015    S     R2,ONE                                                   32800020
+ 00006C 4780 F15E      0015E          83          BC    ZERO,XP100                                               33200020
+ 000070 F8FF D070 D0C4 00070 000C4    84          ZAP   112(16,R13),SAVE(16)                                     33600020
+ 000076 50F0 D0E0      000E0          85          ST    R15,RS15                                                 34000020
+ 00007A 58F0 F244      00244          86          L     R15,APMULT                                               34400020
+ 00007E 05EF                          87          BALR  R14,R15                                                  34800020
+ 000080 98EF D0DC      000DC          88          LM    R14,R15,RS14                                             35200020
+ 000084 4810 D0D8      000D8          89          LH    R1,DEC                                                   35600020
+ 000088 1B33                          90          SR    R3,R3                                                    36000020
+ 00008A 433E 0000      00000          91          IC    R3,0(R14)                                                36400020
+ 00008E 1A13                          92          AR    R1,R3               INCREMENT DEC COUNT.                 36800020
+ 000090 4010 D0D8      000D8          93          STH   R1,DEC                                                   37200020
+ 000094 413D 0081      00081          94          LA    R3,129(R13)                                              37600020
+ 000098 9500 3000      00000          95 XP020    CLI   0(R3),0             CALCULATE NO. OF DIGITS IN PRODUCT.  38000020
+ 00009C 4770 F0A8      000A8          96          BC    NOTEQ,XP030                                              38400020
+ 0000A0 4133 0001      00001          97          LA    R3,1(R3)                                                 38800020
+ 0000A4 47F0 F098      00098          98          BC    UNCOND,XP020                                             39200020
+ 0000A8 414D 009F      0009F          99 XP030    LA    R4,159(R13)                                              39600020
+ 0000AC 1B43                         100          SR    R4,R3                                                    40000020
+ 0000AE 1814                         101          LR    R1,R4                                                    40400020
+ 0000B0 8910 0001      00001         102          SLL   R1,1                                                     40800020
+ 0000B4 91F0 3000      00000         103          TM    0(R3),X'F0'                                              41200020
+ 0000B8 4780 F0C0      000C0         104          BC    ZERO,XP040                                               41600020
+ 0000BC 4111 0001      00001         105          LA    R1,1(R1)            R1 HAS NO. OF DIGITS IN PRODUCT.     42000020
+ 0000C0 5510 F250      00250         106 XP040    CL    R1,CON30                                                 42400020
+ 0000C4 4210 D0DB      000DB         107          STC   R1,DIGIT                                                 42800020
+ 0000C8 47D0 F0D6      000D6         108          BC    NOTHI,XP045                                              43200020
+ 0000CC D500 D0D9 E001 000D9 00001   109          CLC   DEC+1(1),1(R14)     COMPARE DEC NO. WITH DMAX IN PARAM.  43600020
+ 0000D2 4720 F0E0      000E0         110          BC    HI,XP050                                                 44000020
+ 0000D6 F8FF D060 D090 00060 00090   111 XP045    ZAP   96(16,R13),144(16,R13)  TAKE LOW-ORDER 16 BYTES OF PROD. 44400020
+ 0000DC 47F0 F068      00068         112          BC    UNCOND,XP015                                             44800020
+ 0000E0 4840 D0D8      000D8         113 XP050    LH    R4,DEC                                                   45200020
+1XPR0     ILBOXPR0                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00000E4 1B14                         114          SR    R1,R4                                                    45600020
+ 0000E6 47B0 F0EC      000EC         115          BC    NOTNEG,XP052                                             46000020
+ 0000EA 1B11                         116          SR    R1,R1                                                    46400020
+ 0000EC 1B55                         117 XP052    SR    R5,R5                                                    46800020
+ 0000EE 435E 0001      00001         118          IC    R5,1(R14)           IS INT + DMAX GREATER THAN 30 DIGITS 47200020
+ 0000F2 1A15                         119          AR    R1,R5                                                    47600020
+ 0000F4 5510 F250      00250         120          CL    R1,CON30                                                 48000020
+ 0000F8 47D0 F150      00150         121          BC    NOTHI,XP090                                              48400020
+ 0000FC 1B45                         122 XP055    SR    R4,R5                  YES, TRUNCATE EITHER INTEGER      48800020
+ 0000FE 1B11                         123          SR    R1,R1                                                    49200020
+ 000100 4810 D0D8      000D8         124          LH    R1,DEC                                                   49600020
+ 000104 1B14                         125          SR    R1,R4                                                    50000020
+ 000106 4010 D0D8      000D8         126          STH   R1,DEC                                                   50400020
+ 00010A 0640                         127          BCTR  R4,0                     OR DECIMAL PART OF PRODUCT.     50800020
+ 00010C D21F D060 D080 00060 00080   128          MVC   96(32,R13),128(R13)        DIVIDEND = PRODUCT            51200020
+ 000112 D70F D090 D090 00090 00090   129          XC    144(16,R13),144(R13)                                     51600020
+ 000118 9201 D09E      0009E         130          MVI   158(R13),X'01'                                           52000020
+ 00011C 920C D09F      0009F         131          MVI   159(R13),X'0C'                                           52400020
+ 000120 1244                         132          LTR   R4,R4                                                    52800020
+ 000122 4780 F136      00136         133          BC    ZERO,XP070                                               53200020
+ 000126 D201 D0A0 D09E 000A0 0009E   134          MVC   160(2,R13),158(R13)                                      53600020
+ 00012C FCF1 D090 D0A0 00090 000A0   135 XP060    MP    144(16,R13),160(2,R13)     DIVISOR  = 10**(DEC-DMAX)     54000020
+ 000132 4640 F12C      0012C         136          BCT   R4,XP060                           OR 10**(DIGIT-30)     54400020
+ 000136 58F0 F248      00248         137 XP070    L     R15,ADIVID                                               54800020
+ 00013A 05EF                         138          BALR  R14,R15                                                  55200020
+ 00013C 98EF D0DC      000DC         139          LM    R14,R15,RS14                                             55600020
+ 000140 F8FF D090 D0B0 00090 000B0   140          ZAP   144(16,R13),176(16,R13)                                  56000020
+ 000146 D20F D060 D0B0 00060 000B0   141          MVC   96(16,R13),176(R13) QUOTIENT THEN BECOMES THE MPLIER     56400020
+ 00014C 47F0 F068      00068         142          BC    UNCOND,XP015                                             56800020
+                                     143 *                                                                       57200020
+ 000150 1B44                         144 XP090    SR    R4,R4                                                    57600020
+ 000152 4340 D0DB      000DB         145          IC    R4,DIGIT                                                 58000020
+ 000156 4150 001E      0001E         146          LA    R5,30(0)               TRUNCATE INTEGER PART.            58400020
+ 00015A 47F0 F0FC      000FC         147          BC    UNCOND,XP055                                             58800020
+                                     148 *                                                                       59200020
+ 00015E 58E0 D0DC      000DC         149 XP100    L     R14,RS14                                                 59600020
+ 000162 1B44                         150          SR    R4,R4                  IF DEC NOT EQ TO DMAX,            60000020
+ 000164 434E 0001      00001         151          IC    R4,1(R14)              CALCULATE ABS(DMAX-DEC) =X        60400020
+ 000168 4850 D0D8      000D8         152          LH    R5,DEC                                                   60800020
+ 00016C 1B54                         153          SR    R5,R4                                                    61200020
+ 00016E 1015                         154          LPR   R1,R5                                                    61600020
+ 000170 4780 F1C4      001C4         155          BC    ZERO,XP150             DEC = DMAX, NO ADJUSTMENT MADE.   62000020
+ 000174 4560 F1E4      001E4         156          BAL   R6,XP162                                                 62400020
+ 000178 F8FF D060 D070 00060 00070   157          ZAP   96(16,R13),112(16,R13)                                   62800020
+ 00017E F8FF D070 D090 00070 00090   158          ZAP   112(16,R13),144(16,R13)                                  63200020
+ 000184 D500 D0D9 E001 000D9 00001   159 XP120    CLC   DEC+1(1),1(R14)                                          63600020
+ 00018A 4740 F1B4      001B4         160          BC    LO,XP140                                                 64000020
+ 00018E F8FF D090 D060 00090 00060   161          ZAP   144(16,R13),96(16,R13)                                   64400020
+ 000194 D70F D060 D060 00060 00060   162          XC    96(16,R13),96(R13)                                       64800020
+ 00019A D200 D0D9 E001 000D9 00001   163          MVC   DEC+1(1),1(R14)                                     7328 65200020
+ 0001A0 58F0 F248      00248         164          L     R15,ADIVID          WHEN DEC IS GT THAN DMAX, ADJUST     65600020
+ 0001A4 05EF                         165          BALR  R14,R15                ANSWER BY BASE / (10 ** X ).      66000020
+ 0001A6 98EF D0DC      000DC         166          LM    R14,R15,RS14                                             66400020
+ 0001AA F8FF D090 D0B0 00090 000B0   167          ZAP   144(16,R13),176(16,R13)                                  66800020
+ 0001B0 47F0 F1C4      001C4         168          BC    UNCOND,XP150                                             67200020
+1XPR0     ILBOXPR0                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    169 *                                                                       67600020
+ 0001B4 D200 D0D9 E001 000D9 00001   170 XP140    MVC   DEC+1(1),1(R14)     WHEN DEC IS LESS THAN DMAX, ADJUST   68000020
+ 0001BA 58F0 F244      00244         171          L     R15,APMULT             ANSWER BY BASE * 10 ** X.         68400020
+ 0001BE 05EF                         172          BALR  R14,R15                                                  68800020
+ 0001C0 98EF D0DC      000DC         173          LM    R14,R15,RS14                                             69200020
+ 0001C4 1200                         174 XP150    LTR   R0,R0                                                    69600020
+ 0001C6 47B0 F236      00236         175          BC    NOTNEG,EXIT                                              70000020
+ 0001CA D71F D060 D060 00060 00060   176          XC    96(32,R13),96(R13)                                       70400020
+ 0001D0 4560 F1D8      001D8         177          BAL   R6,XP160                                                 70800020
+ 0001D4 47F0 F222      00222         178          BC    UNCOND,XP170                                             71200020
+ 0001D8 1B11                         179 XP160    SR    R1,R1               FORM EITHER 10 ** (DEC + DMAX)       71600020
+                                     180 *                                     OR 10 ** ABS( DMAX - DEC)         72000020
+ 0001DA 431E 0001      00001         181          IC    R1,1(R14)                                                72400020
+ 0001DE 4820 D0D8      000D8         182          LH    R2,DEC                                                   72800020
+ 0001E2 1A12                         183          AR    R1,R2                                                    73200020
+ 0001E4 920C D07F      0007F         184 XP162    MVI   127(R13),X'0C'                                           73600020
+ 0001E8 D70E D070 D070 00070 00070   185          XC    112(15,R13),112(R13)                                     74000020
+ 0001EE 5510 F250      00250         186          CL    R1,CON30            IF VALUE IS GREATER THAN 10 ** 30,   74400020
+ 0001F2 47D0 F1FC      001FC         187          BC    NOTHI,XP163            ONLY 10 ** 30 IS GIVEN.           74800020
+ 0001F6 9610 D070      00070         188          OI    112(R13),X'10'                                      7328 75200020
+ 0001FA 07F6                         189          BCR   UNCOND,R6                                                75600020
+ 0001FC 4111 0001      00001         190 XP163    LA    R1,1(R1)                                                 76000020
+ 000200 4210 D0DA      000DA         191          STC   R1,TEMP                                                  76400020
+ 000204 8A10 0001      00001         192          SRA   R1,1                                                     76800020
+ 000208 413D 007F      0007F         193          LA    R3,127(R13)                                              77200020
+ 00020C 1B31                         194          SR    R3,R1                                                    77600020
+ 00020E 9101 D0DA      000DA         195          TM    TEMP,1                                                   78000020
+ 000212 4710 F21C      0021C         196          BC    ONES,XP165                                               78400020
+ 000216 9601 3000      00000         197          OI    0(R3),X'01'                                              78800020
+ 00021A 07F6                         198          BCR   UNCOND,R6                                                79200020
+ 00021C 9610 3000      00000         199 XP165    OI    0(R3),X'10'                                              79600020
+ 000220 07F6                         200          BCR   UNCOND,R6                                                80000020
+ 000222 58F0 F248      00248         201 XP170    L     R15,ADIVID                                               80400020
+ 000226 05EF                         202          BALR  R14,R15                                                  80800020
+ 000228 98EF D0DC      000DC         203          LM    R14,R15,RS14                                             81200020
+ 00022C F8FF D060 D0B0 00060 000B0   204          ZAP   96(16,R13),176(16,R13)                                   81600020
+ 000232 47F0 F23C      0023C         205          BC    UNCOND,EXIT1                                             82000020
+ 000236 F8FF D060 D090 00060 00090   206 EXIT     ZAP   96(16,R13),144(16,R13)                                   82400020
+ 00023C 98E6 D0DC      000DC         207 EXIT1    LM    R14,R6,RS14                                              82800020
+ 000240 47FE 0002      00002         208          BC    UNCOND,2(R14)                                            83200020
+ 000244 00000000                     209 APMULT   DC    A(ILBOXMU0)                                              83600020
+ 000248 00000000                     210 ADIVID   DC    A(ILBOXDI0)                                              84000020
+ 00024C 0000000C                     211 ZEROS    DC    F'12'                                                    84400020
+ 000250 0000001E                     212 CON30    DC    F'30'                                                    84800020
+ 000254 00000001                     213 ONE      DC    F'1'                                                     85200020
+ 000000                              214 WC       DSECT                                                          85600020
+ 000000                              215          DS    0D                                                       86000020
+ 000000                              216          DS    96C                                                      86400020
+ 000060                              217          DS    100C                                                     86800020
+ 0000C4                              218 SAVE     DS    20C                                                      87200020
+ 0000D8                              219          DS    0CL96                                                    87600020
+ 0000D8                              220 DEC      DS    H                                                        88000020
+ 0000DA                              221 TEMP     DS    C                                                        88400020
+ 0000DB                              222 DIGIT    DS    C                                                        88800020
+ 0000DC                              223 RS14     DS    F                                                        89200020
+1XPR0     ILBOXPR0                                                                                              PAGE    7
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00000E0                              224 RS15     DS    F                                                        89600020
+ 0000E4                              225 RSAVE    DS    7F                                                       90000020
+                                     226          END                                                            90400020
+1XPR0                                              RELOCATION DICTIONARY                                        PAGE    8
+-POS.ID   REL.ID   FLAGS   ADDRESS                                                                ASM 0201 11.03 02/14/15
+0 0001     0002      0C     000244
+  0001     0003      0C     000248
+
+1XPR0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    9
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        227
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                        14
+ TOTAL RECORDS PRINTED                       260

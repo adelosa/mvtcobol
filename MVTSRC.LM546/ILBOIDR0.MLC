@@ -1,0 +1,990 @@
+*//    ILBOIDR0                                                         00100018
+IDR0     TITLE     'ILBOIDR0'                                           00200018
+*        ILBOIDR0   CALLING SEQ... L    15,V(ILBOIDR0)                  00300018
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 00400018
+*                                                                       00500018
+*        LEVEL  180     09/14/66                                        00600018
+*                                                                       00700018
+*FUNCTION/OPERATION0  THIS ROUTINE EDITS A PACKED DECIMAL QUANTITY      00800018
+*   INTO A STERLING REPORT FIELD, AS DEFINED BY A STERLING REPORT       00900018
+*   PICTURE AND OTHER PARAMETERS IN THE CALLING SEQUENCE.               01000018
+*    THE PACKED DECIMAL QUANTITY CONTAINS 31 DIGITS,SIGNED,AND IS NOT   01100018
+*   CHANGED BY THE ROUTINE. THE REPORT FIELD MAY BE UP TO 127 BYTES     01200018
+*   LONG.                                                               01300018
+*    THE DECIMAL FIELD,PENCE,IS CONVERTED TO POUNDS,SHILLING,PENCE AND  01400018
+*   PENCE DECIMAL FIELDS ACCORDING TO THE SPECIFICATIONS IN THE CALLING 01500018
+*   SEQUENCE. THE POUND INTEGER FIELD IS EDITED USING THE EDIT-AND-MARK 01600018
+*   INSTUCTION. ALL OTHER FIELDS ARE EDITED DIRECTLY BY THE SUBROUTINE. 01700018
+*ENTRY   ILBOIDSR ONLY.                                                 01800018
+*                                                                       01900018
+*   THE CALLING SEQUENCE IS                                             02000018
+*                                                                       02100018
+*        LA   REGISTER2 (PICTURE ADDRESS)                               02200018
+*        L    REGISTER1=GN FOR ON-SIZE-ERROR ROUTINE                    02300018
+*          OR                                                           02400018
+*        SR   REG1,REG1      IF NO SIZE ERROR ROUTINE                   02500018
+*   (    LA   REGISTER0(ADDRESS OF REPORT FIELD)                        02600018
+*        LA   REGISTER13(ADDRESS OF WORKSPACE)    )                     02700018
+*                                                                       02800018
+*        LA   REGISTER15(ILBOIDSR)   ROUTINE ADDRESS                    02900018
+*        BALR REGISTER14,REGISTER15  BRANCH TO ROUTINE,WITH REGISTER14  03000018
+*                                   SET TO NEXT INSTRUCTION             03100018
+*        DC   AL4(SOURCE FIELD ADDRESS)                                 03200018
+*        DC   AL1(PICTURE LENGTH)                                       03300018
+*        DC   AL3(0)                                                    03400018
+*        DC   AL1(LENGTH OF REPORT FIELD)                               03500018
+*        DC   AL1(NO.OF DECIMAL DIGITS)                                 03600018
+*        DC   AL1(NO.OF POUND INTEGERS)                                 03700018
+*        DC   X'INFOA' (1BYTE)                                          03800018
+*   NORMAL RETURN POINT.                                                03900018
+*                                                                       04000018
+*   NOTES ON CALLING SEQUENCE0                                          04100018
+*   'REPORT FIELD' IS THE STERLING REPORT FIELD REQUIRED.               04200018
+*   'SOURCE FIELD' CONTAINS THE SIGNED,PACKED DECIMAL,QUANTITY.         04300018
+*   'PICTURE' IS THE DEFINITION OF THE OUTPUT FORMAT REQUIRED.          04400018
+*   REGISTER 13 CONTAINS THE ADDRESS OF A WORK AREA FIELD,STARTING ON A 04500018
+*   DOUBLE WORD BOUNDARY.(THE ROUTINE REQUIRES ONLY A FULL WORD         04600018
+*    BOUNDARY).THE FIRST 96 BYTES ARE PRE-EMPTED BY COBOL.              04700018
+*   REGISTER 14 IS POINTING TO THE PARAMETER LIST.                      04800018
+*   REGISTER 15 CONTAINS THE ADDRESS OF THE SUBROUTINE.                 04900018
+*   'ON-SIZE-ERROR ROUTINE' IS THE POINTER TO THE P.G.T. WHICH CONTAINS 05000018
+*    THE ADDRESS OF THE ROUTINE TO BE USED IN                           05100018
+*   THE CASE OF AN ON-SIZE-ERROR OCCURRING.                             05200018
+*   THE 1 BYTE FIELD 'INFOA' CONTAINS THE FOLLOWING INFORMATION         05300018
+*   BIT 0 X'80'   BLANK WHEN ZERO           0 = NO, 1 = YES             05400018
+*       1 X'40'   SHILLING DELIMITER = C    0 = NO, 1 = YES             05500018
+*       2 X'20'   POUND DELIMITER = C       0 = NO, 1 = YES             05600018
+*       3 X'10'   NO POUNDS PRESENT         0 = NO  1 = YES             05700018
+*   NOTE THAT 'NO POUNDS PRESENT' MEANS THAT IF THERE ARE ANY           05800018
+*   CHARACTERS PRESENT BEFORE THE POUND DELIMITER,THEY ARE ALL ONLY     05900018
+*   SEPARATOR CHARACTERS.                                               06000018
+         EJECT                                                          06100018
+*INPUT0  ALL INPUT PARAMETERS ARE DEFINED EXPLICITLY BY THE CALLING     06200018
+*   SEQUENCE                                                            06300018
+*    THE INPUT DATA CONSISTS OF A 16 BYTE FIELD, CONTAINING 31 PACKED   06400018
+*   DECIMAL DIGITS AND A SIGN. THE DATA IS IN PENCE AND PENCE DECIMAL,  06500018
+*   THE NUMBER OF DECIMAL PLACES BEING GIVEN BY THE 'NO.OF DECIMAL      06600018
+*   DIGITS' PARAMETER.                                                  06700018
+*   THE PICTURE CONTAINS THE FORMAT REQUIRED FOR OUTPUT. IT CONSISTS    06800018
+*   OF A STRING OF BYTE PAIRS (OF TOTAL LENGTH GIVEN BY THE 'PICTURE    06900018
+*   LENGTH' PARAMETER) CONTAINING THE REQUIRED CHARACTER IN THE FIRST   07000018
+*   BYTE,AND THE COUNT OF SUCCESSIVE OCCURENCES OF THAT CHARACTER IN    07100018
+*   THE SECOND BYTE.                                                    07200018
+*                                                                       07300018
+*OUTPUT0 THE OUTPUT CONSISTS OF THE EDITED STERLING REPORT FIELD,AT THE 07400018
+*   ADDRESS DEFINED BY REGISTER 0 UPON ENTRY.                           07500018
+*    ALL INPUT FIELDS, AND PARAMETERS ARE UNCHANGED. ALL REGISTERS ARE  07600018
+*   RESTORED, WITH THE EXCEPTION OF REGISTER 15 (THE BASE REGISTER OF   07700018
+*   THE ROUTINE) AND REGISTER 14,WHICH IS CHANGED TO THE ADDRESS OF THE 07800018
+*   FIRST INSTUCTION AFTER THE PARAMETER LIST IF THE NORMAL EXIT IS     07900018
+*   TAKEN.                                                              08000018
+*                                                                       08100018
+*EXITS-NORMAL0  THE NORMAL EXIT IS TO THE FIRST INSTUCTION AFTER THE    08200018
+*   CALLING SEQUENCE PARAMETER LIST, WITH REGISTER 14 SET TO THIS       08300018
+*   ADDRESS. REGISTER 15 CONTAINS THE ADDRESS OF THE ROUTINE.           08400018
+*                                                                       08500018
+*EXITS-ERROR0   THE ONLY ERROR EXIT IS TO THE ON-SIZE-ERROR ROUTINE.    08600018
+*    THIS WILL OCCUR IF AN ON-SIZE-ERROR ROUTINE IS GIVEN (THE          08700018
+*   PARAMETER IS NOT ZERO) AND EITHER THE 'NO. OF POUND INTEGERS'       08800018
+*   PARAMETER IS NOT ZERO,BUT THE NO.OF POUND DIGITS GENERATED FROM THE 08900018
+*   SOURCE FIELD IS GREATER THAN THE NO.OF POUND INTEGERS SPECIFIED,    09000018
+*   OR,IF THE 'NO OF POUND INTEGERS' PARAMETER IS ZERO,BUT THE NUMBER   09100018
+*   OF SHILLINGS DIGITS GENERATED IS GREATER THAN TWO. NOTE THAT IF     09200018
+*   NO POUND INTEGERS ARE SPECIFIED,SHILLINGS ARE NOT CONVERTED TO      09300018
+*   POUNDS AND SHILLINGS,SO THE SIZE LIMIT IS 99 SHILLINGS,NOT 19.      09400018
+*    REGISTER 15 IS POINTING AT THE ON-SIZE-ERROR ROUTINE.              09500018
+*    NOTE THAT REGISTER 14 IS NOT CHANGED IF THE ON-SIZE-ERROR EXIT IS  09600018
+*   TAKEN,AND REMAINS POINTING AT THE PARAMETER LIST.                   09700018
+*                                                                       09800018
+*TABLES0  NONE                                                          09900018
+*                                                                       10000018
+*WORK AREAS0   THE ROUTINE USES ONE WORK AREA,246 BYTES IN LENGTH.THE   10100018
+*   ADDRESS OF THIS WORK AREA IS GIVEN TO THE ROUTINE THROUGH REGISTER  10200018
+*   13,AND STARTS ON A FULL-WORD BOUNDARY.THE STRUCTURE OF THE AREA IS  10300018
+*   12 FULL WORDS FOR REGISTER SAVE AREA,3 FULL WORDS FOR TEMPORARY     10400018
+*   ADDRESS SAVE AREAS,1 HALF-WORD AREA,AND THE REST NON-ALLIGNED AREAS 10500018
+*                                                                       10600018
+*ATTRIBUTES0  THE ROUTINE IS RE-ENTRANT.                                10700018
+*   THE ONLY CORE STORAGE CHANGED BY THE ROUTINE IS THE OUTPUT AREA AND 10800018
+*   THE WORK AREA.                                                      10900018
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 11000018
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 11100018
+*   FURTHER NOTES ON THE OPERATION OF THE ROUTINE.                      11200018
+*                            **********                                 11300018
+*    THE SOURCE FIELD,IN PENCE,PENCE DECIMAL,AND SIGN,IS CONVERTED TO   11400018
+*   POUNDS,SHILLINGS,PENCE,AND PENCE DECIMAL,WITH SIGN SAVED.           11500018
+*    THE EDITING MAY THEN COMMENCE                                      11600018
+*                                                                       11700018
+*    IF BLANK-WHEN-ZERO IS SPECIFIED,AND THE FIELD IS ZERO,THE COMPLETE 11800018
+*   OUTPUT FIELD IS SET TO BLANK                                        11900018
+*                                                                       12000018
+*    EDITING IS CARRIED OUT FROM LEFT TO RIGHT.                         12100018
+*                            **********                                 12200018
+*    THE STERLING REPORT FIELD IS DEVIDED INTO 3 FIELDS BY THE          12300018
+*   DELIMITER CHARACTERS(C OR D),THESE FIELDS BEING POUNDS,SHILLINGS    12400018
+*   AND PENCE WITH PENCE DECIMALS.                                      12500018
+*    THESE FIELDS ARE FURTHER DEVIDED AS FOLLOWS-                       12600018
+*   POUNDS - STATIC CHARACTERS,DIGIT FIELD,SEPARATORS                   12700018
+*   SHILLS - DIGIT FIELD,SEPARATORS                                     12800018
+*   PENCE  - DIGIT FIELD,SEPARATORS,DECIMALS,TERMINATORS.               12900018
+*    THESE SUB-FIELDS ARE DEFINED AS-                                   13000018
+*   POUND DIGITS-THAT PART OF THE FIELD FROM THE FIRST DIGIT POSITION   13100018
+*    TO THE LAST DIGIT POSITION.THESE MAY INCLUDE INSERTION (NON-DIGIT) 13200018
+*    CHARACTERS.                                                        13300018
+*   POUND STATIC CHARACTERS-ALL CHARACTERS PRECEDING THE DIGIT FIELD    13400018
+*   POUND SEPARATORS-ALL CHARACTERS AFTER THE DIGIT FIELD,BUT BEFORE    13500018
+*    THE DELIMITER.                                                     13600018
+*   SHILLS DIGITS-THE 2 DIGITS AT THE START OF THE FIELD.               13700018
+*    SHILLS.SEPARATORS-ALL REMAINING CHARACTERS BEFORE THE DELIMITER.   13800018
+*    PENCE DIGITS-THE 2 DIGITS AT THE START OF THE FIELD                13900018
+*    PENCE SEPARATORS-THE CHARACTERS UP TO THE NEXT DIGIT POSITION.     14000018
+*    PENCE DECIMALS-THAT PART OF THE FIELD FROM THE FIRST DIGIT         14100018
+*     POSITION (AFTER THE SEPARATORS) UP TO THE LAST DIGIT POSITION.    14200018
+*    PENCE TERMINATORS-ALL REMAINING CHARACTERS.                        14300018
+*    ANY OF THESE FIELDS MAY BE OMITTED,EXCEPT THE SHILLINGS AND PENCE  14400018
+*    DIGITS.TO RESOLVE AMBIGUITY WHEN FIELDS ARE OMITTED,THE FOLLOWING  14500018
+*     RULES APPLY-                                                      14600018
+*    IF POUND DIGIT FIELD IS OMITTED,(NO.OF POUND INTEGERS IS ZERO)     14700018
+*     THEN THE ENTIRE POUND FIELD IS CONSIDERED AS SEPARATORS,UNLESS    14800018
+*     THERE IS A SIGN (+ OR -) IN THE FIELD.IN THIS CASE,THE SIGN IS    14900018
+*     THE TERMINATOR OF THE STATIC FIELD,AND THE NO POUND BIT IN INFOA  15000018
+*     (BIT 3,X'10') WILL NOT BE SET ON.                                 15100018
+*    IF THE PENCE DECIMAL FIELD IS OMITTED,THE PENCE SEPARATORS ARE     15200018
+*    COMBINED WITH THE PENCE TERMINATORS.                               15300018
+*                            **********                                 15400018
+         EJECT                                                          15500018
+*                                                                       15600018
+*    THE RULES FOR EDITING ARE AS FOLLOWS-                              15700018
+*    POUND STATIC CHARACTERS WILL ALWAYS APPEAR                         15800018
+*    POUND DIGITS ARE EDITED IN THE NORMAL WAY. IF THE COMPLETE FIELD   15900018
+*     IS A FLOAT CHARACTER ($ OR SIGN),THE FLOAT CHARACTER WILL BE      16000018
+*    REPLACED BY A BLANK IF THE VALUE OF FIELD IS ZERO,BUT STATIC       16100018
+*    CHARACTERS WILL STILL APPEAR.                                      16200018
+*    THE POUND SEPARATOR FIELD WILL APPEAR UNLESS THE LAST CHARACTER    16300018
+*     OF THE POUND DIGIT FIELD RESULTED IN AN * OR BLANK AND THE        16400018
+*     DELIMITER IS A C,IN WHICH CASE THE LAST CHARACTER WILL BE         16500018
+*     PROPOGATED THROUGH THE FIELD.(NOTE THAT THIS CAN ONLY OCCUR IF    16600018
+*     THE POUND DIGIT FIELD IS PRESENT,CONTAINS NO NINE,AND THE VALUE   16700018
+*     OF THE FIELD IS ZERO).                                            16800018
+*    THE SHILLING DIGITS WILL ALWAYS APPEAR.THIS FIELD IS INDEPENDENT   16900018
+*     OF THE POUND FIELD,EXCEPT FOR THE X8 TYPE EDITING,WHEN THE 8 IS   17000018
+*     TREATED AS 9 UNLESS POUND FIELD VALUE WAS ZERO.                   17100018
+*    THE SHILLING SEPARATOR FIELD WILL APPEAR UNLESS THE LAST DIGIT     17200018
+*     CHARACTER OF THE DIGIT FIELD RESULTED IN AN * OR BLANK AND THE    17300018
+*     DELIMITER IS A C,IN WHICH CASE THE LAST CHARACTER WILL BE         17400018
+*     PROPOGATED THROUGH THE FIELD.(THIS CAN ONLY OCCUR IF THE SHILLS   17500018
+*     FIELD VALUE IS ZERO,AND THE 2ND DIGIT WAS NOT A 9 OR FORCED TO    17600018
+*     9 BY THE VALUE OF THE POUND FIELD).THIS FIELD IS INDEPENDENT      17700018
+*     OF THE POUND FIELD EXCEPT FOR THE EFFECT OF X8 TYPE EDIT.         17800018
+*    THE PENCE DIGIT FIELD WILL ALWAYS APPEAR.THIS FIELD IS INDEPENDENT 17900018
+*     OF PRECEDING FIELDS,EXCEPT FOR THE X8 TYPE EDITING,WHEN THE 8 IS  18000018
+*     TREATED AS 9 UNLESS BOTH POUND AND SHILLINGS VALUES ARE ZERO.     18100018
+*    THE REMAINING PENCE FIELDS WILL ALWAYS APPEAR.                     18200018
+*                                                                       18300018
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 18400018
+ILBOIDR0 START 0                                                        18500018
+*            DEFINE SYMBOLIC REGISTERS                                  18600018
+*                                                                       18700018
+R0       EQU   0                                                        18800018
+R1       EQU   1         USED FOR TRT,EDIT AND MARK INSTRUCTIONS        18900018
+WRKREG    EQU   2      WORK REGISTER                                 CS 19000018
+WORK   EQU   3      BASE REG FOR DSECT AT 96(13)                     CS 19100018
+MASKER   EQU   4         POSITION IN EDIT MASK                          19200018
+GEN      EQU   5         GENERAL USAGE REGISTER                         19300018
+WREG1    EQU   6         THESE MUST BE EVEN/ODD PAIR,USED               19400018
+WREG2    EQU   7          FOR WORKREGISTERS                             19500018
+TARGET   EQU   8         CURRENT BYTE IN TARGET (OUTPUT AREA)           19600018
+PICTURE  EQU   9         CURRENT CHARACTER IN PICTURE                   19700018
+SOURCE   EQU   10        ADDRESS OF SOURCE (INPUT) FIELD                19800018
+GLOBAL   EQU   12   X    RESERVED BY COBOL                              19900018
+WORKSP   EQU   13   X    RESERVED BY COBOL - ADDRESS OF WORK AREA       20000018
+RETURN   EQU   14   X    RESERVED BY COBOL - ADDRESS OF PARAMETER LIST  20100018
+*                        ALSO RETURN POSITION                           20200018
+CALLER   EQU   15        CALLING REGISTER,USED AS BASE REGISTER         20300018
+*                                                                       20400018
+*            OTHER DEFINITIONS                                          20500018
+XX       EQU   16        NO.OF BYTES IN SOURCE FIELD                    20600018
+WC       EQU   96   NO.OF.BYTES AT START OF WORK AREA RESERVED BY COBOL 20700018
+REGFROM  EQU   0         FIRST REGISTER TO BE SAVED                     20800018
+REGTO    EQU   11        LAST REGISTER TO BE SAVED                      20900018
+SZEERR   EQU   4         DISPL TO SIZE-ERROR ADDR IN REGSAVE            21000018
+PICTADD  EQU   9         DISPL TO FIRST BYTE OF 3 BYTE PICTURE          21100018
+*                        ADDR FIELD IN REGSAVE                          21200018
+*                                                                       21300018
+PARAM  DSECT                                                            21400018
+*              DEFINE CALLING SEQUENCE PARAMETERS                       21500018
+PAR1     DS    0C                                                       21600018
+SRCADD DS    CL4    SOURCE ADDR                                         21700018
+PCTLNG DS    CL1    PICTURE LENGTH                                      21800018
+FILLER DS    CL3      ZERO                                              21900018
+TRGLNG DS    CL1    TARGET LENGTH                                       22000018
+DECDGT DS    CL1    NO. DECIMAL DIGITS                                  22100018
+PNDDGT DS    CL1    NO. POUND DIGITS                                    22200018
+*                                                                       22300018
+INFOA    DS    C    SOURCE INFO FLAGS                                   22400018
+*  BIT MEANINGS FOR INFOA                                               22500018
+BLANKWZ  EQU   X'80'     BLANK WHEN ZERO CLAUSE                         22600018
+SDILIMC  EQU   X'40'     SHILL DELIM IS C                               22700018
+PDILIMC  EQU   X'20'     POUND DELIM IS C                               22800018
+PSEPONLY EQU   X'10'      POUND FIELD SEPARATORS ONLY                   22900018
+*                                                                       23000018
+PAR2     DS    0C                                                       23100018
+DISPLACE EQU   PAR2-PAR1                                                23200018
+         EJECT                                                          23300018
+STORAGE DSECT                                                           23400018
+*            DEFINE STRUCTURE OF WORKING STORAGE                        23500018
+*            SPACE TO SAVE REGISTERS                                    23600018
+REGSAVE DS   (REGTO-REGFROM+1)F                                         23700018
+*            TEMPORARY STORES                                           23800018
+TEMP1  DS    FL1                                                        23900018
+SAVEMASK DS    F                                                        24000018
+FIRST9   DS    F                                                        24100018
+FIRST91  EQU   FIRST9+1                                                 24200018
+SAVEOFF  DS    H                                                        24300018
+SIGNCHAR DS    C                                                        24400018
+*                                                                       24500018
+FLAGA  DS    CL1    STATUS FLAGS                                        24600018
+*              BIT MEANINGS FOR FLAG A                                  24700018
+NOPOUND  EQU   X'01'     POUND VALUE IS ZERO                            24800018
+NOSHILL  EQU   X'02'     SHILL VALUE IS ZERO (ALSO POUND)               24900018
+DROPPSEP EQU   X'04'     DROP POUND SEPARATORS                          25000018
+DROPSSEP EQU   X'08'     DROP SHILL SEPARATORS                          25100018
+*                                                                       25200018
+FLAGB    DS    CL1                                                      25300018
+*              BIT MEANINGS FOR FLAG B                                  25400018
+TRANMASK EQU   X'10'     TRANSFER TO POUND DIGIT MASK HAS STARTED       25500018
+DUMMYPOS EQU   X'20'     DUMMY DIGIT POSITION IN MASK                   25600018
+HIDIGSIG EQU   X'40'     HIGH ORDER DIGIT POSIT IS SIGNIF SHILL OR PEN  25700018
+IHDIGSIG EQU   X'BF'    X'-40' INVERT OF HISIGDIG                       25800018
+PENPROC  EQU   X'80'     PENCE PROCESSING IN SHILLS LOOP                25900018
+INSERTCR EQU   X'01'     INSERT CREDIT SYMBOL                           26000018
+*                                                                       26100018
+FLOAT  DS    CL1    FLOATING CHAR                                       26200018
+SSIGN  DS    CL1         SIGN OF SOURCE                                 26300018
+MASKXX DS      CL1         DUMMY DIGIT                                  26400018
+MASKX  DS    CL1    FOR EXTRA DIGIT                                     26500018
+MASK   DS    CL127  127BYTE EDIT MASK                                   26600018
+WORKSH   DS    CL2                                                      26700018
+INTEGER DS   CL(XX)      XX BYTES FOR SOURCE INTEGER DIGITS   PACKED    26800018
+DECIMAL DS   CL(2*XX)  2*XX BYTES FOR SOURCE DECIMAL DIGITS  UNPACKED   26900018
+ENDSTOR DS   0F                                                         27000018
+STORESIZ EQU   ENDSTOR-REGSAVE        AMOUNT OF WORKSPACE NEEDED        27100018
+       EJECT                                                            27200018
+ILBOIDR0 CSECT                                                          27300018
+*            ESTABLISH BASE REGISTER USAGES                             27400018
+       USING *,CALLER                                                   27500018
+       USING STORAGE,WORK                                               27600018
+       USING PARAM,RETURN                                               27700018
+*            SAVE REGISTERS                                             27800018
+       STM   REGFROM,REGTO,WC(WORKSP)                                   27900018
+* SET UP POINTERS TO INPUT,OUTPUT,PICTURE AND WORK AREA.CLEAR WORKAREA  28000018
+       LA    WORK,WC(WORKSP)  LOAD REG2 WITH ADDR OF DSECT AT 96(13) CS 28100018
+       MVC   TEMP1(1),SRCADD  MOVE REG CODE TO WORK                  CS 28200018
+       OI    TEMP1,X'A0'      SET UP TO PUT TGT POINTER IN R10       CS 28300018
+       IC    WRKREG,TEMP1     REG CODE TO WORK REG                   CS 28400018
+       EX    WRKREG,LDREG     LOAD BASE TO R10                       CS 28500018
+       AH    SOURCE,SRCADD+2  ADD DISP                               CS 28600018
+*            PICK UP TARGET ADDR                                        28700018
+         LR    TARGET,R0         (ALSO IN REGSAVE 0 TO 3)               28800018
+       MVC   TEMP1+1(3),REGSAVE+PICTADD                                 28900018
+         NI    TEMP1,X'00'                                              29000018
+       L     PICTURE,TEMP1                                              29100018
+       LA    WORK,WC(WORKSP)                                            29200018
+*            ZERO WORK AREA BEYOND REGISTER SAVE AREA                   29300018
+       XC    TEMP1(ENDSTOR-TEMP1),TEMP1      EXC.OR WITH SELF =0        29400018
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 29500018
+*   THE SOURCE FIELD CONSISTS OF PENCE INTEGERS,PENCE DECIMALS AND SIGN 29600018
+*   THE SIGN IS MOVED TO FIELD 'SSIGN'                                  29700018
+*   THE INTEGER PENCE ARE MOVED TO A 16 BYTE FIELD 'INTEGER'            29800018
+*   WITH A PLUS SIGN                                                    29900018
+*   THE INTEGER PENCE ARE CONVERTED TO SHILLINGS AND PENCE,WITH         30000018
+*   14 BYTES SHILLINGS (27 DIGITS,WITH PLUS SIGN)                       30100018
+*    2 BYTES PENCE     (03 DIGITS,WITH PLUS SIGN)                       30200018
+*   IF POUNDS ARE SPECIFIED (NO.POUND INTEGERS NOT ZERO)                30300018
+*   THE INTEGER SHILLINGS ARE CONVERTED TO POUNDS AND SHILLINGS,WITH    30400018
+*   12 BYTES POUNDS    (23 DIGITS,WITH PLUS SIGN)                       30500018
+*    2 BYTES SHILLINGS (03 DIGITS,WITH PLUS SIGN)                       30600018
+*   THE FIELD INTEGER THEREFORE CONTAINS (16 BYTES)                     30700018
+*                    P O U N D S              SHILL  PENCE              30800018
+*        00 00 00 00 DD DD DD DD DD DD DD D+  0D D+  0D D+              30900018
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 31000018
+*                                                                       31100018
+*            SAVE SIGN                                                  31200018
+         MVC   SSIGN(1),XX-1(SOURCE)                                    31300018
+       OI    SSIGN,X'10' ENSURE NON ZERO                                31400018
+*            IS SOURCE ZERO                                             31500018
+       CP    0(XX,SOURCE),ZERO(1)                                       31600018
+       BE    ZEROSRC          SOURCE IS ZERO                            31700018
+* TRANSFER VALUE TO WORK AREA,AND CONVERT TO LSD.                       31800018
+*            POSITION DECIMAL POINT                                     31900018
+       SR    WREG1,WREG1                                                32000018
+       IC    WREG1,DECDGT     PICK UP NO. DECIMAL DIGITS                32100018
+*            SHIFT RIGHT ONE BIT,CONVERTING DIGITS TO CHARS - FOR MVC   32200018
+         SRL   WREG1,1                                                  32300018
+*                                                                       32400018
+*            INITIALLY JUST MOVE TO GET INTEGER R.J AT INTEGER+15       32500018
+*            COMPUTE STARTING POINT FOR MOVE                            32600018
+       LA    WREG2,INTEGER(WREG1)                                       32700018
+         TM    DECDGT,X'01'        COUNT ODD                            32800018
+       BO    OFFSET           LOW BIT TEST                              32900018
+*            BIT=ZERO, STRAIGHT MOVE                                    33000018
+       MVC   0(XX,WREG2),0(SOURCE)                                      33100018
+       B     MOVDGT                                                     33200018
+*            ODD NO. DEC DIGITS,MOVE WITH OFFSET, DROPPING LOW ORDER    33300018
+*            BYTE, BECAUSE MOVE IS ONLY 16 BYTES.                       33400018
+OFFSET MVO   0(XX,WREG2),0(XX-1,SOURCE)                                 33500018
+GETLSD   EQU   *                                                        33600018
+*            NOW INSERT PLUS SIGN IN LOW ORDER INTEGER                  33700018
+MOVDGT MVN   INTEGER+XX-1(1),ZERO                                       33800018
+* INTEGER NOW CONTAINS PENCE ONLY,WITH A PLUS SIGN                      33900018
+* CONVERT PENCE TO SHILLINGS AND PENCE                                  34000018
+*            PROCESS DECIMAL DIGITS LATER ON                            34100018
+COMPS  DP    INTEGER(XX),TWLV(2)                                        34200018
+*            SHILLINGS ARE IN INTEGER(0 TO XX-1-2)                      34300018
+*            TEST FOR ZERO SHILLINGS                                    34400018
+       CP    INTEGER(XX-2),ZERO(1)                                      34500018
+       BE    ZEROSH                                                     34600018
+* CONVERT SHILLINGS TO POUNDS AND SHILLINGS.                            34700018
+         TM    PNDDGT,X'FF'   ANY POUND DIGITS SPECIFIED                34800018
+         BM    COMPP          YES CONVERT SHILLS TO POUNDS              34900018
+*   IF NO POUND DIGITS,CHECK FOR SHILLS OVERFLOW                        35000018
+         CP    INTEGER(XX-2),MAXSHILS(2) SHILLS GREATER THAN MAXIMUM    35100018
+         BH    SIZERR          YES THEN SIZE ERROR                      35200018
+         B     POUND                                                    35300018
+COMPP  DP    INTEGER(XX-2),TWNTY(2)                                     35400018
+*            POUNDS ARE NOW IN INTEGER(0 TO XX-1-2-2)                   35500018
+*            TEST FOR ZERO POUNDS                                       35600018
+       CP    INTEGER(XX-2-2),ZERO(1)                                    35700018
+       BE    ZEROPD                                                     35800018
+*            FIND OUT HOW MANY POUND DIGITS THERE ARE                   35900018
+*            USE TRT  AND STOP ON NON ZERO                              36000018
+COMPX  SR      R1,R1                                                    36100018
+         TRT   SCAN(XX-4),INTEGER                                       36200018
+*            ARGUMENT ADDR (BYTE NO.) IS IN REG 1                       36300018
+*            GET BYTE AT WHICH WE STOPPED    N BYTES FROM INTEGER       36400018
+       LA      WREG1,INTEGER                                            36500018
+       SR    WREG2,WREG2                                                36600018
+       IC    WREG2,0(R1)                                                36700018
+       AR    WREG1,WREG2                                                36800018
+*              CONVERT BYTE COUNT TO DIGITS                             36900018
+       AR      WREG2,WREG2                                              37000018
+*              IF HIGH DIGIT ZERO R1 OFF BY 1                           37100018
+       TM      0(WREG1),X'F0'                                           37200018
+       BM    TEST1  NOT ZERO                                            37300018
+         LA    WREG2,1(WREG2)                                           37400018
+TEST1  LH      WREG1,PDIGITS                                            37500018
+       SR    WREG1,WREG2                                                37600018
+*            COMPARE AGAINST NO. POUND DIGITS                           37700018
+       IC    WREG2,PNDDGT                                               37800018
+       CR    WREG1,WREG2                                                37900018
+         BNH   POUND                                                    38000018
+       EJECT                                                            38100018
+*            TOO MANY POUND DIGITS, IS THERE A SIZE ERROR EXIT          38200018
+*              OR TOO MANY SHILLINGS                                    38300018
+SIZERR   L     WREG1,REGSAVE+SZEERR                                     38400018
+         LTR   WREG1,WREG1        IS THERE AN ADDRESS...                38500018
+       BZ    POUND         NO                                           38600018
+*              RESTORE STATUS BEFORE EXITING                            38700018
+         LM    REGFROM,REGTO,WC(WORKSP)                                 38800018
+       LR    CALLER,R1                                                  38900018
+         BR    CALLER                                                   39000018
+         SPACE 1                                                        39100018
+ZEROSRC  TM    INFOA,BLANKWZ   IS BLANK WHEN ZERO SPECIFIED             39200018
+         BZ    GETLSD    NO, NORMAL TREATMENT,INTEGER IS ALREADY ZERO   39300018
+*              BLANK OUT THE TARGET                                     39400018
+         MVI   0(TARGET),C' '                                           39500018
+*              PICK UP TARGET LENGTH                                    39600018
+         SR    WREG2,WREG2                                              39700018
+         IC    WREG2,TRGLNG                                             39800018
+         BCT   WREG2,ZAA                                                39900018
+         B     FINISH                                                   40000018
+ZAA      EQU   *                                                        40100018
+         BCTR  WREG2,0             REDUCE FOR THE MVC                   40200018
+         EX    WREG2,PROPTRGT      PROPAGATE BLANK                      40300018
+         B     FINISH              ALL DONE                             40400018
+*                                                                       40500018
+ZEROSH   OI    FLAGA,NOSHILL       NO POUNDS OR SHILLS                  40600018
+ZEROPD   OI    FLAGA,NOPOUND       NO POUNDS                            40700018
+         EJECT                                                          40800018
+* THE CONVERSION TO LSD IS COMPLETE,AND THE EDIT MAY BE STARTED.        40900018
+*     THE STATIC CHARACTERS ARE MOVED DIRECTLY TO THE OUTPUT AREA.      41000018
+*     THE DIGIT FIELD IS PROCESSED USING THE EDIT-AND-MARK INSTRUCTION. 41100018
+*    AN EDIT MASK IS BUILT UP FROM THE PICTURE STRING,IN THE WORKAREA.  41200018
+*    THE EDIT MASK IS INITIALISED BEFORE PROCESSING THE STATIC CHARS.   41300018
+*                                                                       41400018
+*    FIRST DETERMINE IF EDIT MASK IS REQUIRED                           41500018
+*            PICK UP PICTURE LENGTH AND ADDRESS                         41600018
+POUND    EQU   *                                                        41700018
+*            SET NO. OF DIGITS TO THAT GIVEN BY PICTURE                 41800018
+         SR    WREG1,WREG1                                              41900018
+         IC    WREG1,PNDDGT                                             42000018
+         TM    INFOA,PSEPONLY  ANY STATIC OR DIGIT FIELDS               42100018
+         BO    LOOPS1         NO PROCESS POUND SEPARATORS,IF ANY        42200018
+         LTR   WREG1,WREG1    IS POUND COUNT ZERO                       42300018
+         BZ    POUNDA         YES PROCESS LEADING STATIC CHARACTERS     42400018
+*                                                                       42500018
+*    AN EDIT MASK IS REQUIRED,SO INITIALISE IT.                         42600018
+*              IF NO. OF DIGITS TO EDIT IS EVEN THERE WILL BE           42700018
+*              AN EXTRA HIGH ORDER DIGIT PROCESSED, TO HANDLE           42800018
+*              LEAVE A DUMMY POSITION IN MASK                           42900018
+*                                                                       43000018
+         SR    WREG2,WREG2                                              43100018
+         SRL   WREG1,1                                                  43200018
+         TM    PNDDGT,X'01'        COUNT ODD                            43300018
+         BO    POUND1         LOW BIT WAS 1                             43400018
+       LA      MASKER,MASKXX TWO SPACES                                 43500018
+*              STORE BLANK AS FILL CHAR, AND DIGIT SEL                  43600018
+       MVC   0(2,MASKER),BLDS                                           43700018
+         OI    FLAGB,DUMMYPOS      NOTE THE DUMMY POSITION              43800018
+         B     POUND2                                                   43900018
+POUND1 EQU     *                                                        44000018
+       LA      MASKER,MASKX  ONE SPACE                                  44100018
+*              START WITH BLANK AS FILL CHAR                            44200018
+         MVI   0(MASKER),C' '                                           44300018
+POUND2 EQU     *                                                        44400018
+*              STORE OFFSET FROM INTEGER FOR EDMK                       44500018
+       LH      WREG2,PBYTESZ                                            44600018
+         SR    WREG2,WREG1                                              44700018
+         STH   WREG2,SAVEOFF                                            44800018
+*              IF EXTRA DIGIT IS PRESENT ZERO IT OUT                    44900018
+*              THIS ENSURES NO TROUBLE WITH 0 NOT BEING BLANKED OUT     45000018
+         TM    FLAGB,DUMMYPOS                                           45100018
+         BZ    POUNDA                                                   45200018
+         LA    R1,INTEGER(WREG2)                                        45300018
+         NI    0(R1),X'0F'                                              45400018
+         EJECT                                                          45500018
+*     NOW PROCESS THE PICTURE STRING.                                   45600018
+*     EACH CHARACTER IS EXAMINED TO SEE IF IT IS A DIGIT CHARACTER.     45700018
+*     INITIALLY,ALL CHARACTERS ARE TREATED AS STATIC CHARACTERS,AND ARE 45800018
+*    MOVED TO THE OUTPUT AREA.AS SOON AS A DIGIT CHARACTER IS FOUND,    45900018
+*    THIS DEFINES THE START OF THE DIGIT FIELD.FROM THEN ON,THE         46000018
+*    CHARACTERS ARE MOVED TO THE EDIT MASK.THIS CONTINUES UNTIL THE     46100018
+*    NO.OF DIGITS PROCESSED IS EQUAL TO THE NUMBER SPECIFIED.           46200018
+POUNDA   EQU   *                                                        46300018
+*              PUT DIGIT COUNT BACK INTO WREG1                          46400018
+       IC      WREG1,PNDDGT                                             46500018
+*              SAVE START                                               46600018
+       ST      MASKER,SAVEMASK                                          46700018
+*      START AT MASK                                                    46800018
+       LA      MASKER,MASK                                              46900018
+PICKUP   EQU   *                                                        47000018
+*            SCAN PICTURE                                               47100018
+*            CHAR FOUND, BRANCH TO ROUTINE                              47200018
+         CLI   0(PICTURE),C'9'                                          47300018
+         BE    NINE                                                     47400018
+         CLI   0(PICTURE),C'Z'                                          47500018
+         BE    ZZED                                                     47600018
+         CLI   0(PICTURE),C'*'                                          47700018
+         BE    STAR                                                     47800018
+         CLI   0(PICTURE),C'$'                                          47900018
+         BE    POND                                                     48000018
+         CLI   0(PICTURE),C'+'                                          48100018
+         BE    SIGN                                                     48200018
+         CLI   0(PICTURE),C'-'                                          48300018
+         BE    SIGN                                                     48400018
+*    THEN MUST BE SEPARATOR                                             48500018
+         B     SEPT                                                     48600018
+         EJECT                                                          48700018
+*              ROUTINES TO HANDLE POUND CHARACTERS                      48800018
+*                                                                       48900018
+POND     EQU   *                                                        49000018
+* POUND MAY BE STATIC OR A FLOAT STRING                                 49100018
+         TM    FLAGB,TRANMASK      TRANSFER TO DIGIT MASK YET           49200018
+         BO    STARDGT       YES, STORE DIGIT SELECT                    49300018
+*              NO, MAY BE FLOAT STRING                                  49400018
+         SR    WREG2,WREG2                                              49500018
+         IC    WREG2,1(PICTURE)    TEST COUNT = 1                       49600018
+         BCT   WREG2,FLTCHAR                                            49700018
+NOFLT    EQU   *    COUNT IS 1,SO STATIC - MOVE TO OUTPUT AREA          49800018
+         MVC   0(1,TARGET),0(PICTURE)                                   49900018
+         LA    TARGET,1(TARGET)                                         50000018
+         LA    PICTURE,2(PICTURE)                                       50100018
+         B     PICKUP         GET NEXT CHARACTER                        50200018
+*              COUNT EXCEEDS 1, FLOATING STRING                         50300018
+FLTCHAR  EQU   *                                                        50400018
+         MVC   FLOAT(1),0(PICTURE)     SAVE FLOAT CHAR                  50500018
+         B     STARDGTA                                                 50600018
+         SPACE 1                                                        50700018
+SIGN     EQU   *                                                        50800018
+* SIGN MAY BE STATIC OR A FLOAT STRING                                  50900018
+         TM    FLAGB,TRANMASK      TRANSFER TO DIGIT MASK YET           51000018
+         BO    STARDGT       YES STORE DIGIT SELECT                     51100018
+*     HOW IS SIGN TO PRINT                                              51200018
+*              IS CHAR +                                                51300018
+         CLI   0(PICTURE),C'+'                                          51400018
+         BNE   SIGNA          NO                                        51500018
+*              CHAR IS + IS SIGN +                                      51600018
+         MVI   SIGNCHAR,C'+'                                            51700018
+         CP    SSIGN(1),ZERO(1)                                         51800018
+         BH    SIGNB          YES                                       51900018
+         MVI   SIGNCHAR,C'-'  NO                                        52000018
+         B     SIGNB                                                    52100018
+*              CHAR IS -, IS SIGN - TOO                                 52200018
+SIGNA    MVI   SIGNCHAR,C' '                                            52300018
+         CP    SSIGN(1),ZERO(1)                                         52400018
+         BH    SIGNB          NO                                        52500018
+         MVI   SIGNCHAR,C'-'  NO                                        52600018
+*              IS CHAR FLOATING                                         52700018
+SIGNB    EQU   *                                                        52800018
+         SR    WREG2,WREG2                                              52900018
+         IC    WREG2,1(PICTURE)                                         53000018
+         BCT   WREG2,SIGNC    YES                                       53100018
+*                   COUNT IS 1,SO STATIC - MOVE TO OUTPUT AREA          53200018
+         MVC   0(1,TARGET),SIGNCHAR                                     53300018
+         LA    TARGET,1(TARGET)                                         53400018
+         LA    PICTURE,2(PICTURE)                                       53500018
+         LTR   WREG1,WREG1    IS IT STATIC SIGN,NO POUND DIGITS         53600018
+         BP    PICKUP         NO.SINCE POUND COUNT PLUS                 53700018
+         B     LOOPS1         YES.THEN PROCESS POUND SEPARATORS         53800018
+*              FLOAT CHAR, SAVE IN FLOAT                                53900018
+SIGNC    EQU   *                                                        54000018
+         MVC   FLOAT(1),SIGNCHAR                                        54100018
+         B     STARDGTA                                                 54200018
+         EJECT                                                          54300018
+*              CHAR IS 9                                                54400018
+NINE     EQU   *                                                        54500018
+*              IF FIRST 9 ENCOUNTERED SAVE POSITION                     54600018
+*              SO THAT 0 CAN BE INSERTED IF FIRST DIGIT IS ZERO         54700018
+         TM    FIRST9,X'01'                                             54800018
+         BO    STARDGT                                                  54900018
+         ST    MASKER,FIRST9                                            55000018
+         OI    FIRST9,X'01'                                             55100018
+*              STORE SIGNIFICANT START IN MASK                          55200018
+NINE1    MVI   0(MASKER),X'21'                                          55300018
+         LA    MASKER,1(MASKER)                                         55400018
+         BCTR  WREG1,0        ONE FROM DIGIT COUNT                      55500018
+         SR    WREG2,WREG2                                              55600018
+         IC    WREG2,1(PICTURE)                                         55700018
+*              IF ONLY ONE CHAR UPDATE COUNTERS,                        55800018
+*              OTHERWISE PROPAGATE DIGIT SELECTS.                       55900018
+         BCT   WREG2,STARDGTA                                           56000018
+         B     STARA                                                    56100018
+*                                                                       56200018
+SEPT     EQU   *                                                        56300018
+*              0 , AND B                                                56400018
+* SEPARATOR MAY BE STATIC OR AN INSERTION CHARACTER                     56500018
+         LR    R1,MASKER                                                56600018
+         TM    FLAGB,TRANMASK      TRANSFER TO DIGIT MASK YET           56700018
+         BO    SEPTM               YES,STORE IN MASK                    56800018
+         LR    R1,TARGET           ELSE STORE IN OUTPUT AREA            56900018
+SEPTM  MVC     0(1,R1),0(PICTURE)                                       57000018
+       SR      WREG2,WREG2                                              57100018
+       IC      WREG2,1(PICTURE)                                         57200018
+*              PROPAGATE IF COUNT NOT 1                                 57300018
+         BCT   WREG2,SEPTMC                                             57400018
+         B     SEPTMA                                                   57500018
+SEPTMC   EQU   *                                                        57600018
+       BCTR    WREG2,0                                                  57700018
+       EX      WREG2,SEPTMV                                             57800018
+SEPTMA   IC    WREG2,1(PICTURE)                                         57900018
+         LA    PICTURE,2(PICTURE)                                       58000018
+         TM    FLAGB,TRANMASK      TRANSFER TO DIGIT MASK YET           58100018
+         BO    SEPTMB         YES UPDATE MASK POSITION                  58200018
+       AR      TARGET,WREG2                                             58300018
+         B     PICKUP         GET NEXT CHARACTER                        58400018
+SEPTMB AR      MASKER,WREG2                                             58500018
+         B     PICKUP         GET NEXT CHARACTER                        58600018
+SEPTMV MVC     1(0,R1),0(R1)                                            58700018
+         EJECT                                                          58800018
+STARDGT  EQU   *                                                        58900018
+*     STORE DIGIT SELECT CHARACTERS IN THE EDIT MASK                    59000018
+*  PICK UP COUNT FROM PICTURE                                           59100018
+         SR    WREG2,WREG2                                              59200018
+         IC    WREG2,1(PICTURE)                                         59300018
+STARDGTA EQU   *    ENTRY WHEN WREG2 ALREADY SET TO TRUE COUNT          59400018
+*              STORE DIGIT SELECTS IN MASK                              59500018
+         MVI   0(MASKER),X'20'     DIGIT SELECT                         59600018
+         BCT   WREG2,PONDA                                              59700018
+         LA    WREG2,1(WREG2)                                           59800018
+         B     STARA                                                    59900018
+PONDA    EQU   *                                                        60000018
+*              DECREMENT COUNT BY 1 FOR EX OF MVC                       60100018
+         BCTR  WREG2,0                                                  60200018
+PONDSET  EX    WREG2,PONDMV                                             60300018
+*              RESET COUNT                                              60400018
+         LA    WREG2,2(WREG2)                                           60500018
+STARA    EQU   *                                                        60600018
+         OI    FLAGB,TRANMASK      TRANSFER TO DIGIT MASK HAS STARTED   60700018
+*              UPDATE MASK AND PICTURE                                  60800018
+         AR    MASKER,WREG2                                             60900018
+         LA    PICTURE,2(PICTURE)                                       61000018
+*              DECREMENT DIGIT COUNTER (WREG1)                          61100018
+         SR    WREG1,WREG2                                              61200018
+         BP    PICKUP         GET NEXT CHARACTER IF ANY LEFT            61300018
+         B     EDIT        ELSE START EDIT                              61400018
+PONDMV   MVC   1(0,MASKER),0(MASKER)    LENGTH SET BY PONDSET           61500018
+         SPACE 1                                                        61600018
+*              CHAR IS *                                                61700018
+*                                                                       61800018
+STAR     EQU   *                                                        61900018
+*              STORE * AS FILL CHAR                                     62000018
+         L     WREG2,SAVEMASK      START OF MASK                        62100018
+         MVI   0(WREG2),C'*'                                            62200018
+         B     STARDGT                                                  62300018
+         SPACE 1                                                        62400018
+*              CHAR IS Z USE STARDGT                                    62500018
+ZZED     EQU   STARDGT                                                  62600018
+         EJECT                                                          62700018
+*              NO MORE, NOW EDIT AND MARK (MAY BE FLOATING CHAR)        62800018
+EDIT     EQU   *                                                        62900018
+*              COMPUTE STARTING POINT                                   63000018
+         L     R1,SAVEMASK                                              63100018
+         LR    WREG2,R1       FOR EDMK                                  63200018
+         LA    R1,1(R1)      FIRST CHAR + 1                             63300018
+*              COMPUTE LENGTH OF EDIT                                   63400018
+       LR      GEN,MASKER     SAVE POSITION                             63500018
+         SR    MASKER,R1      (END+1)-(START+1) = LENGTH-1              63600018
+*              ESTABLISH R1                                             63700018
+         L     R1,FIRST9      SET REG 1 TO FLOAT POSITION               63800018
+       LA      WREG1,INTEGER                                            63900018
+       AH      WREG1,SAVEOFF                                            64000018
+EDITEX   EX    MASKER,EDITPND                                           64100018
+*              OVERLAY SIG. START DIGIT IF FILL CHAR                    64200018
+         L     WREG2,FIRST9                                             64300018
+       LTR     WREG2,WREG2                                              64400018
+       BZ      EDITCA                                                   64500018
+         CLI   0(WREG2),C' '                                            64600018
+         BE    EDITC                                                    64700018
+         CLI   0(WREG2),C'*'                                            64800018
+         BNE   EDITCA                                                   64900018
+EDITC    MVI   0(WREG2),C'0'                                            65000018
+*              DIGIT WASN'T ZERO                                        65100018
+EDITCA   EQU   *                                                        65200018
+         TM    FLAGA,NOPOUND    IS POUND FIELD ZERO                     65300018
+         BO    PSEPA          YES                                       65400018
+*              IS THERE A FLOAT CHAR                                    65500018
+EDITA1   TM    FLOAT,X'FF'                                              65600018
+         BZ    EDITB          NO                                        65700018
+         MVI   MASKX,C' '                                               65800018
+*              STORE FLOAT AT R1-1                                      65900018
+EDITB1   BCTR  R1,0                                                     66000018
+         MVC   0(1,R1),FLOAT                                            66100018
+*              MOVE EDITED RESULT TO TARGET                             66200018
+EDITE    LA    R1,MASKX                                                 66300018
+         B     EDITD                                                    66400018
+EDITB  LA      R1,MASK                                                  66500018
+EDITD    EQU   *                                                        66600018
+*              COMPUTE LENGTH OF MOVE                                   66700018
+         SR    GEN,R1              END+1-START=LENGTH                   66800018
+       BCTR    GEN,0                                                    66900018
+       EX      GEN,EDITX                                                67000018
+*              UPDATE TARGET                                            67100018
+       AR      TARGET,GEN                                               67200018
+         LA    TARGET,1(TARGET)      OFF BY 1                           67300018
+*              NOW PROCESS L SEPARATOR TILL C OR D                      67400018
+         B     LOOPS1                                                   67500018
+EDITPND EDMK   0(0,WREG2),0(WREG1)                                      67600018
+EDITX    MVC   0(0,TARGET),0(R1)                                        67700018
+*                                                                       67800018
+*              POUND FIELD ZERO, ANYTHING SPECIAL                       67900018
+PSEPA    EQU   *                                                        68000018
+*              WAS THERE A NINE IN THE PICTURE                          68100018
+         TM    FIRST9,X'01'                                             68200018
+         BO    EDITA1       THEN TEST FOR FLOAT                         68300018
+*              NOTHING SPECIAL, BUT DELIMITER MAY BE C                  68400018
+PSEPX   TM     INFOA,PDILIMC       DILIMITER A C                        68500018
+         BZ    PSEPB          NO                                        68600018
+         OI    FLAGA,DROPPSEP   DELIMITER IS C SO DROP SEPARATORS       68700018
+PSEPB    EQU   *    WAS THERE A FLOAT CHARACTER                         68800018
+         TM    FLOAT,X'FF'                                              68900018
+         BZ    EDITB                                                    69000018
+         B     EDITE                                                    69100018
+         EJECT                                                          69200018
+*    LOOPS1 PROCESSES L SEPARATORS                                      69300018
+*  TARGET IS POINTING TO NEXT AVAILABLE ENTRY                           69400018
+* PICTURE IS POINTING TO NEXT CHARACTER                                 69500018
+*                                                                       69600018
+LOOPS1   CLI   0(PICTURE),C'C'                                          69700018
+         BE    GETSHILL                                                 69800018
+         CLI   0(PICTURE),C'D'                                          69900018
+         BE    GETSHILL                                                 70000018
+*              THEN MUST BE SEPARATORS                                  70100018
+         TM    FLAGA,DROPPSEP   SEPORATOR CHARS TO BE DROPPED           70200018
+         BO    LOOPS1A             YES                                  70300018
+         MVC   0(1,TARGET),0(PICTURE)                                   70400018
+*              IF COUNT NOT 1 PROPAGATE                                 70500018
+LOOPS3 SR      WREG2,WREG2                                              70600018
+       IC      WREG2,1(PICTURE)                                         70700018
+         BCT   WREG2,STARG                                              70800018
+         B     LOOPS1B                                                  70900018
+STARG    EQU   *                                                        71000018
+*              NOT 1                                                    71100018
+         BCTR  WREG2,0                                                  71200018
+         EX    WREG2,PROPTRGT   PROPAGATE IN TARGET                     71300018
+*              RESET WREG2                                              71400018
+LOOPS1B  IC    WREG2,1(PICTURE)                                         71500018
+*              UPDATE TARGET                                            71600018
+         AR    TARGET,WREG2                                             71700018
+         LA    PICTURE,2(PICTURE)                                       71800018
+*              NOW GET NEXT SEPARATOR                                   71900018
+         B     LOOPS1                                                   72000018
+*              EITHER BLANK OR * TO BE INSERTED                         72100018
+LOOPS1A  EQU   *                                                        72200018
+*              REDUCE TARGET BY 1 TO GET PREVIOUS CHAR                  72300018
+         BCTR  TARGET,0                                                 72400018
+         MVC   1(1,TARGET),0(TARGET)                                    72500018
+         LA    TARGET,1(TARGET)                                         72600018
+         B     LOOPS3                                                   72700018
+         EJECT                                                          72800018
+*              PROCESS SHILLINGS FIELD                                  72900018
+*   PICTURE POINTS TO DELIMITER                                         73000018
+*  TARGET POINTS TO NEXT ENTRY IN TARGET FIELD                          73100018
+GETSHILL EQU   *                                                        73200018
+*              UPDATE PICTURE - SKIP DELIMITER                          73300018
+PNDSKP   EQU   *                                                        73400018
+         LA    PICTURE,2(PICTURE)                                       73500018
+*              UNPACK SHILLINGS                                         73600018
+*              ONLY TWO LOW ORDER DIGITS ARE UNPACKED                   73700018
+*              HENCE UP TO 99 SHILLS WILL BE HANDLED                    73800018
+         UNPK  WORKSH(4),INTEGER+XX-3-1(3)        HIGH ZERO IS DROPPED  73900018
+*              ENTRY FROM GETPENCE                                      74000018
+*            SAME PROCESSING FOR SHILL AS PENCE                         74100018
+*              OPERATE ON HIGH ORDER DIGIT                              74200018
+*              IS IT ZERO                                               74300018
+GETSHILM CLI   WORKSH,C'0'                                              74400018
+         BE    SHILLA         YES                                       74500018
+*              NON ZERO, STORE IN TARGET                                74600018
+SHILLB   OI    FLAGB,HIDIGSIG  HIGH DIGIT SIGNIFICANT                   74700018
+         MVC   0(1,TARGET),WORKSH                                       74800018
+         B     LOWSH                                                    74900018
+*              IS PICTURE 9                                             75000018
+SHILLA   CLI   0(PICTURE),C'9'                                          75100018
+         BE    SHILLB                                                   75200018
+*              IS PICTURE *                                             75300018
+         CLI   0(PICTURE),C'*'                                          75400018
+         BNE   SHILLC         NO                                        75500018
+SHILLD   MVI   0(TARGET),C'*'                                           75600018
+         B     LOWSH                                                    75700018
+SHILLC EQU     *                                                        75800018
+*              NO, STORE BLANK                                          75900018
+SHILLCX  MVI   0(TARGET),C' '                                           76000018
+LOWSH    EQU   *                                                        76100018
+*   DOES PICTURE POINTER NEED UPDATING  IS CHARACTER COUNT 1            76200018
+         CLI   1(PICTURE),X'01'                                         76300018
+         BNE   LOWSHB                NO                                 76400018
+         LA    PICTURE,2(PICTURE)   YES UPDATE POINTER                  76500018
+LOWSHB   EQU   *                                                        76600018
+*              NOW OPERATE ON LOW SHILL DIGIT                           76700018
+         CLI   WORKSH+1,C'0'                                            76800018
+         BE    SHILLE         ZERO                                      76900018
+SHILLF   MVC   1(1,TARGET),WORKSH+1                                     77000018
+         B     SHILLSEP                                                 77100018
+*              DIGIT ZERO, IS PICTURE 9                                 77200018
+SHILLE   CLI   0(PICTURE),C'9'                                          77300018
+         BE    SHILLF         YES                                       77400018
+         TM    FLAGB,HIDIGSIG  HIGH DIGIT SIGNIFICANT                   77500018
+         BO    SHILLF         YES, STORE DIGIT                          77600018
+*              NO, IS PICTURE 8                                         77700018
+         CLI   0(PICTURE),C'8'                                          77800018
+         BNE   SHILLG         NO                                        77900018
+*              YES, IF POUNDS NON ZERO STORE DIGIT                      78000018
+         TM    FLAGB,PENPROC  IS THIS PENCE PROCESSING                  78100018
+         BZ    SHILLEA        NO                                        78200018
+         TM    FLAGA,NOSHILL  ANY SHILLINGS                             78300018
+         BZ    SHILLF    YES                                            78400018
+*              NO SHILL, SO NO POUNDS                                   78500018
+         B     SHILLEB                                                  78600018
+SHILLEA  TM    FLAGA,NOPOUND    IS POUND FIELD ZERO                     78700018
+         BZ    SHILLF         POUNDS PRESENT                            78800018
+*              NO POUNDS PRESENT,PROPAGATE PREVIOUS CHAR                78900018
+SHILLEB  MVC   1(1,TARGET),0(TARGET)                                    79000018
+         B     SHILLSEP                                                 79100018
+*              IS PICTURE *                                             79200018
+SHILLG   CLI   0(PICTURE),C'*'                                          79300018
+         BNE   SHILLH         NO                                        79400018
+SHILLI   MVI   1(TARGET),C'*' YES, STORE *                              79500018
+         B     SHILLSEP                                                 79600018
+*              PICTURE IS Z, PROPAGATE PREVIOUS CHAR                    79700018
+SHILLH   MVI   1(TARGET),C' '                                           79800018
+*   NOW PROCESS SEPARATORS IF ANY                                       79900018
+         EJECT                                                          80000018
+SHILLSEP EQU    *   PROCESS SEPARATORS,FIRST INITIALISE,CHK SUPPRESSION 80100018
+*      TARGET IS POINTING TO HIGH SHILLING ENTRY                        80200018
+*   PICTURE IS POINTING TO LOW  SHILLING ENTRY                          80300018
+         LA    TARGET,1(TARGET)   NOW AT LOW SHILLING ENTRY             80400018
+         LA    PICTURE,2(PICTURE)  NOW AT NEXT PICTURE ENTRY            80500018
+         TM    FLAGB,PENPROC  IS THIS PENCE PROCESSING                  80600018
+         BO    GETPENCF       YES,EXIT                                  80700018
+         TM    INFOA,SDILIMC     IS DILIMITER A C                       80800018
+         BZ    SHILLSA        NO                                        80900018
+*              ZERO SHILL, DELIMITER C, DROP SEPARATORS                 81000018
+*              IF PREVIOUS CHAR IS * OR BLANK                           81100018
+         CLI   0(TARGET),C'*'                                           81200018
+         BE    SHILLSE                                                  81300018
+         CLI   0(TARGET),C' '                                           81400018
+         BNE   SHILLSA                                                  81500018
+SHILLSE  EQU   *                                                        81600018
+         OI    FLAGA,DROPSSEP   DROP SEPARATORS                         81700018
+SHILLSA  EQU   *    RESET POINTERS   (TARGET IS AT LOW SHILLING ENTRY)  81800018
+         LA    TARGET,1(TARGET)   NOW AT NEXT AVAILABLE ENTRY           81900018
+SHILLSF  EQU   *    NOW PROCESS SEPARATORS                              82000018
+*  TARGET POINTS TO NEXT AVAILABLE ENTRY                                82100018
+* PICTURE POINTS TO NEXT CHARACTER                                      82200018
+***    IS DELIMITER REACHED YET                                         82300018
+         CLI   0(PICTURE),C'C'                                          82400018
+         BE    SHILLSB        DELIMITER                                 82500018
+         CLI   0(PICTURE),C'D'                                          82600018
+         BE    SHILLSB        DELIMITER                                 82700018
+*              NOT DELIMITER, STORE CHAR,OR SUPPRESS WITH * OR BLANK    82800018
+         MVC   0(1,TARGET),0(PICTURE)                                   82900018
+         TM    FLAGA,DROPSSEP   DROP SEPARATORS                         83000018
+         BZ    SHILLSC        NO                                        83100018
+*              SUPPRESS,WITH PREVIOUS TARGET CHAR.                      83200018
+         BCTR  TARGET,0                                                 83300018
+         MVC   1(1,TARGET),0(TARGET)                                    83400018
+         LA    TARGET,1(TARGET)                                         83500018
+*              NOW SEE IF SEPARATOR IS TO BE PROPAGATED                 83600018
+SHILLSC  SR    WREG2,WREG2                                              83700018
+         IC    WREG2,1(PICTURE)                                         83800018
+         BCT   WREG2,SHILLT                                             83900018
+         B     SHILLSD                                                  84000018
+SHILLT   EQU   *                                                        84100018
+         BCTR  WREG2,0                                                  84200018
+         EX    WREG2,PROPTRGT    PROPAGATE IN TARGET                    84300018
+*      UPDATE POINTERS TO NEXT ENTRY                                    84400018
+SHILLSD  IC    WREG2,1(PICTURE)                                         84500018
+         AR    TARGET,WREG2                                             84600018
+         LA    PICTURE,2(PICTURE)                                       84700018
+         B     SHILLSF    PROCESS NEXT PICTURE CHARACTER                84800018
+         EJECT                                                          84900018
+SHILLSB  EQU    *    DELIMITER REACHED,SO SPACE OVER,AND PROCESS PENCE  85000018
+         LA    PICTURE,2(PICTURE)   POINT TO NEXT PICTURE CHARACTER     85100018
+*              PROCESS PENCE, USE GETSHILL, BUT TURN ON PENCE SW        85200018
+GETPENCE EQU   *                                                        85300018
+*   TARGET POINTS TO NEXT AVAILABLE ENTRY                               85400018
+*  PICTURE POINTS TO NEXT PICTURE CHARACTER                             85500018
+         OI    FLAGB,PENPROC  NOTE THIS IS PENCE                        85600018
+         NI    FLAGB,IHDIGSIG  RESET HIDIGSIG BIT                       85700018
+         UNPK  WORKSH(4),INTEGER+XX-1-1(3)                              85800018
+         B     GETSHILM                                                 85900018
+*                                                                       86000018
+GETPENCF EQU   *         RETURN FROM GETSHILM                           86100018
+*   TARGET POINTS TO LOW PENCE ENTRY                                    86200018
+*  PICTURE POINTS TO NEXT PICTURE CHARACTER                             86300018
+*   AT THE END OF THE PICTURE YET                                       86400018
+         MVC   TEMP1+1(3),REGSAVE+PICTADD                               86500018
+         L     WREG2,TEMP1                                              86600018
+         LA    WREG2,0(WREG2)     CLEAR TOP 8 BITS                      86700018
+         SR    GEN,GEN                                                  86800018
+         IC    GEN,PCTLNG                                               86900018
+         AR    WREG2,GEN                                                87000018
+*   WREG2 NOW HAS LOCATION OF END OF PICTURE PLUS ONE                   87100018
+*                                                                       87200018
+         CR    WREG2,PICTURE                                            87300018
+         BH    PENCESEP     PROCESS PENCE SEPARATORS OR DECIMALS        87400018
+       B       FINISH                                                   87500018
+*              MORE TO GO,  HANDLE SEPARATOR                            87600018
+PENCESEP EQU   *                                                        87700018
+*              PROCESS PENCE SEPARATORS                                 87800018
+*                                                                       87900018
+*              ANY DECIMAL PENCE                                        88000018
+         SR    WREG1,WREG1                                              88100018
+         IC    WREG1,DECDGT                                             88200018
+         LTR   WREG1,WREG1                                              88300018
+         BZ    NOPDEC         NO                                        88400018
+*              YES, UNPACK INTO DECIMAL                                 88500018
+       UNPK  DECIMAL(16),2(8,SOURCE)                                    88600018
+       UNPK  DECIMAL+15(2*XX-17),9(XX-8,SOURCE)                         88700018
+*              PUT LOCATION FIRST DIGIT IN REGISTER GEN                 88800018
+         LA    GEN,DECIMAL+28                                           88900018
+         SR    GEN,WREG1                                                89000018
+         EJECT                                                          89100018
+NOPDEC   EQU   *                                                        89200018
+*              PICK UP PICTURE CHAR AND PROCESS                         89300018
+         LA    TARGET,1(TARGET)     SET TARGET TO NEXT AVAIL ENTRY      89400018
+*  IT WAS AT LOW PENCE                                                  89500018
+*              END OF PICTURE IS IN WREG2                               89600018
+PLOOP    CR    WREG2,PICTURE                                            89700018
+         BNH   FINISH         PAST END - THATS IT                       89800018
+         CLI   0(PICTURE),C'9'                                          89900018
+         BE    PNINE          NINE                                      90000018
+         CLI   0(PICTURE),C'C'                                          90100018
+         BE    PCRED          CREDIT                                    90200018
+         CLI   0(PICTURE),C'D'                                          90300018
+         BE    PDEBIT         DEBIT                                     90400018
+         CLI   0(PICTURE),C'+'                                          90500018
+         BE    PPLUS          PLUS                                      90600018
+         CLI   0(PICTURE),C'-'                                          90700018
+         BE    PMINUS         MINUS                                     90800018
+*              NOTHING SPECIAL, SO STORE                                90900018
+         MVC   0(0,TARGET),0(PICTURE)                                   91000018
+*              PROPAGATE IF NEED BE                                     91100018
+         SR    WREG1,WREG1                                              91200018
+         IC    WREG1,1(PICTURE)    EXAMINE COUNT                        91300018
+         BCT   WREG1,PLOOR                                              91400018
+         B     PLOOP1                                                   91500018
+PLOOR    EQU   *                                                        91600018
+         BCTR  WREG1,0                                                  91700018
+         EX    WREG1,PROPTRGT    PROPAGATE IN TARGET                    91800018
+*   UPDATE POINTERS TO NEXT AVAILABLE ENTRY                             91900018
+PLOOP1   IC    WREG1,1(PICTURE)                                         92000018
+         LA    PICTURE,2(PICTURE)                                       92100018
+         AR    TARGET,WREG1                                             92200018
+         B     PLOOP                                                    92300018
+         EJECT                                                          92400018
+PNINE    EQU   *                                                        92500018
+*              STORE DIGITS                                             92600018
+*              SEE HOW MANY                                             92700018
+         SR    WREG1,WREG1                                              92800018
+         IC    WREG1,1(PICTURE)                                         92900018
+         BCTR  WREG1,0        REDUCE FOR MOVE                           93000018
+         EX    WREG1,PNINEMV  MOVE FROM DECIMAL TO TARGET               93100018
+         LA    WREG1,1(WREG1)                                           93200018
+         AR    TARGET,WREG1                                             93300018
+         LA    PICTURE,2(PICTURE)                                       93400018
+         AR    GEN,WREG1                                                93500018
+         B     PLOOP                                                    93600018
+PNINEMV  MVC   0(0,TARGET),0(GEN)                                       93700018
+*              CREDIT, INSERT CR IF SIGN -                              93800018
+*              DEBIT, INSERT DB IF SIGN -                               93900018
+PCRED    OI    FLAGB,INSERTCR  INSERT CREDIT                            94000018
+PDEBIT   EQU   *              INSERT DB                                 94100018
+*              IS SIGN -                                                94200018
+         CP    SSIGN(1),ZERO(1)                                         94300018
+         BH    PBLANK    NO, SIGN +                                     94400018
+*              SIGN MINUS, MOVE CR OR DB                                94500018
+         TM    FLAGB,INSERTCR  INSERT CREDIT SYMBOL                     94600018
+         BO    PCREDA    CR                                             94700018
+*              INSERT DB                                                94800018
+         MVC   0(2,TARGET),DB                                           94900018
+         B     FINISH                                                   95000018
+PCREDA   MVC   0(2,TARGET),CR                                           95100018
+         B     FINISH                                                   95200018
+PBLANK   MVC   0(2,TARGET),BL                                           95300018
+         B     FINISH                                                   95400018
+*                                                                       95500018
+PPLUS    EQU   *    INSERT +                                            95600018
+         CP    SSIGN(1),ZERO(1)                                         95700018
+         BL    PMINUSA                                                  95800018
+         MVI   0(TARGET),C'+'                                           95900018
+         B     FINISH                                                   96000018
+PPLUSA   MVI   0(TARGET),C' '                                           96100018
+         B     FINISH                                                   96200018
+PMINUS   CP    SSIGN(1),ZERO(1)                                         96300018
+         BH    PPLUSA                                                   96400018
+PMINUSA  MVI   0(TARGET),C'-'                                           96500018
+         EJECT                                                          96600018
+FINISH EQU     *                                                        96700018
+*      RESTORE THE REGISTERS AND EXIT                                   96800018
+       LM      REGFROM,REGTO,WC(WORKSP)                                 96900018
+       B       DISPLACE(RETURN)                                         97000018
+*                                                                       97100018
+PROPTRGT MVC   1(0,TARGET),0(TARGET)  PROPOGATE IN TARGET               97200018
+LDREG  LR    0,0              LOAD BASE TO R10                       CS 97300018
+*                                                                       97400018
+*            CONSTANTS                                                  97500018
+PDIGITS DC     AL2(2*(XX-4)-1)                                          97600018
+PBYTESZ DC     AL2(XX-4-1)                                              97700018
+DB       DC    C'DB'                                                    97800018
+CR       DC    C'CR'                                                    97900018
+BL       DC    C'  '                                                    98000018
+TWNTY  DC    PL2'20'     20+                                            98100018
+TWLV   DC    PL2'12'     12+                                            98200018
+MAXSHILS DC    PL2'99'   99 SHILLS MAX IF NO POUNDS                     98300018
+ZERO   DC    PL1'0'      0+                                             98400018
+BLDS   DC      C' '                                                     98500018
+       DC      X'20'         MUST FOLLOW BLDS                           98600018
+*             SCAN IS USED TO EXAMINE TWELVE BYTES IN A TRT INST.       98700018
+SCAN     DC    XL(XX-4)'000102030405060708090A0B'                       98800018
+       END                                                              98900018
+         EJECT                                                          99000018

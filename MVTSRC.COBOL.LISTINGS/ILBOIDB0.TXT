@@ -1,0 +1,93 @@
+1IDB0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOIDB0  SD  0001 000000 000068
+ ILBOIDB1  LD       00001C        0001
+1IDB0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOIDB0                                                         01000018
+1IDB0     ILBOIDB0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      3 *        ILBOIDB0   CALLING SEQ... L    15,V(ILBOIDB0)                  03000018
+                                       4 *                                                                       04000018
+                                       5 *        LEVEL  180     09/14/66                                        05000018
+                                       6 *                                                                       06000018
+                                       7 *FUNCTION 0 THIS ROUTINE CONVERTS EITHER A 10-BYTE INTERNAL DECIMAL     07000018
+                                       8 *   NUMBER OR AN 18-BYTE EXTERNAL DECIMAL NUMBER INTO A DOUBLE          08000018
+                                       9 *   PRECISION BINARY NUMBER.                                            09000018
+                                      10 *ENTRY POINTS 0 ILBOIDBI, ILBOEDBI                                      10000018
+                                      11 *INPUT 0 THE DECIMAL FIELD STARTS AT WORKA(13) WHERE 13 IS THE REGISTER 11000018
+                                      12 *   POINTING TO THE TGT OF COBOL OBJECT PROGRAM, AND IS INITIALIZED BY  12000018
+                                      13 *   THE CALLING PROGRAM.                                                13000018
+                                      14 *OUTPUT 0 A DOUBLE PRECISION BINARY NUMBER IN REGISTERS 0 AND 1         14000018
+                                      15 *EXTERNAL ROUTINES 0 NONE                                               15000018
+                                      16 *EXITS- NORMAL0  BY  BCR  15,14                                         16000018
+                                      17 *       ERROR 0  NONE                                                   17000018
+                                      18 *WORK AREA 0 BYTES 96-156 OF TGT.                                       18000018
+                                      19 *ATTRIBUTES 0 REENTRANT CODE. NO CHARACTER DEPENDENCY.                  19000018
+                                      20 *                                                                       20000018
+ 000000                               21 ILBOIDB0 START 0                                                        21000018
+                                      22          ENTRY ILBOIDB1                                                 22000018
+                                      23 *                                                                       23000018
+                             00000    24 R0     EQU   0                                                          24000018
+                             00001    25 R1     EQU   1                                                          25000018
+                             00002    26 R2     EQU   2                                                          26000018
+                             00003    27 R3     EQU   3                                                          27000018
+                             00004    28 R4     EQU   4                                                          28000018
+                             00005    29 R5     EQU   5                                                          29000018
+                             00006    30 R6     EQU   6                                                          30000018
+                             00007    31 R7     EQU   7                                                          31000018
+                             00008    32 R8     EQU   8                                                          32000018
+                             00009    33 R9     EQU   9                                                          33000018
+                             0000A    34 R10    EQU   10                                                         34000018
+                             0000B    35 R11    EQU   11                                                         35000018
+                             0000C    36 R12    EQU   12                                                         36000018
+                             0000D    37 R13    EQU   13                                                         37000018
+                             0000E    38 R14    EQU   14                                                         38000018
+                             0000F    39 R15    EQU   15                                                         39000018
+                             00000    40          USING *,R15             SET BASE REG                           40000018
+ 000000 D702 D070 D070 00070 00070    41          XC    WORKA3(3,R13),WORKA3(R13)                                41000018
+ 000006 D204 D073 D065 00073 00065    42          MVC   WORKA3+3(5,R13),WORKA+5(R13)                             42000018
+ 00000C D200 D06F D077 0006F 00077    43          MVC   WORKA2+7(1,R13),WORKA3+7(R13)  MOVE SIGN BYTE TO WORKA2  43000018
+ 000012 F174 D068 D060 00068 00060    44          MVO   WORKA2(8,R13),WORKA(5,R13)     HI-ORD 9 DIGS TO WORKA2   44000018
+ 000018 45F0 F02E      0002E          45          BAL   R15,COMMON        GO TO COMMON                           45000018
+                             0001C    46          USING *,R15             SET BASE REG                           46000018
+ 00001C F278 D070 D069 00070 00069    47 ILBOIDB1 PACK  WORKA3(8,R13),WORKA2+1(9,R13) PACK LO-ORD 9 DIGITS       47000018
+ 000022 F278 D068 D060 00068 00060    48          PACK  WORKA2(8,R13),WORKA(9,R13)    PACK HI-ORD 9 DIGS         48000018
+ 000028 D100 D06F D077 0006F 00077    49          MVN   WORKA2+7(1,R13),WORKA3+7(R13)  MOVE SIGN TO HI-ORD FIELD 49000018
+ 00002E 502D 0098      00098          50 COMMON   ST    R2,SVREG2(R13)     SAVE REG2                             50000018
+ 000032 4F1D 0068      00068          51          CVB   R1,WORKA2(R13)     CONV HI-ORD 9 DIGS                    51000018
+ 000036 4F2D 0070      00070          52          CVB   R2,WORKA3(R13)     CONV LO-ORD 9 DIGS                    52000018
+ 00003A 5C00 F048      00064          53          M     R0,TNPW9          MULT HI-ORD 9 DIGS BY 10 **9 IN REGS 0 53000018
+ 00003E 1222                          54          LTR   R2,R2                                                    54000018
+ 000040 4780 F03E      0005A          55        BC      8,EXIT                                                   55000018
+ 000044 1E12                          56          ALR   R1,R2              ADD IN LO-ORD 9 DIGS                  56000018
+ 000046 47C0 F032      0004E          57        BC    12,*+8           NO CARRY OUT                              57000018
+1IDB0     ILBOIDB0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000004A 4A00 F044      00060          58          AH    R0,H1             CARRY OUT - ADD 1 TO HI-ORDER          58000018
+ 00004E 9101 D077      00077          59          TM    WORKA3+7(R13),1   TEST FOR NEGATIVE                      59000018
+ 000052 47E0 F03E      0005A          60        BC    14,EXIT           BIT NOT ON - NUMBER IS PLUS              60000018
+ 000056 4B00 F044      00060          61          SH    R0,H1              NEG - SUBTR 1                         61000018
+ 00005A 582D 0098      00098          62 EXIT     L     R2,SVREG2(R13)     RESTORE REG 2                         62000018
+ 00005E 07FE                          63          BCR   15,R14            RETURN                                 63000018
+                             00060    64 WORKA  EQU   96                                                         64000018
+                             00068    65 WORKA2 EQU   104                                                        65000018
+                             00070    66 WORKA3 EQU   112                                                        66000018
+                             00098    67 SVREG2 EQU   152                                                        67000018
+ 000060 0001                          68 H1     DC    H'1'                                                       68000018
+ 000062 0000
+ 000064 3B9ACA00                      69 TNPW9  DC    F'1000000000'                                              69000018
+                                      70        END                                                              70000018
+1IDB0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    5
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT         71
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                         4
+ TOTAL RECORDS PRINTED                        93

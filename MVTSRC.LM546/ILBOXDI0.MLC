@@ -1,0 +1,107 @@
+*//    ILBOXDI0                                                         00900018
+XDI0     TITLE     'ILBOXDI0'                                           01800018
+*        ILBOXDI0   CALLING SEQ... L    15,V(ILBOXDI0)                  02700018
+*                                                                       03600018
+*        LEVEL  180     09/14/66                                        04500018
+*                                                                       05400018
+*FUNCTION 0 THIS ROUTINE DIVIDES A 60-DIGIT DECIMAL NUMBER BY A 30-     06300018
+*   DIGIT DECIMAL NUMBER TO YIELD A 60-DIGIT QUOTIENT.                  07200018
+*ENTRY POINT 0 ILBOXDIV, CALLING SEQUENCE IS0                           08100018
+*              MVC   96(32,13),DIVIDEND     IF 32 BYTE DIVIDEND         09000018
+*                  OR                                                   09900018
+*              XC    96(16,13),96(13)                                   10800018
+*              ZAP   112(16,13),DIVIDEND    IF 16 BYTE DIVIDEND         11700018
+*              ZAP   144(16,13),DIVISOR                                 12600018
+*              L     15,V(ILBOXDIV)                                     13500018
+*              BALR  14,15                                              14400018
+*INPUT 0 60-DIGIT DIVIDEND, 30-DIGIT DIVISOR ARE ALL SIGNED INTEGERS,   15300018
+*   RIGHT-ALIGNED IN THEIR FIELDS.  REG 13 IS INITIALIZED BY CALLER TO  16200018
+*   POINT TO START OF TGT.                                              17100018
+*OUTPUT 0 A 60-DIGIT INTEGER QUOTIENT AT 160(32,13) WITH THE SIGN       18000018
+*   DETERMINED BY THE RULES OF ALGEBRA FROM DIVIDEND AND DIVISOR SIGNS. 18900018
+*   NO REMAINDER IS RETURNED.                                           19800018
+*EXTERNAL ROUTINES 0 NONE                                               20700018
+*EXITS-NORMAL 0  BCR 15,14                                              21600018
+*      ERROR  0 REG 15=0 AND THE QUOTIENT IS SET TO PLUS ZERO WHEN      22500018
+*               THE INPUT DIVISOR IS ZERO.  EXITS BY  BCR  15,14        23400018
+*WORK AREA 0 BYTES  96-127 CONTAIN THE DIVIDEND                         24300018
+*            BYTES 128-143 IS A TEMPORARY WORK AREA                     25200018
+*            BYTES 144-159 CONTAIN THE DIVISOR                          26100018
+*            BYTES 160-191 CONTAIN THE QUOTIENT                         27000018
+*             BYTES 192-195 IS A TEMPRORARY WORK AREA                   27900018
+*ATTRIBUTES 0 REENTRANT CODE.                                           28800018
+*                                                                       29700018
+*                                                                     * 30600018
+ILBOXDI0 START 0                                                        31500018
+*                                                                       32400018
+R13    EQU   13                                                         33300018
+R14    EQU   14                                                         34200018
+R15    EQU   15                                                         35100018
+         USING *,R15                                                    36000018
+         XC    QUOT(32,R13),QUOT(R13)         ZERO QUOTIENT AREA        36900018
+         MVI   QUOT+32(R13),HEX0C            SET QUOT SIGN PLUS         37800018
+         ZAP   DIVSOR(16,R13),DIVSOR(16,R13)  IS DIVISOR ZERO           38700018
+         BC    7,*+8                         NO                         39600018
+         SR    R15,R15                         YES - SET ZERO DIVSR COD 40500018
+         BCR   15,R14                         RETURN                    41400018
+         MVI   DENDWK+15(R13),HEX0C          SET WK AREA SIGN PLUS      42300018
+         MVC   DVSIGN(2,R13),PVSIGN    SET UP SIGN TEST AREA            43200018
+         MVN   DVSIGN(1,R13),DVDEND+31(R13)   GET SIGN OF QUOTIENT      44100018
+         MVN   DVSIGN+1(1,R13),DIVSOR+15(R13)                           45000018
+         CP    DVSIGN(1,R13),DVSIGN+1(1,R13)                            45900018
+         MVI   DVSIGN(R13),X'0C'                                        46800018
+       BC    8,*+8                   LIKE SIGNS +                       47700018
+         MVI   DVSIGN(R13),X'0D'        UNLIKE, -                       48600018
+SIGNPL   NI    DIVSOR+15(R13),HEXFC          SET DIVISOR SIGN PLUS      49500018
+MVDNDR   MVC   DVDEND(16,R13),DVDEND+1(R13)   SEPARATE LEFT MOST 16 BYT 50400018
+         MVI   DVDEND+16(R13),HEX0C            OF DIVIDEND AND          51300018
+MVDND1   MVO   DVDEND+1(16,R13),DVDEND(16,R13)     SET SIGN PLUS        52200018
+         NI    DVDEND(R13),HEX00                                        53100018
+         CP    DVDEND+1(16,R13),DIVSOR(16,R13)  COMP LEFT DOR WITH DEND 54000018
+         BC    4,MVDNDL                     BRANCH IF LEFT DIVISOR LOW  54900018
+         MVO   DENDWK(16,R13),DENDWK(15,R13)  SHIFT COMPLETE DIVISOR    55800018
+         MVO   DVDEND+17(16,R13),DVDEND+17(15,R13)  ONE DECIMAL DIGIT   56700018
+         MVZ   DVDEND+17(1,R13),DVDEND+16(R13)         TO THE RIGHT     57600018
+         BC    15,MVDND1                                                58500018
+MVDNDL   TM    DVDEND+17(R13),HEXC0          TEST IF COMPLETE DEND LESS 59400018
+         BC    1,STSIGN                       THAN DOR - RETURN IF YES  60300018
+         TM    QUOT+31(R13),HEX0C            TEST IF QUOTIENT IS TO BE  61200018
+         BC    1,MVQUOT                       SHIFTED - BRANCH IF YES   62100018
+MVDNL1   MVC   DVDEND(16,R13),DVDEND+1(R13)   SHIFT DIVISOR LEFT UNTIL  63000018
+         MVO   DVDEND+1(16,R13),DVDEND(16,R13)   LEFT PART OF DIVIDEND  63900018
+         MVZ   DVDEND+16(1,R13),DVDEND+17(R13)     IS GREATER THAN OR   64800018
+         MVO   DENDWK(16,R13),DENDWK(15,R13)         EQUAL TO DIVISOR   65700018
+         MVO   DVDEND+17(16,R13),DVDEND+17(15,R13)                      66600018
+         MVC   DVDEND+17(30,R13),DVDEND+18(R13)                         67500018
+         CP    DVDEND+1(16,R13),DIVSOR(16,R13)                          68400018
+         BC    4,MVDNDL                                                 69300018
+         MVI   QUOT+31(R13),HEX0C            SET QUOT SIGN PLUS         70200018
+SUBDR    SP    DVDEND+1(16,R13),DIVSOR(16,R13)  SUB DIVISOR FROM DEND   71100018
+         AP    QUOT+31(1,R13),ONEC(1)         ADD ONE TO QUOTIENT       72000018
+         CP    DVDEND+1(16,R13),DIVSOR(16,R13)   TRA IF DIVSOR GREATER  72900018
+         BC    10,SUBDR                        THAN DIVIDEN             73800018
+         BC    15,MVDNDL                                                74700018
+MVQUOT   MVI   QUOT+32(R13),HEX0C             SET SIGN OF QUOT PLUS     75600018
+         MVO   QUOT+17(16,R13),QUOT+17(15,R13) SHIFT QUOTIENT ONE       76500018
+         MVO   QUOT+16(2,R13),QUOT+16(1,R13)                            77400018
+         MVO   QUOT+1(16,R13),QUOT+1(15,R13)     DECIMAL DIGIT TO THE   78300018
+         MVC   QUOT(32,R13),QUOT+1(R13)              RIGHT              79200018
+         NI    QUOT+31(R13),HEX0C                                       80100018
+         BC    15,MVDNL1                                                81000018
+STSIGN   MVN   QUOT+31(1,R13),DVSIGN(R13)    SET QUOTIENT SIGN          81900018
+         BCR   15,R14                                                   82800018
+HEX00    EQU   0                                                        83700018
+HEX0C    EQU   12                                                       84600018
+HEX0F    EQU   15                                                       85500018
+HEXC0    EQU   192                                                      86400018
+HEXFC    EQU   252                                                      87300018
+DVDEND EQU   96                                                         88200018
+DIVSOR   EQU   DVDEND+48                   DIVISOR  16 BYTES            89100018
+QUOT     EQU   DVDEND+64                   QUOTIENT 32 BYTES            90000018
+DENDWK   EQU   DVDEND+32                   WORK AREA 16BYTES            90900018
+DVSIGN   EQU   DVDEND+97                   SAVE SIGN AREA 1 BYTE        91800018
+PVSIGN DC    X'1C1C'                                                    92700018
+ONEC     DC    X'1C'                                                    93600018
+         END                                                            94500018
+         EJECT                                                          95400018
+*//    ILBOXMU0                                                         96300018

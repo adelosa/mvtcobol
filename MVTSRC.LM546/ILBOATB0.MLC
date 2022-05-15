@@ -1,0 +1,30 @@
+*//    ILBOATB0                                                         03000018
+*        ILBOATB0   CALLING SEQ... L    15,V(ILBOATB0)                  06000018
+*                                                                       09000018
+*                                                                       12000018
+*        LEVEL  180     09/14/66                                        15000018
+*                                                                       18000018
+*FUNCTION 0 ALPHABETIC TABLE FOR CLASS TEST.                            21000018
+*INPUT 0 N/A                                                            24000018
+*OUTPUT0 N/A                                                            27000018
+*EXTERNAL ROUTINES 0 N/A                                                30000018
+*EXITS 0 N/A                                                            33000018
+*WORK AREAS 0 N/A                                                       36000018
+*ATTRIBUTES 0 N/A                                                       39000018
+*                                                                       42000018
+ILBOATB0 START 0                                                        45000018
+*                                                                       48000018
+ATBL   DC    16X'01010101010101010101010101010101'                      51000018
+*                                                                       54000018
+*      OVERLAY AREAS OF TABLE WHICH CORRESPOND TO ALPHA CHARS WITH 00.  57000018
+*                                                                       60000018
+       ORG   ATBL+64                                                    63000018
+       DC    X'00'       BLANK                                          66000018
+       ORG   ATBL+193                                                   69000018
+       DC    9X'00'      A THRU I                                       72000018
+       ORG   ATBL+209                                                   75000018
+       DC    9X'00'      J THRU R                                       78000018
+       ORG   ATBL+226                                                   81000018
+       DC    8X'00'      S THRU Z                                       84000018
+         END                                                            87000018
+         EJECT                                                          90000018

@@ -1,0 +1,114 @@
+1VTR0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOVTR0  SD  0001 000000 00007C
+1VTR0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOVTR0                                                         01000018
+1VTR0     ILBOVTR0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      3 *        ILBOVTR0   CALLING SEQ... L    15,V(ILBOVTR0)                  03000018
+                                       4 *                                                                       04000018
+                                       5 *                                                                       05000018
+                                       6 *        LEVEL  180     09/14/66                                        06000018
+                                       7 *                                                                       07000018
+                                       8 *FUNCTION 0 THIS ROUTINE PROCESSES THE TRANSFORM STATEMENTS WHEN THE    08000018
+                                       9 *   FIELD IS VARIABLE IN LENGTH. A 256-BYTE TRANSFORM TABLE IS USED.    09000018
+                                      10 *ENTRY POINT 0 ILBOVTRN, CALLING SEQUENCE IS0-                          10000018
+                                      11 *                             L    2,V(ILBOTRAN)   TRANSFORM TABLE      11000018
+                                      12 *                             L    15,V(ILBOVTRN)                       12000018
+                                      13 *                             BALR 1,15                                 13000018
+                                      14 *                             DC   XL10'OPERAND INFORMATION'            14000018
+                                      15 *   WHERE THE OPERAND INFORMATION FIELD HAS THE FOLLOWING FORMAT 0      15000018
+                                      16 *                             DC   XL1'TYPE CODE'     SEE BELOW         16000018
+                                      17 *                             DC   AL3(POINTER TO CELL IN TASK GLOBAL   17000018
+                                      18 *                                     TABLE THAT CONTAINS THE LENGTH)   18000018
+                                      19 *                             DC   AL4(ADDRESS OF POINTER IN THE TASK   19000018
+                                      20 *                                     GLOBAL TABLE)                     20000018
+                                      21 *                             DC   XL2'DISPLACEMENT'                    21000018
+                                      22 *   THE TYPE CODE BITS ARE BIT 0   NOT USED                             22000018
+                                      23 *                              1   TRACE ITEM    (N/A HERE)             23000018
+                                      24 *                              2   VARIABLE LENGTH                      24000018
+                                      25 *                              3   DIRECT POINTER (FOR LITERAL OR TALLY 25000018
+                                      26 *                            4-5   NOT USED                             26000018
+                                      27 *                              6   INTERNAL DECIMAL ITEM    (N/A HERE)  27000018
+                                      28 *                              7   BINARY ITEM              (N/A HERE)  28000018
+                                      29 *INPUT 0 SEE ABOVE                                                      29000018
+                                      30 *OUTPUT 0 N/A                                                           30000018
+                                      31 *EXTERNAL ROUTINES 0 USES THE TRANSFORM TABLE (ILBOTRAN),ADDRESS OF     31000018
+                                      32 *   WHICH IS GIVEN IN THE CALLING SEQUENCE BY THE CALLER.               32000018
+                                      33 *EXITS-NORMAL 0 BY   BC   15,10(1)                                      33000018
+                                      34 *      ERROR  0 NONE                                                    34000018
+                                      35 *ATTRIBUTES 0 SERIALLY REUSABLE                                         35000018
+                                      36 *                                                                       36000018
+ 000000                               37 ILBOVTR0 START 0                                                        37000018
+                                      38 *                                                                       38000018
+                             00000    39 R0     EQU   0                                                          39000018
+                             00001    40 R1     EQU   1                                                          40000018
+                             00002    41 R2     EQU   2                                                          41000018
+                             00003    42 R3     EQU   3                                                          42000018
+                             00004    43 R4     EQU   4                                                          43000018
+                             00005    44 R5     EQU   5                                                          44000018
+                             00006    45 R6     EQU   6                                                          45000018
+                             00007    46 R7     EQU   7                                                          46000018
+                             00008    47 R8     EQU   8                                                          47000018
+                             00009    48 R9     EQU   9                                                          48000018
+                             0000A    49 R10    EQU   10                                                         49000018
+                             0000B    50 R11    EQU   11                                                         50000018
+                             0000C    51 R12    EQU   12                                                         51000018
+                             0000D    52 R13    EQU   13                                                         52000018
+                             0000E    53 R14    EQU   14                                                         53000018
+                             0000F    54 R15    EQU   15                                                         54000018
+                             00060    55 WRK    EQU   96                                                      CS 55000018
+                             00005    56 WRKREG EQU   5                                                       CS 56000018
+                             00000    57          USING *,R15             SET BASE                               57000018
+1VTR0     ILBOVTR0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000000 90EC D00C      0000C          58          STM   R14,R12,SAVE(R13)                                        58000018
+ 000004 D200 D060 1004 00060 00004    59        MVC   WRK(1,R13),4(R1) MOVE REG CODE TO WORK                  CS 59000018
+ 00000A 9630 D060      00060          60        OI    WRK(R13),X'30'   SET UP REG3 FOR VAR LENGTH             CS 60000018
+ 00000E 435D 0060      00060          61        IC    WRKREG,WRK(R13)  PUT CODE IN WORK REG                   CS 61000018
+ 000012 4450 F078      00078          62        EX    WRKREG,LDREG     LOAD BASE INTO REG3                    CS 62000018
+ 000016 4A31 0002      00002          63        AH    R3,2(R1)         ADD DISP TO POINT TO VLC               CS 63000018
+ 00001A 4833 0000      00000          64        LH    R3,0(R3)         LOAD VALUE IN VLC TO REG3              CS 64000018
+ 00001E 940F D060      00060          65        NI    WRK(R13),X'0F'   TURN OFF REG3 BITS                     CS 65000018
+ 000022 9640 D060      00060          66        OI    WRK(R13),X'40'   SET UP FOR REG 4                       CS 66000018
+ 000026 435D 0060      00060          67        IC    WRKREG,WRK(R13)  PUT CODE IN WORK REG                   CS 67000018
+ 00002A 4450 F078      00078          68        EX    WRKREG,LDREG     LOAD BASE TO REG 4                     CS 68000018
+ 00002E 4A41 0006      00006          69        AH    R4,6(R1)         ADD DISP                               CS 69000018
+ 000032 9110 1000      00000          70          TM    0(R1),X'10'       TEST DIRECT POINTER                    70000018
+ 000036 4710 F042      00042          71        BC    1,LOOP            YES                                      71000018
+ 00003A 5844 0000      00000          72          L     R4,0(R4)            NO LOAD BL                           72000018
+ 00003E 4A41 0008      00008          73          AH    R4,8(R1)            ADD DISPLACEMENT                     73000018
+ 000042 4930 F07A      0007A          74 LOOP     CH    R3,H256           IS LENGTH GREATER THAN 256             74000018
+ 000046 4720 F060      00060          75        BC    2,GRT256          YES                                      75000018
+ 00004A 1233                          76          LTR   R3,R3              TEST ZERO LENGTH                      76000018
+ 00004C 4780 F056      00056          77        BC    8,EXIT            YES - EXIT                               77000018
+ 000050 0630                          78          BCTR  R3,R0              SUBTR 1 TO EX                         78000018
+ 000052 4430 F072      00072          79          EX    R3,TRANS          EXECUTE TRANSFORM                      79000018
+ 000056 98EC D00C      0000C          80 EXIT     LM    R14,R12,SAVE(R13)                                        80000018
+ 00005A 4111 000A      0000A          81          LA    R1,10(R1)          ADD 10 TO RETURN REG                  81000018
+ 00005E 07F1                          82          BCR   15,R1             EXIT                                   82000018
+ 000060 DCFF 4000 2000 00000 00000    83 GRT256   TR    0(256,R4),0(R2)    TRANS 256 BYTES                       83000018
+ 000066 4A40 F07A      0007A          84          AH    R4,H256           UP DATA POINTER                        84000018
+ 00006A 4B30 F07A      0007A          85          SH    R3,H256           DECR LENGTH                            85000018
+ 00006E 47F0 F042      00042          86        BC    15,LOOP          REPEAT LOOP                               86000018
+ 000072 DC00 4000 2000 00000 00000    87 TRANS    TR    0(0,R4),0(R2)      EXECUTE TRANSLATE                     87000018
+ 000078 1800                          88 LDREG  LR    R0,R0            LOAD BASE                              CS 88000018
+                                      89 *                                                                       89000018
+ 00007A 0100                          90 H256   DC    H'256'                                                     90000018
+                             0000C    91 SAVE     EQU   12                                                       91000018
+                             00060    92 ALLIGN EQU   96                                                         92000018
+                                      93        END                                                              93000018
+1VTR0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    5
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT         94
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                         5
+ TOTAL RECORDS PRINTED                       114

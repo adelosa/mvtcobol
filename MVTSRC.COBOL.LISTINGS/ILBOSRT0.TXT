@@ -1,0 +1,480 @@
+1SRT0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOSRT0  SD  0001 000000 0003D4
+1SRT0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *$MODULE       ILBOSRT0                                                 00200020
+                                       2 *//    ILBOSRT0                                                         00400020
+1SRT0     ILBOSRT0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      4 *        ILBOSRT0   CALLING SEQ... L    15,V(ILBOSRT0)                  00800020
+ 000000                                5 ILBOSRT0 START 0                                                        01000020
+                             00190     6 FILESIZE EQU   400                                                      01200020
+                             00194     7 MODESIZE EQU   404                                                      01400020
+                             0000D     8 VLOC     EQU   13                                                       01600020
+                                       9 *                                                                       01800020
+                             00058    10 CORESIZE EQU   88                                                       02000020
+                             0005E    11 SORTRET  EQU   94                                                       02200020
+                             0018C    12 SRSVPNTR EQU   396                                                      02400020
+                             0000C    13 R12      EQU   12   BASE REGISTER MAIN PART OF SUBROUTINE               02600020
+                             0000D    14 R13      EQU   13   SAVE AREA POINTER                                   02800020
+                             0000E    15 R14      EQU   14   RETURN REGISTER - ALSO BASE REG IN SOME SECTIONS    03000020
+                             0000F    16 R15      EQU   15   LINKAGE REGISTER - ALSO BASE REG IN SOME SECTIONS   03200020
+                                      17 *                                                                       03400020
+                                      18 *                                                                       03600020
+                                      19 *                                                                       03800020
+                                      20 * EQUATES                                                               04000020
+                                      21 *ENTRY POINTS                                                           04200020
+                                      22 *                                                                       04400020
+                                      23 *   CALLING SEQUENCE....                                                04600020
+                                      24 *                                                                       04800020
+                                      25 *        MVC   PARMCELLS,(SORT & RECORD CONTROL CARD LITERALS)          05000020
+                                      26 *        LA    R0,(SORT CONTROL CARD)                                   05200020
+                                      27 *        LA    R1,(END OF SORT CONTROL CARD)                            05400020
+                                      28 *        LA    R2,(RECORD CONTROL CARD)                                 05600020
+                                      29 *        LA    R3,(END OF RECORD CONTROL CARD)                          05800020
+                                      30 *        LA    R4,(INPUT PROCEDURE)                                     06000020
+                                      31 *        LA    R5,(OUTPUT PROCEDURE)                                    06200020
+                                      32 *        L     R15,V(ILBOSRT0)                                          06400020
+                                      33 *        BALR  R14,R15                                                  06600020
+                                      34 *        L     R1,NEXTGN                                                06800020
+                                      35 *        BR    R1                                                       07000020
+                                      36 *                                                                       07200020
+                                      37 *                                                                       07400020
+                                      38 * REGISTER EQUATES AND USAGE                                            07600020
+                                      39 *                                                                       07800020
+                             00000    40 R0       EQU   0                                                        08000020
+                             00001    41 R1       EQU   1    POINTER TO PARAM LIST AND RECORD BUFFERS            08200020
+                             00002    42 R2       EQU   2    INPUT/OUTPUT PROC LINK REG - (BALR 2,14)            08400020
+                             00003    43 R3       EQU   3                                                        08600020
+                             00004    44 R4       EQU   4    WORK REGISTER                                       08800020
+                             00005    45 R5       EQU   5    WORK REGISTER                                       09000020
+                             00006    46 R6       EQU   6    WORK REGISTER                                       09200020
+                             00007    47 R7       EQU   7    WORK REGISTER                                       09400020
+                             00008    48 R8       EQU   8    WORK REGISTER                                       09600020
+                             00009    49 R9       EQU   9                                                        09800020
+                             0000A    50 R10      EQU   10   BASE REG AT  E15 AND E35 EXITS                      10000020
+                             0000B    51 R11      EQU   11                                                       10200020
+                             00024    52 RECEND   EQU   36                                                       10400020
+                             00017    53 MAXLNGTH EQU   23                                                       10600020
+                             0001F    54 MINLNGTH EQU   31                                                       10800020
+                                      55 *                                                                       11000020
+                                      56 * THE COBOL LIBRARY SUBROUTINE ILBOSRT0 IS ENTERED AT THIS POINT        11200020
+                                      57 *                                                                       11400020
+                             00000    58          USING *,R12                                                    11600020
+1SRT0     ILBOSRT0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000000 90EC D00C      0000C          59          STM   R14,R12,12(R13)     SAVE  COBOL REGS IN COBOL SAVE AREA  11800020
+ 000004 18CF                          60          LR    R12,R15             LOAD BASE REG                        12000020
+ 000006 50E0 C1A4      001A4          61          ST    R14,COBRETRN        SAVE FINAL RETURN ADDR TO COBOL      12200020
+ 00000A 50D0 C1AC      001AC          62          ST    R13,SRSAVE+4        STORE POINTER TO COBOL SAVE AREA     12400020
+ 00000E 9005 C200      00200          63          STM   R0,R5,PARAMS        SAVE THE 6 PARAMETERS                12600020
+ 000012 5850 C208      00208          64          L     R5,PARM3            POINT TO 'RECORD' CARD               12800020
+ 000016 9400 C232      00232          65          NI    VARLENSW,0          SET V-TYPE SW TO ZERO                13000020
+ 00001A 95E5 500D      0000D          66          CLI   VLOC(R5),C'V'       TEST FOR VARIABLE LENGTH RECORDS     13200020
+ 00001E 4770 C026      00026          67          BNE   TSTFILSZ            NO - FIXED                           13400020
+ 000022 9601 C232      00232          68          OI    VARLENSW,1           YES - TURN ON SWITCH                13600020
+                                      69 *                                                                       13800020
+                                      70 * TEST FOR SORT-FILE-SIZE SPECIAL REGISTER - TACK ON SIZE PARAMETER     14000020
+                                      71 *  AT THE END OF THE 'SORT' CONTROL CARD LITERAL                        14200020
+                                      72 *                                                                       14400020
+ 000026 585D 0190      00190          73 TSTFILSZ L     R5,FILESIZE(R13)    LOAD FILE SIZE SPECIAL REG           14600020
+ 00002A 1255                          74          LTR   R5,R5               IS IT ZERO                           14800020
+ 00002C 4780 C054      00054          75          BE    TESTMODE             YES - EXIT                          15000020
+ 000030 5870 C204      00204          76          L     R7,PARM2            POINT TO BLANK AFTER 'SORT' CNTRL    15200020
+ 000034 D206 7000 C192 00000 00192    77          MVC   0(7,R7),KSIZE       MOVE IN 'SIZE=E'                     15400020
+ 00003A 4E50 C1F0      001F0          78          CVD   R5,WORK             CONVERT FILE SIZE                    15600020
+ 00003E F363 7007 C1F4 00007 001F4    79          UNPK  7(7,R7),WORK+4(4)   UNPK 7 BYTE FILE SIZE INTO CTL CARD  15800020
+ 000044 96F0 700D      0000D          80          OI    13(R7),X'F0'        MAKE ZONE 'F'                        16000020
+ 000048 4177 000E      0000E          81          LA    R7,14(R7)           POINT TO NEW SORT END                16200020
+ 00004C 5070 C204      00204          82          ST    R7,PARM2            STORE NEW SORT END IN PARAM LIST     16400020
+ 000050 9240 7000      00000          83          MVI   0(R7),C' '                                               16600020
+                                      84 *                                                                       16800020
+                                      85 * TEST FOR SORT-MODE-SIZE SPECIAL REGISTER - TACK ON MODE PARAMETER     17000020
+                                      86 *  AT THE END OF THE RECORD CONTROL CARD                                17200020
+                                      87 *                                                                       17400020
+ 000054 585D 0194      00194          88 TESTMODE L     R5,MODESIZE(R13)    LOAD MODE-SIZE SPECIAL REGISTER      17600020
+ 000058 1255                          89          LTR   R5,R5               TEST FOR ZERO                        17800020
+ 00005A 4780 C0AA      000AA          90          BE    TESTCORE             YES - EXIT                          18000020
+ 00005E 5880 C208      00208          91          L     R8,PARM3            POINT TO START OF RECORD CARD        18200020
+ 000062 95E5 800D      0000D          92          CLI   VLOC(R8),C'V'       THIS CHARACTER MUST BE A V           18400020
+ 000066 4770 C0AA      000AA          93          BNE   TESTCORE             IF NOT, MODE-REG HAS INVALID DATA   18600020
+ 00006A 4E50 C1F0      001F0          94          CVD   R5,WORK             CONVERT MODE LENGTH                  18800020
+ 00006E F342 C1F0 C1F5 001F0 001F5    95          UNPK  WORK(5),WORK+5(3)   UNPACK 5 BYTE MODE-SIZE              19000020
+ 000074 96F0 C1F4      001F4          96          OI    WORK+4,X'F0'        MAKE ZONE 'F'                        19200020
+                                      97 * CHECK THAT MODE IS VALID, IE, BETWEEN RANGE OF MAX AND MIN            19400020
+ 000078 D504 C1F0 8017 001F0 00017    98          CLC   WORK(5),MAXLNGTH(R8) COMPARE MODE TO MAX LENGTH          19600020
+ 00007E 4720 C0AA      000AA          99          BH    TESTCORE            INVALID - IGNORE MODE                19800020
+ 000082 D504 C1F0 801F 001F0 0001F   100          CLC   WORK(5),MINLNGTH(R8) COMPARE MODE TO MIN LENGTH          20000020
+ 000088 4740 C0AA      000AA         101          BL    TESTCORE            INVALID - IGNORE MODE                20200020
+                                     102 *                                                                       20400020
+ 00008C 4188 0024      00024         103          LA    R8,RECEND(R8)       POINT TO RT PAREN AT END OF REC CARD 20600020
+ 000090 926B 8000      00000         104          MVI   0(R8),C','          OVERLAY WITH COMMA                   20800020
+ 000094 D204 8001 C1F0 00001 001F0   105          MVC   1(5,R8),WORK        MOVE IN 5 BYTE MODE                  21000020
+ 00009A 925D 8006      00006         106          MVI   6(R8),C')'          TACK ON RT PAREN                     21200020
+ 00009E 4188 0007      00007         107          LA    R8,7(R8)            POINT TO NEW RECORD END              21400020
+ 0000A2 5080 C20C      0020C         108          ST    R8,PARM4            STORE NEW RECORD END IN PARAM LIST   21600020
+ 0000A6 9240 8000      00000         109          MVI   0(R8),C' '                                               21800020
+                                     110 *                                                                       22000020
+                                     111 * TEST FOR SORT-CORE-SIZE SPECIAL REGISTER - IF NON-ZERO STORE          22200020
+                                     112 *   THE VALUE IN THE PARAMETER LIST                                     22400020
+                                     113 *                                                                       22600020
+1SRT0     ILBOSRT0                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00000AA 4150 0018      00018         114 TESTCORE LA    R5,24               LIST LENGTH WITHOUT CORE SIZE OPTION 22800020
+ 0000AE 586D 0058      00058         115          L     R6,CORESIZE(R13)    LOAD CORE-SIZE SPECIAL REGISTER      23000020
+ 0000B2 1266                         116          LTR   R6,R6               TEST FOR ZERO                        23200020
+ 0000B4 4780 C0C0      000C0         117          BE    STCORE              ZERO-EXIT                            23400020
+ 0000B8 5060 C218      00218         118          ST    R6,PARM7            STORE CORE SIZE - FULL BINARY WORK   23600020
+ 0000BC 4150 001C      0001C         119          LA    R5,28               LIST LENGTH WITH CORE SIZE OPTION    23800020
+ 0000C0 5050 C1FC      001FC         120 STCORE   ST    R5,LSTLNGTH         STORE LIST LENGTH                    24000020
+                                     121 *                                                                       24200020
+                                     122 *   SAVE THE ADDRESS OF THE INPUT PROCEDURE                             24400020
+                                     123 *  FROM THE PARAMETER LIST AND REPLACE WITH ADDRESS OF LINKAGE ROUTINE  24600020
+                                     124 *  IN THIS SUBROUTINE. GET A BUFFER FOR RELEASED RECORDS                24800020
+                                     125 *                                                                       25000020
+ 0000C4 D701 C230 C230 00230 00230   126 TESTINPT XC    VARLNADJ,VARLNADJ   SET ADJUSTMENT FACTOR TO 0 - F RECS  25200020
+ 0000CA D203 C21C C210 0021C 00210   127          MVC   ADINPUT(4),PARM5    SAVE COBOL INPUT PROC ADDRESS        25400020
+ 0000D0 4150 C23E      0023E         128          LA    R5,INPROC           POINT TO SUBROUT INPUT PROC ROUTINE  25600020
+ 0000D4 5050 C210      00210         129          ST    R5,PARM5            STORE IN PARAMETER LIST              25800020
+ 0000D8 5850 C208      00208         130          L     R5,PARM3            POINT TO RECORD CONTROL CARD         26000020
+ 0000DC F274 C1F0 5017 001F0 00017   131          PACK  WORK,MAXLNGTH(5,R5) PACK LENGTH OF MAX SIZE RECORD       26200020
+ 0000E2 4F50 C1F0      001F0         132          CVB   R5,WORK             CONVERT TO BINARY VALUE              26400020
+ 0000E6 5050 C22C      0022C         133          ST    R5,RECLNGTH         SAVE LENGTH FOR FREEMAIN LATER       26600020
+ 0000EA 1211                         134          LTR   R1,R1               SAME RECORD AREA FOR SD...      4774 26800020
+ 0000EC 4740 C100      00100         135          BM    INPUT1              YES,BYPASS GETMAIN FOR BUFFER   4774 27000020
+ 0000F0 1805                         136          LR    R0,R5               TRANSFER LENGTH TO PARAMETER REG     27200020
+                                     137          GETMAIN R,LV=(0)          GET A RECORD BUFFER                  27400020
+ 0000F2 4510 C0F6      000F6         138+         BAL   1,*+4                             INDICATE GETMAIN       04660000
+ 0000F6 0A0A                         139+         SVC   10                                ISSUE GETMAIN SVC      04680000
+ 0000F8 5010 C224      00224         140          ST    R1,ADBUFFER         SAVE BUFFER ADDRESS                  27600020
+ 0000FC 47F0 C118      00118         141          B     INPUT2              BYPASS SRA CODE                 4774 27800020
+ 000100                              142 INPUT1   DS    0H                                                  4774 28000020
+ 000100 1011                         143          LPR   R1,R1               CHANGE TO VALID ADDRESS         4774 28200020
+ 000102 5010 C204      00204         144          ST    R1,PARM2            INSERT IN PARAMETER GROUP       4774 28400020
+ 000106 9601 C238      00238         145          OI    SRASW,SWON          INDICATE SRA IS OPERATIVE       4774 28600020
+0
+ 00010A 5810 C200      00200         147          L     R1,PARM1                                            4774 29000020
+ 00010E 4B10 C23A      0023A         148          SH    R1,HW4              POINT TO ACTUAL BL VALUE        4774 29200020
+ 000112 D203 C224 1000 00224 00000   149          MVC   ADBUFFER(LX4),DX0(R1)    MOVE SRA BL TO BUFF ADR    4774 29400020
+0
+ 000118                              151 INPUT2   DS    0H                                                  4774 29800020
+                                     152 * TEST AND SET UP FOR VARIABLE LENGTH RECORDS                           30000020
+ 000118 9101 C232      00232         153          TM    VARLENSW,1          TEST FOR VARIABLE LENGTH             30200020
+ 00011C 47E0 C12C      0012C         154          BC    14,TESTOTPT          NOT VARIABLE - EXIT                 30400020
+ 000120 9204 C231      00231         155          MVI   VARLNADJ+1,4        SET ADJUSTMENT FACTOR TO 4 - V RECS  30600020
+ 000124 9240 1002      00002         156          MVI   2(R1),C' '          MOVE BLANKS TO 3D AND 4TH            30800020
+ 000128 9240 1003      00003         157          MVI   3(R1),C' '            BYTES OF LENGTH ATTRIBUTE          31000020
+                                     158 *                                                                       31200020
+                                     159 *   SAVE THE ADDRESS OF THE OUTPUT PROCEDURE                            31400020
+                                     160 *  FROM PARAMETER AND REPLACE WITH ADDRESS OF LINKAGE ROUTINE IN        31600020
+                                     161 *  THIS SUBROUTINE                                                      31800020
+                                     162 *                                                                       32000020
+ 00012C D203 C220 C214 00220 00214   163 TESTOTPT MVC   ADOUTPUT(4),PARM6   SAVE COBOL OUTPUT PROC ADDRESS       32200020
+ 000132 4150 C2BA      002BA         164          LA    R5,OUTPROC          LOAD SUBROUTINE OUTPUT PROC ADDR     32400020
+ 000136 5050 C214      00214         165          ST    R5,PARM6            STORE IN PARAMETER LIST              32600020
+ 00013A 9601 C237      00237         166          OI    FIRSTSW,1           TURN ON FIRST TIME SW FOR OUTPUTPROC 32800020
+1SRT0     ILBOSRT0                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    167 *                                                                       33000020
+                                     168 * FINISH INITIALIZATION AND LINK TO SORT                                33200020
+                                     169 *                                                                       33400020
+ 00013E 4150 C1FE      001FE         170 LINKSORT LA    R5,LSTLNGTH+2       LOAD ADDR OF PARAM LIST              33600020
+ 000142 5050 C1F8      001F8         171          ST    R5,LSTPNTER         STORE IN POINTER                     33800020
+ 000146 9680 C1F8      001F8         172          OI    LSTPNTER,X'80'      SORT NEEDS HIGH ORDER BIT ON         34000020
+ 00014A 4110 C1F8      001F8         173          LA    R1,LSTPNTER         R1 MUST POINT TO A POINTER           34200020
+ 00014E 4150 C1A8      001A8         174          LA    R5,SRSAVE          LOAD ADDR OF SUBROUT SAVE AREA        34400020
+ 000152 505D 018C      0018C         175          ST    R5,SRSVPNTR(R13)    SAVE IN COBOL TGT                    34600020
+ 000156 18D5                         176          LR    R13,R5              POINT TO SR SAVE AREA                34800020
+                                     177          LINK  EPLOC=SORTNAME      LINK TO SORT                         35000020
+ 000158                              178+         CNOP  0,4                                                      01440000
+ 000158 45F0 C164      00164         179+         BAL   15,*+12                           LOAD SUP.PARAMLIST ADR 01460000
+ 00015C 00                           180+         DC    B'00000000'                       SET DE-EPLOC SW BIT    01560000
+ 00015D 000199                       181+         DC    AL3(SORTNAME)                     EPLOC OR DE PARAMETER  01580000
+ 000160 00000000                     182+         DC    A(0)                    DCB ADDRESS PARAMETER       LC0A 01736017
+ 000164 0A06                         183+         SVC   6                                 ISSUE LINK SVC         00300000
+                                     184 *                                                                       35200020
+                                     185 * CONTROL RETURNS HERE AT THE COMPLETION OF THE SORT                    35400020
+                                     186 *                                                                       35600020
+ 000166 58DD 0004      00004         187          L     R13,4(R13)          POINT TO COBOL SAVE AREA             35800020
+ 00016A 40FD 005E      0005E         188          STH   R15,SORTRET(R13)    STORE SORT RETURN CODE               36000020
+ 00016E 9101 C238      00238         189          TM    SRASW,SWON          SRA OPERATIVE...                4774 36200020
+ 000172 4710 C184      00184         190          BO    EXITSORT            YES,BYPASS FREEMAIN CODE        4774 36400020
+ 000176 5810 C224      00224         191          L     R1,ADBUFFER         INPUT PROC BUFFER ADDR               36600020
+ 00017A 5800 C22C      0022C         192          L     R0,RECLNGTH          YES - LOAD BUFFER LENGTH            36800020
+                                     193          FREEMAIN R,LV=(0),A=(1)   FREE BUFFER                          37000020
+ 00017E 4111 0000      00000         194+         LA    1,0(1)                       CLEAR THE HIGH ORDER BYTE   03130018
+ 000182 0A0A                         195+         SVC   10                      ISSUE FREEMAIN SVC         P2504 03140021
+ 000184 58E0 C1A4      001A4         196 EXITSORT L     R14,COBRETRN        LOAD COBOL RETURN ADDR               37200020
+ 000188 94FE C238      00238         197          NI    SRASW,SWOFF         TURN OFF SRA INDICATOR          4774 37400020
+ 00018C 98FC D010      00010         198          LM    R15,R12,16(R13)     RESTORE COBOL REGS                   37600020
+ 000190 07FE                         199          BR    R14                 RETURN TO COBOL                      37800020
+                                     200 *                                                                       38000020
+                                     201 *                                                                       38200020
+                                     202 * CONSTANTS                                                             38400020
+                                     203 *                                                                       38600020
+ 000192 6BE2C9E9C57EC5               204 KSIZE    DC    C',SIZE=E'                                               38800020
+ 000199 C9C5D9D9C3D6F0F0             205 SORTNAME DC    C'IERRCO00'                                              39000020
+ 0001A4                              206 COBRETRN DS    F         SAVE AREA FOR COBOL FINAL RETURN               39200020
+ 0001A8                              207 SRSAVE   DS    18F           SAVE AREA FOR SUBROUTINE'S REGS            39400020
+ 0001F0                              208 WORK     DS    D                                                        39600020
+ 0001F8                              209 LSTPNTER DS    F         SET TO POINT TO LISTLENGTH+2                   39800020
+ 0001FC                              210 LSTLNGTH DS    F         LENGTH OF PARAM LIST - 24 OR 28                40000020
+                             00200   211 PARAMS   EQU   *                                                        40200020
+ 000200                              212 PARM1    DS    F         START OF 'SORT' CARD                           40400020
+ 000204                              213 PARM2    DS    F         END OF 'SORT' CARD                             40600020
+ 000208                              214 PARM3    DS    F         START OF 'RECORD' CARD                         40800020
+ 00020C                              215 PARM4    DS    F         END OF 'RECORD' CARD                           41000020
+ 000210                              216 PARM5    DS    F         INPUT PROCEDURE ADDRESS                        41200020
+ 000214                              217 PARM6    DS    F         OUTPUT PROCEDURE ADDRESS                       41400020
+ 000218                              218 PARM7    DS    F         CORE SIZE IF SPECIFIED                         41600020
+ 00021C                              219 ADINPUT  DS    F         ADDRESS OF INPUT PROCEDURE                     41800020
+ 000220                              220 ADOUTPUT DS    F         ADDRESS OF OUTPUT PROCEDURE                    42000020
+ 000224                              221 ADBUFFER DS    F         ADDRESS OF INPUT OR OUTPUT BUFFER              42200020
+1SRT0     ILBOSRT0                                                                                              PAGE    7
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000228                              222 ADLIST   DS    F         ADDRESS OF LIST RETURNED BY SORT AT E35        42400020
+ 00022C                              223 RECLNGTH DS    F         LENGTH OF INPUT PROC RECORD                    42600020
+ 000230                              224 VARLNADJ DS    H         ADJUSTMENT FACTOR - 0 IF F RECS, 4 IF V RECS   42800020
+ 000232                              225 VARLENSW DS    C         VARIABLE LENGTH RECORD SWITCH - ON IF V        43000020
+ 000233 00000000                     226 FW4      DC    XL4'0'              FULL WORD OF ZEROES                  43200020
+ 000237                              227 FIRSTSW  DS    C         SWITCH FOR FIRST TIME THRU OUTPUT PROC         43400020
+ 000238 00                           228 SRASW    DC    XL1'0'              SAME RECORD AREA SWITCH        39345 43600020
+                                     229 *  X'01' INDICATES SAME RECORD AREA SPECIFIED FOR SORT-FILE        4774 43800020
+                             00001   230 SWON     EQU   X'01'              *                                4774 44000020
+                             000FE   231 SWOFF    EQU   X'FE'              *                                4774 44200020
+                                     232 *                                                                       44400020
+-
+                                     234 *                                                                  4774 44800020
+                                     235 * INCIDENTAL EQUATES AND STORAGE:                                  4774 45000020
+                                     236 *                                                                  4774 45200020
+0
+                             00000   238 DX0      EQU   0                  *                                4774 45600020
+                             00000   239 LX0      EQU   0                  *                                4774 45800020
+                             00001   240 DX1      EQU   1                  *                                4774 46000020
+                             00004   241 DX4      EQU   4                  *                                4774 46200020
+                             00004   242 LX4      EQU   4                  *                                4774 46400020
+                             000FF   243 DX255    EQU   255                *                                4774 46600020
+ 000239 00
+ 00023A 0004                         244 HW4      DC    H'4'               *                                4774 46800020
+ 00023C 0100                         245 HW256    DC    H'256'             *                                4774 47000020
+1SRT0     ILBOSRT0                                                                                              PAGE    8
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    247 *                                                                       47400020
+                                     248 * SORT EXITS AT E15 TO THIS ROUTINE WHICH CREATES LINKAGE TO THE        47600020
+                                     249 *  COBOL INPUT PROCEDURE                                                47800020
+                                     250 *                                                                       48000020
+ 00023E 90EC D00C      0000C         251 INPROC   STM   R14,R12,12(R13)     SAVE SORT REGS                       48200020
+ 000242 05A0                         252          BALR  R10,0               SET BASE REG                         48400020
+                             00244   253          USING *,R10                                                    48600020
+ 000244 585D 0004      00004         254          L     R5,4(R13)           PICK  UP POINTER TO SUBROUT SAVEAREA 48800020
+ 000248 50D5 0008      00008         255          ST    R13,8(R5)           SAVE POINTER TO SORT SAVE AREA       49000020
+ 00024C 58C5 0044      00044         256          L     R12,68(R5)          LOAD SUBROUTINE BASE REGISTER        49200020
+ 000250 58D5 0004      00004         257          L     R13,4(R5)           POINT TO COBOL SAVE AREA             49400020
+ 000254 5810 C224      00224         258          L     R1,ADBUFFER         POINT TO BUFFER                      49600020
+ 000258 4A10 C230      00230         259          AH    R1,VARLNADJ         ADD 4 IF VARIABLE LENGTH             49800020
+ 00025C 58F0 C21C      0021C         260          L     R15,ADINPUT         INPUT PROC ADDR                      50000020
+ 000260 580D 0014      00014         261          L     R0,20(R13)          RESTORE COBOL R0                     50200020
+ 000264 982C D01C      0001C         262          LM    R2,R12,28(R13)      RESTORE THE REST OF COBOL REGS       50400020
+ 000268 05EF                         263          BALR  R14,R15             GO TO INPUT PROC                     50600020
+                                     264 *                                                                       50800020
+1SRT0     ILBOSRT0                                                                                              PAGE    9
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    266 *      .                                                                51200020
+                                     267 * THE INPUT PROCEDURE WILL RETURN CONTROL VIA R14 TO THIS SECTION.      51400020
+                                     268 *  IF THERE ARE MORE RECORDS TO BE RELEASED CONTROL WILL COME TO        51600020
+                                     269 *  'MORERECI'.  IF THE LAST RECORD HAS BEEN RELEASED, CONTROL WILL      51800020
+                                     270 *  COME TO 'LASTRECI'.                                                  52000020
+                                     271 *                                                                       52200020
+                             0026A   272          USING *,R14               SET BASE REG                         52400020
+ 00026A 47F0 E01A      00284         273 MORERECI B     RELEASE             GO TO RELEASE THE RECORD TO SORT     52600020
+                                     274 * LAST RECORD HAS BEEN RELEASED - CLOSE EXIT E15                        52800020
+ 00026E 90EC D00C      0000C         275 LASTRECI STM   R14,R12,12(R13)     SAVE COBOL REGS                      53000020
+ 000272 58DD 018C      0018C         276          L     R13,SRSVPNTR(R13)   POINT TO SUBROUTINE SAVE AREA        53200020
+ 000276 58DD 0008      00008         277          L     R13,8(R13)          POINT TO SORT SAVE AREA              53400020
+ 00027A 98EC D00C      0000C         278          LM    R14,R12,12(R13)     LOAD SORT REGS                       53600020
+ 00027E 41F0 0008      00008         279          LA    R15,8               CODE 8 TELLS SORT TO CLOSE EXIT E15  53800020
+ 000282 07FE                         280          BR    R14                 RETURN TO SORT                       54000020
+                                     281 *                                                                       54200020
+                                     282 * SET UP TO RELEASE THE RECORD TO  SORT                                 54400020
+                                     283 *                                                                       54600020
+ 000284 90EC D00C      0000C         284 RELEASE  STM   R14,R12,12(R13)     SAVE COBOL REGS                      54800020
+ 000288 58DD 018C      0018C         285          L     R13,SRSVPNTR(R13)   POINT TO SUBROUTINE SAVE AREA        55000020
+ 00028C 58CD 0044      00044         286          L     R12,68(R13)         LOAD SUBROUTINE BASE REGISTER        55200020
+ 000290 5810 C224      00224         287          L     R1,ADBUFFER         LOAD R1 WITH BUFFER ADDR             55400020
+                                     288 *                                                                       55600020
+                                     289 * TEST FOR VARIABLE LENGTH RECORDS - IF V-TYPE, LENGTH IN R3            55800020
+                                     290 *                                                                       56000020
+ 000294 9101 C232      00232         291          TM    VARLENSW,1          TEST VARIABLE LENGTH                 56200020
+ 000298 47E0 E03A      002A4         292          BC    14,IPCOMMON          NO - GO TO COMMON ROUTINE           56400020
+ 00029C 4133 0004      00004         293          LA    R3,4(R3)            ADD 4 BYTES FOR LLBB FIELD           56600020
+ 0002A0 4031 0000      00000         294          STH   R3,0(R1)            INSERT LENGTH AT BEG OF RECORD       56800020
+ 0002A4 5020 C21C      0021C         295 IPCOMMON ST    R2,ADINPUT          SAVE RETURN ADDRESS TO INPUT PROC    57000020
+                                     296 *                                 ( BALR 2,14)                          57200020
+ 0002A8 58DD 0008      00008         297          L     R13,8(R13)          POINT TO SORT SAVE AREA              57400020
+ 0002AC 98E0 D00C      0000C         298          LM    R14,R0,12(R13)      LOAD SORT REGS EXCEPT R1             57600020
+ 0002B0 982C D01C      0001C         299          LM    R2,R12,28(R13)      LOAD BALANCE OF SORT REGS            57800020
+ 0002B4 41F0 000C      0000C         300          LA    R15,12              CODE 12 TELLS SORT TO INSERT RECORD  58000020
+ 0002B8 07FE                         301          BR    R14                 RETURN TO SORT AT E15                58200020
+                                     302 *                                                                       58400020
+                                     303 *                                                                       58600020
+1SRT0     ILBOSRT0                                                                                              PAGE   10
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    305 *                                                                       59000020
+                                     306 *  OUTPUT PROCEDURE ROUTINE - SORT WILL EXIT TO HERE AT E35 . LINKAGE   59200020
+                                     307 *   IS MADE TO THE COBOL OUTPUT PROCEDURE                               59400020
+                                     308 *                                                                       59600020
+ 0002BA 90EC D00C      0000C         309 OUTPROC  STM   R14,R12,12(R13)     SAVE SORT REGS                       59800020
+ 0002BE 05A0                         310          BALR  R10,0               SET BASE REG                         60000020
+                             002C0   311          USING *,R10                                                    60200020
+ 0002C0                              312 OUTPROC1 DS    0H                                                  4774 60400020
+ 0002C0 585D 0004      00004         313          L     R5,4(R13)           POINT TO SUBROUTINE SAVE AREA        60600020
+ 0002C4 50D5 0008      00008         314          ST    R13,8(R5)           SAVE POINTER TO SORT SAVE AREA       60800020
+ 0002C8 58C5 0044      00044         315          L     R12,68(R5)          LOAD SUBROUTINE BASE REGISTER        61000020
+ 0002CC 58D5 0004      00004         316          L     R13,4(R5)           POINT TO COBOL SAVE AREA             61200020
+ 0002D0 5010 C228      00228         317          ST    R1,ADLIST           SAVE ADDR OF LIST RETURNED BY SORT   61400020
+ 0002D4 58F0 C220      00220         318          L     R15,ADOUTPUT        LOAD OUTPUT PROC ADDR                61600020
+ 0002D8 9101 C237      00237         319          TM    FIRSTSW,1           TEST FIRST TIME THRU                 61800020
+ 0002DC 4710 A02E      002EE         320          BC    1,OPINIT             YES                                 62000020
+ 0002E0 D503 1000 A110 00000 003D0   321          CLC   0(4,R1),=XL4'0'     TEST LAST RECORD                     62200020
+ 0002E6 4780 A02E      002EE         322          BE    OPINIT               YES                                 62400020
+ 0002EA 41FF 0006      00006         323 COMMINIT LA    R15,6(R15)          IF NOT 1ST OR LAST RECORD GO TO CODE 62600020
+                                     324 *                                   IN OUTPUT PROC 6 BYTES FORWARD      62800020
+ 0002EE 580D 0014      00014         325 OPINIT   L     R0,20(R13)          LOAD COBOL R0                        63000020
+ 0002F2 5811 0000      00000         326          L     R1,0(R1)            POINT TO RECORD IN SORT'S BUFFER     63200020
+ 0002F6 1211                         327          LTR   R1,R1               LAST RECORD...                  4774 63400020
+ 0002F8 4780 A096      00356         328          BZ    OPINIT1             YES, DO NOT MOVE RECORD         4774 63600020
+ 0002FC 9101 C238      00238         329          TM    SRASW,SWON          SRA OPERATIVE...                4774 63800020
+ 000300 4780 A096      00356         330          BZ    OPINIT1             NO, BYPASS MOVE CODING          4774 64000020
+1SRT0     ILBOSRT0                                                                                              PAGE   11
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    332 *                                                                  4774 64400020
+                                     333 * THIS SECTION, WHICH IS ENTERED WITHIN THE E35 EXIT ONLY WHEN THE 4774 64600020
+                                     334 * SD OF THE SORT-FILE HAS BEEN SPECIFIED IN A SAME RECORD AREA     4774 64800020
+                                     335 * CLAUSE, MOVES THE RECORD FROM SORT'S BUFFER TO THE SRA RESERVED  4774 65000020
+                                     336 * WITHIN THE COBOL PROGRAM. THE CODING TAKES INTO ACCOUNT BOTH     4774 65200020
+                                     337 *                 FIXED AND VARIABLE LENGTH RECORDS.               4774 65400020
+                                     338 *                                                                  4774 65600020
+0
+ 000304                              340 SRAMOVE  DS    0H                                                  4774 66000020
+ 000304 1821                         341          LR    R2,R1               ADDRESS OF RECORD IN REGISTER 2 4774 66200020
+                                     342 *                                     (REG1 IS IS NOT TOUCHED)     4774 66400020
+ 000306 5830 C224      00224         343          L     R3,ADBUFFER         ADDRESS OF AREA                 4774 66600020
+ 00030A 9101 C232      00232         344          TM    VARLENSW,SWON       VARIABLE LENGTH RECORDS...      4774 66800020
+ 00030E 4780 A05E      0031E         345          BZ    SRAMOVE1            NO, FIXED LENGTH                4774 67000020
+                                     346 *                                                                  4774 67200020
+                                     347 * THE POINTERS TO THE SRA AND TO THE SORT RECORD ARE BOTH BUMPED   4774 67400020
+                                     348 * BY 4 FOR VARIABLE LENGTH RECORDS, SINCE WE DO NOT MOVE THE       4774 67600020
+                                     349 *                     RECORD DESCRIPTOR WORD.                      4774 67800020
+                                     350 *                                                                  4774 68000020
+ 000312 4120 2004      00004         351          LA    R2,DX4(LX0,R2)                                      4774 68200020
+ 000316 4850 1000      00000         352          LH    R5,DX0(LX0,R1)      GET LENGTH FROM RCD DSCRPTR WD  4774 68400020
+ 00031A 47F0 A062      00322         353          B     SRAMOVE2            BRANCH AROUND FIXED LENGTH CODE 4774 68600020
+ 00031E                              354 SRAMOVE1 DS    0H                                                  4774 68800020
+ 00031E 5850 C22C      0022C         355          L     R5,RECLNGTH         FOR FIXED LENGTH RECORDS        4774 69000020
+ 000322                              356 SRAMOVE2 DS    0H                                                  4774 69200020
+ 000322 4950 C23C      0023C         357          CH    R5,HW256            LENGTH LT 256 BYTES...          4774 69400020
+ 000326 4740 A080      00340         358          BL    SRAMOVE4            YES, ONLY ONE MOVE              4774 69600020
+ 00032A 4180 00FF      000FF         359          LA    R8,DX255(LX0,R0)    MOVE LENGTH              (255)  4774 69800020
+ 00032E 4170 8001      00001         360          LA    R7,DX1(R0,R8)       COMPARAND                (256)  4774 70000020
+ 000332 1167                         361          LNR   R6,R7               INCREMENT                (-256) 4774 70200020
+0
+                                     363 *                                                                  4774 70600020
+                                     364 * IN THE FOLLOWING LOOP WE MOVE 256-BYTE SEGMENTS OF THE RECORD TO 4774 70800020
+                                     365 * THE SRA, BUMP THE POINTERS BY 256, AND THEN CHECK, VIA A BXH     4774 71000020
+                                     366 * INSTRUCTION, WHETHER 256 BYTES OR LESS ARE LEFT TO BE MOVED. IF  4774 71200020
+                                     367 * THERE ARE, WE FALL THRU THE LOOP; IF NOT, WE TAKE THE BRANCH.    4774 71400020
+                                     368 *                                                                  4774 71600020
+ 000334                              369 SRAMOVE3 DS    0H                                                  4774 71800020
+ 000334 4480 A090      00350         370          EX    R8,MOVECODE         MOVE 256 BYTES                  4774 72000020
+ 000338 1A27                         371          AR    R2,R7               BUMP AREA POINTERS              4774 72200020
+ 00033A 1A37                         372          AR    R3,R7                  BY 256 BYTES EACH            4774 72400020
+ 00033C 8656 A074      00334         373          BXH   R5,R6,SRAMOVE3      BRANCH IF GT 256 BYTES LEFT     4774 72600020
+0
+ 000340                              375 SRAMOVE4 DS    0H                                                  4774 73000020
+ 000340 1255                         376          LTR   R5,R5               ARE ZERO BYTES LEFT...          4774 73200020
+ 000342 4780 A096      00356         377          BZ    OPINIT1             YES, RETURN TO OPINIT ROUTINE   4774 73400020
+ 000346 0650                         378          BCTR  R5,R0               NO,DECREMENT BYTE COUNT BY 1    4774 73600020
+ 000348 4450 A090      00350         379          EX    R5,MOVECODE            AND PERFORM LAST MOVE        4774 73800020
+ 00034C 47F0 A096      00356         380          B     OPINIT1             RETURN TO INLINE PROCEDURE      4774 74000020
+-
+1SRT0     ILBOSRT0                                                                                              PAGE   12
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000350 D200 3000 2000 00000 00000   382 MOVECODE MVC   DX0(LX0,R3),DX0(R2) MOVE INSTRUCTION TO BE EX'ED    4774 74400020
+-
+ 000356                              384 OPINIT1  DS    0H                                                  4774 74800020
+ 000356 4A10 C230      00230         385          AH    R1,VARLNADJ         ADD 4 IF V-LENGTH               4774 75000020
+ 00035A 982C D01C      0001C         386          LM    R2,R12,28(R13)      LOAD THE REST OF COBOL'S REGS        75200020
+ 00035E 05EF                         387          BALR  R14,R15             GO TO OUTPUT PROCEDURE               75400020
+1SRT0     ILBOSRT0                                                                                              PAGE   13
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    389 *                                                                       75800020
+                                     390 * THE OUTPUT PROCEDURE WILL RETURN CONTROL VIA R14 TO THIS SECTION.     76000020
+                                     391 *  IF THERE ARE MORE RECORDS TO BE RETURNED, CONTROL WILL COME TO       76200020
+                                     392 *  'MORERECO'. IF THE LAST RECORD HAS BEEN RETURNED, CONTROL WILL       76400020
+                                     393 *  COME TO 'LASTRECO'.                                                  76600020
+                                     394 *                                                                       76800020
+                             00360   395          USING *,R14               ESTABLISH BASE                       77000020
+ 000360 47F0 E01E      0037E         396 MORERECO B     RETURN              GO TO GET ANOTHER RECORD             77200020
+                                     397 *                                                                       77400020
+                                     398 * LAST RECORD HAS BEEN RETURNED -- CLOSE EXIT E35                       77600020
+                                     399 *                                                                       77800020
+ 000364 90EC D00C      0000C         400 LASTRECO STM   14,12,12(13)         SAVE COBOL REGS                     78000020
+ 000368 41F0 0008      00008         401          LA    R15,8               CODE 8 TELLS SORT TO CLOSE EXIT E35  78200020
+                                     402 * COMMON CODING TO RETURN TO SORT FOR ALL CASES                         78400020
+ 00036C 58DD 018C      0018C         403 COMMRET  L     R13,SRSVPNTR(R13)   POINT TO SUBROUTINE SAVE AREA        78600020
+ 000370 58DD 0008      00008         404          L     R13,8(R13)          POINT TO SORT SAVE AREA              78800020
+ 000374 58ED 000C      0000C         405          L     R14,12(R13)         LOAD SORT RETURN ADDRESS             79000020
+ 000378 980C D014      00014         406          LM    R0,R12,20(R13)      LOAD THE REST SORT'S REGS            79200020
+ 00037C 07FE                         407          BR    R14                 RETURN TO SORT                       79400020
+                                     408 *                                                                       79600020
+                                     409 * THE OUPUT PROCEDURE COMES HERE WHEN IT IS READY FOR A RECORD          79800020
+                                     410 *  FROM SORT.  NOTE THAT THE FIRST TIME THRU THIS ROUTINE IT IS         80000020
+                                     411 *  NOT NECESSARY TO GO TO SORT FOR A RECORD BECAUSE SORT HAS            80200020
+                                     412 *  ALREADY PASSED A POINTER TO THE FIRST RECORD.  CONTROL IS            80400020
+                                     413 * THEREFORE GIVEN BACK TO THE OUTPUT PROCEDURE AT THE POINT             80600020
+                                     414 *  AFTER THE FIRST 'RETURN' STATEMENT.                                  80800020
+                                     415 *                                                                       81000020
+ 00037E 90EC D00C      0000C         416 RETURN   STM   R14,R12,12(R13)     SAVE COBOL REGS                      81200020
+ 000382 58DD 018C      0018C         417          L     R13,SRSVPNTR(R13)   POINT TO SUBROUTINE SAVE AREA        81400020
+ 000386 58CD 0044      00044         418          L     R12,68(R13)         LOAD SUBROUTINE BASE REGISTER        81600020
+ 00038A 5020 C220      00220         419          ST    R2,ADOUTPUT         SAVE O/P ADDR (O/P EXITS BALR 2,14)  81800020
+ 00038E 9101 C237      00237         420          TM    FIRSTSW,1           TEST FIRST TIME THRU                 82000020
+ 000392 4710 E03E      0039E         421          BC    1,FIRSTIME           YES - GO TO FIRST TIME              82200020
+ 000396 41F0 0004      00004         422          LA    R15,4                NO - CODE 4 SAYS DELETE THE RECORD  82400020
+ 00039A 47F0 E010      00370         423          B     COMMRET+4           GO TO COMMON CODE TO RETURN TO SORT  82600020
+ 00039E 9400 C237      00237         424 FIRSTIME NI    FIRSTSW,0           TURN OFF FIRST TIME SW               82800020
+ 0003A2 5810 C228      00228         425          L     R1,ADLIST           POINT TO SORT'S BUFFER POINTER       83000020
+ 0003A6 58F0 C220      00220         426          L     R15,ADOUTPUT        RETURN ADDR IN OUTPUT PROC           83200020
+ 0003AA 58A0 E064      003C4         427          L    R10,AOUTPRC1         REESTABLISH ADDRESSABILITY      4774 83400020
+ 0003AE 5BE0 E068      003C8         428          S     R14,ADDRDIFF        ADJUST R14 BASE BACK TO 'COMMINIT'   83600020
+ 0003B2 58DD 0004      00004         429          L     R13,4(R13)          POINT BACK TO COBOL SAVE AREA        83800020
+ 0003B6 D503 1000 C233 00000 00233   430          CLC   DX0(LX4,R1),FW4     IS THIS A NULL FILE...               84000020
+ 0003BC 4780 E004      00004         431          BE    DX4(DX0,R14)        YES                                  84200020
+ 0003C0 07FE                         432          BR    R14                 GO TO COMMINIT TO RETURN TO OUT PROC 84400020
+                                     433 *                                                                       84600020
+ 0003C2 0000
+ 0003C4 000002C0                     434 AOUTPRC1 DC    A(OUTPROC1)                                         4774 84800020
+ 0003C8 00000076                     435 ADDRDIFF DC    A(MORERECO-COMMINIT)                                     85000020
+                                     436 *                                                                       85200020
+                                     437 *                                                                       85400020
+                                     438          END                                                            85600020
+ 0003D0 00000000                     439                =XL4'0'
+1SRT0                                              RELOCATION DICTIONARY                                        PAGE   14
+-POS.ID   REL.ID   FLAGS   ADDRESS                                                                ASM 0201 11.03 02/14/15
+0 0001     0001      08     00015D
+  0001     0001      0C     0003C4
+
+1SRT0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE   15
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        428
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY     1424
+ TOTAL RECORDS PUNCHED                        21
+ TOTAL RECORDS PRINTED                       480

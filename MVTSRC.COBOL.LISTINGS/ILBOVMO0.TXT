@@ -1,0 +1,278 @@
+1VMO0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOVMO0  SD  0001 000000 00020A
+ ILBOVMO1  LD       00000C        0001
+1VMO0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *$MODULE       ILBOVMO0                                                 00400021
+                                       2 *//    ILBOVMO0                                                         00800021
+1VMO0     ILBOVMO0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      4 *        ILBOVMV0   CALLING SEQ... L    15,V(ILBOVMV0)                  01600021
+                                       5 *                                                                       02000021
+                                       6 *        LEVEL  180     09/14/66                                        02400021
+                                       7 *                                                                       02800021
+                                       8 *FUNCTION 0 THIS ROUTINE PERFORMS AN ALPHANUMERIC MOVE WHEN ONE OR BOTH 03200021
+                                       9 *   OPERANDS IS VARIABLE IN LENGTH. THEY MAY EXCEED 256 BYTES. THE      03600021
+                                      10 *   ROUTINE HAS TWO ENTRY POINTS DEPENDING UPON WHETHER THE MOVE IS     04000021
+                                      11 *   LEFT OR RIGHT JUSTIFIED.                                            04400021
+                                      12 *ENTRY POINTS 0 ILBOVMOV, ILBOVMVJ.  CALLING SEQUENCE IS 0              04800021
+                                      13 *              L    15,V(ILBOVMOV)     LEFT JUSTIFIED                   05200021
+                                      14 *                OR                                                     05600021
+                                      15 *              L    15,V(ILBOVMVJ)     RIGHT JUSTIFIED                  06000021
+                                      16 *              BALR 1,15                                                06400021
+                                      17 *              DC   XL10'OPERAND-A INFORMATION'                         06800021
+                                      18 *              DC   XL10'OPERAND-B INFORMATION'                         07200021
+                                      19 *   WHERE THE 'OPERAND INFORMATION' FIELD CAN HAVE ONE OF THE FOLLOWING 07600021
+                                      20 *   TWO FORMATS 0-                                                      08000021
+                                      21 *           1. IF FIXED LENGTH.                                         08400021
+                                      22 *              DC   XL1'TYPE CODE'          EXPLAINED BELOW             08800021
+                                      23 *              DC   XL3'LENGTH OF ITEM'                                 09200021
+                                      24 *              DC   AL4(ADDRESS OF POINTER IN TASK GLOBAL TABLE OR      09600021
+                                      25 *                       POINTER TO PROGRAM GLOBAL TABLE )               10000021
+                                      26 *              DC   XL2'DISPLACEMENT'                                   10400021
+                                      27 *     THE TYPE CODE BITS ARE 0                                          10800021
+                                      28 *             BIT 0 NOT USED                                            11200021
+                                      29 *                 1 TRACE ITEM               (N/A HERE)                 11600021
+                                      30 *                 2 VARIABLE LENGTH                                     12000021
+                                      31 *                 3 DIRECT POINTER (E.G., FOR A LIETERAL OR TALLY)      12400021
+                                      32 *               4-5 NOT USED                                            12800021
+                                      33 *                 6 INTERNAL DECIMAL ITEM    (N/A HERE)                 13200021
+                                      34 *                 7 BINARY ITEM              (N/A HERE)                 13600021
+                                      35 *                                                                       14000021
+                                      36 *           2. IF VARIABLE LENGTH.                                      14400021
+                                      37 *              DC   XL1'TYPE CODE'          EXPLAINED ABOVE             14800021
+                                      38 *              DC   AL1(POINTER TO CELL IN TASK GLOBAL TABLE)           15200021
+                                      39 *                       CONTAINS THE LENGTH)                            15600021
+                                      40 *              DC   AL4(ADDRESS OF POINTER IN THE TASK GLOBAL TABLE)    16000021
+                                      41 *              DC   XL2'DISPLACEMENT'                                   16400021
+                                      42 *INPUT 0 AS EXPLAINED ABOVE.                                            16800021
+                                      43 *OUTPUT0 N/A                                                            17200021
+                                      44 *EXTERNAL ROUTINES 0 NONE                                               17600021
+                                      45 *EXITS-NORMAL 0  BY   BCR 15,20(1)                                      18000021
+                                      46 *      ERROR  0  NONE                                                   18400021
+                                      47 *WORKAREA 0 BYTES 76-104 OF TGT.                                        18800021
+                                      48 *ATTRIBUTES0 REENTRANT CODE. BLANK HAS CODE X'40'                       19200021
+                                      49 *                                                                       19600021
+ 000000                               50 ILBOVMO0 START 0                                                        20000021
+                                      51          ENTRY ILBOVMO1                                                 20400021
+                             00008    52 PNTA   EQU   8                                                          20800021
+                             00002    53 PNTB   EQU   2                                                          21200021
+                             00003    54 LENA   EQU   3                                                          21600021
+                             00004    55 LENB   EQU   4                                                          22000021
+                             00005    56 WRKLEN EQU   5                                                          22400021
+                             00006    57 PNTAWK EQU   6                                                          22800021
+                             00007    58 PNTBWK EQU   7                                                          23200021
+1VMO0     ILBOVMO0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                            00000    59 R0     EQU   0                                                          23600021
+                             00001    60 R1     EQU   1                                                          24000021
+                             00002    61 R2     EQU   2                                                          24400021
+                             00003    62 R3     EQU   3                                                          24800021
+                                      63 *                                                                       25200021
+                             00004    64 R4     EQU   4                                                          25600021
+                             00005    65 R5     EQU   5                                                          26000021
+                             00006    66 R6     EQU   6                                                          26400021
+                             00007    67 R7     EQU   7                                                          26800021
+                             00008    68 R8     EQU   8                                                          27200021
+                             00009    69 R9     EQU   9                                                          27600021
+                             0000A    70 R10    EQU   10                                                         28000021
+                             0000B    71 R11    EQU   11                                                         28400021
+                             0000C    72 R12    EQU   12                                                         28800021
+                             0000D    73 R13    EQU   13                                                         29200021
+                             0000E    74 R14    EQU   14                                                         29600021
+                             0000F    75 R15    EQU   15                                                         30000021
+                             00009    76 WRKREG EQU   9                                                       CS 30400021
+                                      77 *                                                                       30800021
+                             00000    78          USING *,R15                                                    31200021
+ 000000 90EC D00C      0000C          79          STM   R14,R12,SAVE(R13)                                        31600021
+ 000004 9400 D060      00060          80          NI    VLMVSW(R13),0     CLEAR SW                               32000021
+ 000008 45F0 F018      00018          81          BAL   R15,TSTPRM        GO TEST PARAMETERS                     32400021
+                             0000C    82          USING *,R15                                                    32800021
+ 00000C 90EC D00C      0000C          83 ILBOVMO1 STM   R14,R12,SAVE(R13)                                        33200021
+ 000010 9400 D060      00060          84          NI    VLMVSW(R13),0     CLEAR SW                               33600021
+ 000014 9601 D060      00060          85          OI    VLMVSW(R13),1     SET JUST RIGHT SW                      34000021
+ 000018 D200 D064 1004 00064 00004    86 TSTPRM MVC   ALLIGN(1,R13),4(R1) MOVE REG CODE TO WORK               CS 34400021
+ 00001E 9680 D064      00064          87        OI    ALLIGN(R13),X'80'   SET UP FOR PNTA REG 8               CS 34800021
+ 000022 439D 0064      00064          88        IC    WRKREG,ALLIGN(R13)  PUT CODE IN WORK REG                CS 35200021
+ 000026 4490 F1F2      001FE          89        EX    WRKREG,LDREG        LOAD BASE TO REG 8 PNTA             CS 35600021
+ 00002A 4A81 0006      00006          90        AH    PNTA,6(R1)          ADD DISP                            CS 36000021
+ 00002E D200 D064 100E 00064 0000E    91        MVC   ALLIGN(1,R13),14(R1) MOVE REG CODE TO WORK              CS 36400021
+ 000034 9620 D064      00064          92        OI    ALLIGN(R13),X'20'    SET UP FOR PNTB REG 2              CS 36800021
+ 000038 439D 0064      00064          93        IC    WRKREG,ALLIGN(R13)   PUT CODE IN WORK REG               CS 37200021
+ 00003C 4490 F1F2      001FE          94        EX    WRKREG,LDREG         LOAD BASE TO REG 2 PNTB            CS 37600021
+ 000040 4A21 0010      00010          95        AH    PNTB,16(R1)          ADD DISP                           CS 38000021
+ 000044 9180 1000      00000          96          TM    0(R1),X'80'       TEST FIGCON                            38400021
+ 000048 4780 F048      00054          97        BC    8,PARAMA         GO TEST A-PARAMETER                       38800021
+ 00004C 9602 D060      00060          98          OI    VLMVSW(R13),2     TURN ON FIGCON SW                      39200021
+ 000050 47F0 F0B8      000C4          99        BC    15,PARAMB        GO TEST B-PARAMETER                       39600021
+ 000054 9110 1000      00000         100 PARAMA   TM    0(R1),X'10'       TEST DIRECT TGT POINTER                40000021
+ 000058 4710 F07A      00086         101        BC    1,GETLNA          YES                                      40400021
+ 00005C 5888 0000      00000         102        L     PNTA,0(PNTA)      NO - LOAD BL IN TGT                      40800021
+ 000060 4A81 0008      00008         103          AH    PNTA,8(R1)        AND DISPLACEMENT                       41200021
+ 000064 9140 1000      00000         104          TM    0(R1),X'40'         SPECIAL BUFFER MOVE            58932 41600021
+ 000068 4780 F07A      00086         105          BZ    GETLNA              NO, REGULAR ALGORITHM          58932 42000021
+ 00006C 4B80 F1FC      00208         106          SH    PNTA,=H'4'          POINT TO RDW                   58932 42400021
+ 000070 1B33                         107          SR   LENA,LENA            GET ACTUAL                     58932 42800021
+ 000072 4330 8000      00000         108          IC    LENA,0(0,PNTA)         RECORD LENGTH               58932 43200021
+ 000076 8930 0008      00008         109          SLL   LENA,8                    FROM RECORD              58932 43600021
+ 00007A 4330 8001      00001         110          IC    LENA,1(0,PNTA)               DESCRIPTOR WORD       58932 44000021
+ 00007E 4180 8004      00004         111          LA    PNTA,4(0,PNTA)      RESTORE AREA POINTER           58932 44400021
+ 000082 47F0 F0B2      000BE         112          B     TSTMOVA             CHECK IF MOVE NECESSARY        58932 44800021
+ 000086 D203 D064 1000 00064 00000   113 GETLNA   MVC   ALLIGN(4,R13),0(R1)  LOAD LENGTH                         45200021
+1VMO0     ILBOVMO0                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000008C 583D 0064      00064         114          L     LENA,ALLIGN(R13)       OR VLC                            45600021
+ 000090 9120 1000      00000         115          TM    0(R1),X'20'       TEST VL                                46000021
+ 000094 4710 F098      000A4         116        BC    1,VLA             YES                                      46400021
+ 000098 8930 0008      00008         117        SLL   LENA,8            NO - CLEAR HI 8 BITS                     46800021
+ 00009C 8830 0008      00008         118        SRL   LENA,8            FROM LENGTH                              47200021
+ 0000A0 47F0 F0B8      000C4         119        BC    15,PARAMB        GO TEST B-PARAMETER                       47600021
+ 0000A4 D200 D064 1004 00064 00004   120 VLA    MVC   ALLIGN(1,R13),4(R1) MOVE REG CODE TO WORK               CS 48000021
+ 0000AA 9630 D064      00064         121        OI    ALLIGN(R13),X'30'  SET UP FOR REG 3 - LENA              CS 48400021
+ 0000AE 439D 0064      00064         122        IC    WRKREG,ALLIGN(R13) PUT CODE IN WORK REG                 CS 48800021
+ 0000B2 4490 F1F2      001FE         123        EX    WRKREG,LDREG       LOAD BASE TO REG 3 - LENA            CS 49200021
+ 0000B6 4A31 0002      00002         124        AH    LENA,2(R1)         ADD DISP TO POINT TO VLC             CS 49600021
+ 0000BA 4833 0000      00000         125        LH    LENA,0(LENA)       LOAD LENGTH IN VLC                   CS 50000021
+ 0000BE                              126 TSTMOVA  DS    0H                                                 58932 50400021
+ 0000BE 1233                         127        LTR   LENA,LENA                                                  50800021
+ 0000C0 4780 F1CE      001DA         128        BC    8,EXIT                                                     51200021
+ 0000C4 4111 000A      0000A         129 PARAMB   LA    R1,10(R1)          UP PARAM POINTER                      51600021
+ 0000C8 9110 1000      00000         130          TM    0(R1),X'10'       TEST DIRECT TGT POINTER                52000021
+ 0000CC 4710 F0CC      000D8         131        BC    1,GETLNB          YES                                      52400021
+ 0000D0 5822 0000      00000         132        L     PNTB,0(PNTB)      NO - LOAD BL IN TGT                      52800021
+ 0000D4 4A21 0008      00008         133          AH    PNTB,8(R1)         ADD DISPLACEMENT                      53200021
+ 0000D8 D203 D064 1000 00064 00000   134 GETLNB   MVC   ALLIGN(4,R13),0(R1)                                      53600021
+ 0000DE 584D 0064      00064         135          L     LENB,ALLIGN(R13)                                         54000021
+ 0000E2 9120 1000      00000         136          TM    0(R1),X'20'       TEST VL                                54400021
+ 0000E6 4710 F0EA      000F6         137        BC    1,VLB             YES                                      54800021
+ 0000EA 8940 0008      00008         138        SLL   LENB,8            NO-CLEAR HI 8 BITS                       55200021
+ 0000EE 8840 0008      00008         139        SRL   LENB,8            FROM LENGTH                              55600021
+ 0000F2 47F0 F10A      00116         140        BC    15,TESTSW        GO TEST TYPE OF MOVE                      56000021
+ 0000F6 D200 D064 1004 00064 00004   141 VLB    MVC   ALLIGN(1,R13),4(R1)  MOVE REG CODE TO WORK              CS 56400021
+ 0000FC 9640 D064      00064         142        OI    ALLIGN(R13),X'40'    SET UP FOR REG 4 - LENB            CS 56800021
+ 000100 439D 0064      00064         143        IC    WRKREG,ALLIGN(R13)   PUT CODE IN WORK REG               CS 57200021
+ 000104 4490 F1F2      001FE         144        EX    WRKREG,LDREG         LOAD BASE TO REG 4 - LENB          CS 57600021
+ 000108 4A41 0002      00002         145        AH    LENB,2(R1)           ADD DISP TO POINT TO VLC           CS 58000021
+ 00010C 4844 0000      00000         146        LH    LENB,0(LENB)         LOAD LENGTH IN VLC                 CS 58400021
+ 000110 1244                         147        LTR   LENB,LENB                                                  58800021
+ 000112 4780 F1CE      001DA         148        BC    8,EXIT                                                     59200021
+                                     149 * TEST TYPE OF MOVE                                                     59600021
+ 000116 9102 D060      00060         150 TESTSW   TM    VLMVSW(R13),2     TEST FIGCON                            60000021
+ 00011A 4780 F120      0012C         151        BC    8,TSTJST          NO                                       60400021
+ 00011E 1868                         152        LR    PNTAWK,PNTA       YES - LOAD PNTA TO WORK POINTER          60800021
+ 000120 1872                         153        LR    PNTBWK,PNTB       LOAD PNTB TO WORK REG                    61200021
+ 000122 1854                         154        LR    WRKLEN,LENB       LOAD LENGTH TO WORK REG                  61600021
+ 000124 45E0 F18C      00198         155          BAL   R14,MVLOOP         GO TO FIGCON MOVE RT                  62000021
+ 000128 47F0 F1CE      001DA         156        BC    15,EXIT          EXIT TO CALLER                            62400021
+ 00012C 9101 D060      00060         157 TSTJST   TM    VLMVSW(R13),1     TEST RIGHT JUSTIFIED                   62800021
+ 000130 4710 F164      00170         158        BC    1,JUSTRT          YES                                      63200021
+                                     159 *                                                                       63600021
+                                     160 * NORMAL MOVE                                                           64000021
+                                     161 *                                                                       64400021
+ 000134 589D 0018      00018         162          L     WRKREG,SAVE1(R13)                                        64800021
+ 000138 9108 9000      00000         163          TM    0(WRKREG),X'08'         SPECIAL IO MOVE?                 65200021
+ 00013C 47E0 F13A      00146         164          BNO   NEXT                    NO                               65600021
+ 000140 1834                         165          LR    LENA,LENB               GIVE SENDING & RECEIVING SAME L  66000021
+ 000142 47F0 F144      00150         166          B     OUT                                                      66400021
+ 000146                              167 NEXT     DS    0H                                                       66800021
+ 000146 9108 900A      0000A         168          TM    10(WRKREG),X'08'        SPECIAL IO MOVE?                 67200021
+1VMO0     ILBOVMO0                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000014A 47E0 F144      00150         169          BNO   OUT                     NO                               67600021
+ 00014E 1843                         170          LR    LENB,LENA               SAME LNGTH FOR BOTH ELEMENTS     68000021
+ 000150                              171 OUT      DS    0H                                                       68400021
+ 000150 1934                         172        CR    LENA,LENB        COMP FIELD LENGTHS                        68800021
+ 000152 4780 F1C0      001CC         173        BC    8,MOVEQ          EQUAL                                     69200021
+ 000156 4740 F154      00160         174        BC    4,NRALOW         A FLD SHRT                                69600021
+                                     175 * A LONGER THAN B                                                       70000021
+ 00015A 1834                         176        LR    LENA,LENB        LENA USED IN COMMON ROUTINE               70400021
+ 00015C 47F0 F1C0      001CC         177        BC    15,MOVEQ         GO MOVE DATA                              70800021
+                                     178 * A SHORTER THAN B - RIGHT PART OF B-FLD FILLED WITH BLANKS             71200021
+ 000160 1854                         179 NRALOW LR    WRKLEN,LENB      CALCULATE NO OF                           71600021
+ 000162 1B53                         180        SR    WRKLEN,LENA       BLANK FILL POSITIONS                     72000021
+ 000164 1872                         181        LR    PNTBWK,PNTB      B POINTER TO WORK REG                     72400021
+ 000166 1A73                         182        AR    PNTBWK,LENA      POINT TO FIRST BLANK                      72800021
+ 000168 45E0 F188      00194         183          BAL   R14,MVBLNK        GO FILL WITH BLANKS                    73200021
+ 00016C 47F0 F1C0      001CC         184        BC    15,MOVEQ         GO MOVE DATA                              73600021
+                                     185 *                                                                       74000021
+                                     186 * JUSTIFIED RIGHT                                                       74400021
+                                     187 *                                                                       74800021
+ 000170 1934                         188 JUSTRT CR    LENA,LENB        COMP FIELD LENGTHS                        75200021
+ 000172 4780 F1C0      001CC         189        BC    8,MOVEQ          EQUAL                                     75600021
+ 000176 4740 F178      00184         190        BC    4,JRALOW         A SHORTER THAN B                          76000021
+                                     191 * A LONGER THAN B                                                       76400021
+ 00017A 1A83                         192        AR    PNTA,LENA        MAKE A POINTER CORRESPOND                 76800021
+ 00017C 1B84                         193        SR    PNTA,LENB           TO B POINTER                           77200021
+ 00017E 1834                         194        LR    LENA,LENB        COMMON MOVE USES LENA                     77600021
+ 000180 47F0 F1C0      001CC         195        BC    15,MOVEQ         GO MOVE DATA                              78000021
+                                     196 * A SHORTER THAN B                                                      78400021
+ 000184 1854                         197 JRALOW LR    WRKLEN,LENB      CALC POSITIONS TO                         78800021
+ 000186 1B53                         198        SR    WRKLEN,LENA       FILL WITH BLANKS                         79200021
+ 000188 1872                         199        LR    PNTBWK,PNTB      S  B POINTER TO WORK REG                  79600021
+ 00018A 1A25                         200        AR    PNTB,WRKLEN       OINT TO FIRST DATA BYTE IN B-FIELD       80000021
+ 00018C 45E0 F188      00194         201          BAL   R14,MVBLNK        GO LEFT FILL WITH BLANKS               80400021
+ 000190 47F0 F1C0      001CC         202        BC    15,MOVEQ         GO MOVE DATA                              80800021
+                                     203 *                                                                       81200021
+                                     204 *  COMMON ROUTINE TO MOVE BLANKS OR FIGCONS TO B- FIELD                 81600021
+                                     205 *                                                                       82000021
+ 000194 4160 F1F4      00200         206 MVBLNK LA    PNTAWK,BLANK                                               82400021
+ 000198 D200 7000 6000 00000 00000   207 MVLOOP MVC   0(1,PNTBWK),0(PNTAWK)  MOVE SINGLE FIGCON OR BLANK         82800021
+ 00019E 4950 F1F6      00202         208        CH    WRKLEN,H256      TEST OVER 256                             83200021
+ 0001A2 4720 F1A8      001B4         209        BC    2,GRT256          YES                                      83600021
+ 0001A6 4650 F1A0      001AC         210        BCT   WRKLEN,NOT1      IF 1, FALL THRU TO EXIT                   84000021
+ 0001AA 07FE                         211          BCR   15,R14            EXIT                                   84400021
+ 0001AC 0650                         212 NOT1     BCTR  WRKLEN,R0         SUBTR 1 TO EX                          84800021
+ 0001AE 4450 F1BA      001C6         213        EX    WRKLEN,EXMVBL    EXECUTE MOVEMENT OF BLANKS                85200021
+ 0001B2 07FE                         214          BCR   15,R14            EXIT                                   85600021
+ 0001B4 D2FE 7001 7000 00001 00000   215 GRT256 MVC   1(255,PNTBWK),0(PNTBWK)  MOVE 256 BLANKS OR FIGCONS        86000021
+ 0001BA 4177 0100      00100         216        LA    PNTBWK,256(PNTBWK)  UP B POINTER BY 256                    86400021
+ 0001BE 4B50 F1F6      00202         217        SH    WRKLEN,H256      DECREMENT BLANK COUNTER BY 256            86800021
+ 0001C2 47F0 F18C      00198         218        BC    15,MVLOOP        REPEAT LOOP                               87200021
+                                     219 *                                                                       87600021
+ 0001C6 D200 7001 7000 00001 00000   220 EXMVBL MVC   1(0,PNTBWK),0(PNTBWK)                                      88000021
+                                     221 *                                                                       88400021
+                                     222 *                                                                       88800021
+                                     223 * COMMON PART OF MOVE - A = B                                           89200021
+1VMO0     ILBOVMO0                                                                                              PAGE    7
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    224 *                                                                       89600021
+ 0001CC 4930 F1F6      00202         225 MOVEQ  CH    LENA,H256        TEST OVER 256                             90000021
+ 0001D0 4720 F1D6      001E2         226        BC    2,OVR256          YES                                      90400021
+ 0001D4 0630                         227          BCTR  LENA,R0           NO                                     90800021
+ 0001D6 4430 F1EC      001F8         228        EX    LENA,MVATOB      MOVE A TO B                               91200021
+ 0001DA 98EC D00C      0000C         229 EXIT     LM    R14,R12,SAVE(R13)                                        91600021
+ 0001DE 47F1 0014      00014         230          BC    15,20(R1)                                                92000021
+ 0001E2 D2FF 2000 8000 00000 00000   231 OVR256 MVC   0(256,PNTB),0(PNTA) MOVE 256 BYTES                         92400021
+ 0001E8 4188 0100      00100         232        LA    PNTA,256(PNTA)   INCREMENT                                 92800021
+ 0001EC 4122 0100      00100         233        LA    PNTB,256(PNTB)    POINTERS                                 93200021
+ 0001F0 4B30 F1F6      00202         234        SH    LENA,H256        DECREMENT LENGTH                          93600021
+ 0001F4 47F0 F1C0      001CC         235        BC    15,MOVEQ         REPEAT                                    94000021
+                                     236 *                                                                       94400021
+ 0001F8 D200 2000 8000 00000 00000   237 MVATOB MVC   0(0,PNTB),0(PNTA)                                          94800021
+ 0001FE 1800                         238 LDREG  LR    R0,R0                LOAD BASE                          CS 95200021
+                                     239 *                                                                       95600021
+                                     240 * REGISTER EQUATES AND CONSTANTS                                        96000021
+                                     241 *                                                                       96400021
+                             0000C   242 SAVE     EQU   12                                                       96800021
+                             00018   243 SAVE1    EQU   24                                                       97200021
+                             00060   244 VLMVSW EQU   96                                                         97600021
+                             00064   245 ALLIGN EQU   100                                                        98000021
+ 000200 40                           246 BLANK  DC    X'40'                                                      98400021
+ 000201 00
+ 000202 0100                         247 H256   DC    H'256'                                                     98800021
+                                     248        END                                                              99200021
+ 000208 0004                         249                =H'4'
+1VMO0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    8
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        249
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                        13
+ TOTAL RECORDS PRINTED                       278

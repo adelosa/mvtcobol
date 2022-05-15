@@ -1,0 +1,868 @@
+1
+  F64-LEVEL LINKAGE EDITOR OPTIONS SPECIFIED LET,LIST,XREF,NCAL,SIZE=(600K,64K),DC
+            VARIABLE OPTIONS USED -  SIZE=(614400,65536)
+ IEW0000      ENTRY ILBOACP0                                                        00006802
+ IEW0000        INCLUDE SYSPUNCH(ILBOACP0)                                          00006902
+ IEW0000        NAME ILBOACP0(R)                                                    00007002
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOACP0      00     1E7
+
+0
+0  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       1E8
+ ****ILBOACP0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOANE0                                                        00007102
+ IEW0000        INCLUDE SYSPUNCH(ILBOANE0)                                          00007202
+ IEW0000        NAME ILBOANE0(R)                                                    00007302
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOANE0      00     134
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       138
+ ****ILBOANE0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOANF0                                                        00007402
+ IEW0000        INCLUDE SYSPUNCH(ILBOANF0)                                          00007502
+ IEW0000        NAME ILBOANF0(R)                                                    00007602
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOANF0      00      60
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        60
+ ****ILBOANF0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOATB0                                                        00007702
+ IEW0000        INCLUDE SYSPUNCH(ILBOATB0)                                          00007802
+ IEW0000        NAME ILBOATB0(R)                                                    00007902
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOATB0      00     100
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       100
+ ****ILBOATB0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOBID0                                                        00008002
+ IEW0000        ALIAS ILBOBID1                                                      00008102
+ IEW0000        ALIAS ILBOBID2                                                      00008202
+ IEW0000        INCLUDE SYSPUNCH(ILBOBID0)                                          00008302
+ IEW0000        NAME ILBOBID0(R)                                                    00008402
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOBID0      00      64
+                                         ILBOBID2       C    ILBOBID1      20
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        68
+ ****ILBOBID0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBOBID2  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOBID1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOBIE0                                                        00008502
+ IEW0000        ALIAS ILBOBIE1                                                      00008602
+ IEW0000        ALIAS ILBOBIE2                                                      00008702
+ IEW0000        INCLUDE SYSPUNCH(ILBOBIE0)                                          00008802
+ IEW0000        NAME ILBOBIE0(R)                                                    00008902
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOBIE0      00      68
+                                         ILBOBIE2       C    ILBOBIE1      20
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        68
+ ****ILBOBIE0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBOBIE2  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOBIE1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOBII0                                                        00009002
+ IEW0000        ALIAS ILBOBII1                                                      00009102
+ IEW0000        ALIAS ILBOBII2                                                      00009202
+ IEW0000        INCLUDE SYSPUNCH(ILBOBII0)                                          00009302
+ IEW0000        NAME ILBOBII0(R)                                                    00009402
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOBII0      00     1C0
+                                         ILBOBII1      14    ILBOBII2      30
+0
+0  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       1C0
+ ****ILBOBII0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBOBII2  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOBII1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOCKP0                                                        00009502
+ IEW0000        INCLUDE SYSPUNCH(ILBOCKP0)                                          00009602
+ IEW0000        NAME ILBOCKP0(R)                                                    00009702
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOCKP0      00      74
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        78
+ ****ILBOCKP0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOCLS0                                                        00009802
+ IEW0000        INCLUDE SYSPUNCH(ILBOCLS0)                                          00009902
+ IEW0000        NAME ILBOCLS0(R)                                                    00010002
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOCLS0      00      88
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        88
+ ****ILBOCLS0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBODCI0                                                        00010102
+ IEW0000        ALIAS ILBODCI1                                                      00010202
+ IEW0000        INCLUDE SYSPUNCH(ILBODCI0)                                          00010302
+ IEW0000        NAME ILBODCI0(R)                                                    00010402
+ IEW0461  ILBOIDB1
+ IEW0461  ILBOIDB0
+ IEW0461  ILBOBII2
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBODCI0      00      A1
+                                         ILBODCI1      14
+0
+0  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION
+        90            ILBOIDB1       $UNRESOLVED                    98            ILBOIDB0       $UNRESOLVED
+        94            ILBOBII2       $UNRESOLVED
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        A8
+ ****ILBODCI0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBODCI1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+0
+-                                             DIAGNOSTIC MESSAGE DIRECTORY
+    IEW0461 WARNING - SYMBOL PRINTED IS AN UNRESOLVED EXTERNAL REFERENCE; NCAL WAS SPECIFIED, OR THE REFERENCE WAS
+            MARKED FOR RESTRICTED NO-CALL OR NEVERCALL.
+
+1
+ IEW0000      ENTRY ILBODSP0                                                        00010502
+ IEW0000        INCLUDE SYSPUNCH(ILBODSP0)                                          00010602
+ IEW0000        NAME ILBODSP0(R)                                                    00010702
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBODSP0      00     700
+
+0
+0  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       700
+ ****ILBODSP0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBODTE0                                                        00010802
+ IEW0000        ALIAS ILBODTE1                                                      00010902
+ IEW0000        INCLUDE SYSPUNCH(ILBODTE0)                                          00011002
+ IEW0000        NAME ILBODTE0(R)                                                    00011102
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBODTE0      00     12A
+                                         ILBODTE1       A
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       130
+ ****ILBODTE0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBODTE1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOEFL0                                                        00011202
+ IEW0000        ALIAS ILBOEFL1                                                      00011302
+ IEW0000        ALIAS ILBOEFL2                                                      00011402
+ IEW0000        INCLUDE SYSPUNCH(ILBOEFL0)                                          00011502
+ IEW0000        NAME ILBOEFL0(R)                                                    00011602
+ IEW0461  ILBOIDB1
+ IEW0461  ILBOBII2
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOEFL0      00     1FC
+                                         ILBOEFL1      54    ILBOEFL2      78
+0
+0  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION
+       1F4            ILBOIDB1       $UNRESOLVED                   1F8            ILBOBII2       $UNRESOLVED
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       200
+ ****ILBOEFL0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBOEFL2  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOEFL1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+0
+-                                             DIAGNOSTIC MESSAGE DIRECTORY
+    IEW0461 WARNING - SYMBOL PRINTED IS AN UNRESOLVED EXTERNAL REFERENCE; NCAL WAS SPECIFIED, OR THE REFERENCE WAS
+            MARKED FOR RESTRICTED NO-CALL OR NEVERCALL.
+
+1
+ IEW0000      ENTRY ILBOERR0                                                        00011702
+ IEW0000        ALIAS ILBOERR1                                                      00011802
+ IEW0000        ALIAS ILBOERR2                                                      00011902
+ IEW0000        ALIAS ILBOERR3                                                      00012002
+ IEW0000        ALIAS ILBOERR4                                                      00012102
+ IEW0000        ALIAS ILBOERR5                                                      00012202
+ IEW0000        ALIAS ILBOERR6                                                      00012302
+ IEW0000        INCLUDE SYSPUNCH(ILBOERR0)                                          00012402
+ IEW0000        NAME ILBOERR0(R)                                                    00012502
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOERR0      00     22C
+                                         ILBOERR1      00    ILBOERR2      42    ILBOERR4      70    ILBOERR3      96
+                                         ILBOERR5      FE    ILBOERR6     12A
+0
+0  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       230
+ ****ILBOERR0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBOERR6  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOERR5  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOERR4  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOERR3  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOERR2  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOERR1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOETB0                                                        00012602
+ IEW0000        INCLUDE SYSPUNCH(ILBOETB0)                                          00012702
+ IEW0000        NAME ILBOETB0(R)                                                    00012802
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOETB0      00     100
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       100
+ ****ILBOETB0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOFPW0                                                        00012902
+ IEW0000        INCLUDE SYSPUNCH(ILBOFPW0)                                          00013002
+ IEW0000        NAME ILBOFPW0(R)                                                    00013102
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOFPW0      00     318
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       318
+ ****ILBOFPW0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOGPW0                                                        00013202
+ IEW0000        INCLUDE SYSPUNCH(ILBOGPW0)                                          00013302
+ IEW0000        NAME ILBOGPW0(R)                                                    00013402
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOGPW0      00      48
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        48
+ ****ILBOGPW0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOIDB0                                                        00013502
+ IEW0000        ALIAS ILBOIDB1                                                      00013602
+ IEW0000        INCLUDE SYSPUNCH(ILBOIDB0)                                          00013702
+ IEW0000        NAME ILBOIDB0(R)                                                    00013802
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOIDB0      00      68
+                                         ILBOIDB1      1C
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        68
+ ****ILBOIDB0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBOIDB1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOIDR0                                                        00013902
+ IEW0000        INCLUDE SYSPUNCH(ILBOIDR0)                                          00014002
+ IEW0000        NAME ILBOIDR0(R)                                                    00014102
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOIDR0      00     671
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       678
+ ****ILBOIDR0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOIDT0                                                        00014202
+ IEW0000        INCLUDE SYSPUNCH(ILBOIDT0)                                          00014302
+ IEW0000        NAME ILBOIDT0(R)                                                    00014402
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOIDT0      00     2A4
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       2A8
+ ****ILBOIDT0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOIFB0                                                        00014502
+ IEW0000        ALIAS ILBOIFB1                                                      00014602
+ IEW0000        ALIAS ILBOIFB2                                                      00014702
+ IEW0000        INCLUDE SYSPUNCH(ILBOIFB0)                                          00014802
+ IEW0000        NAME ILBOIFB0(R)                                                    00014902
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOIFB0      00     120
+                                         ILBOIFB1       8    ILBOIFB2      18
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       120
+ ****ILBOIFB0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBOIFB2  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOIFB1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOIFD0                                                        00015002
+ IEW0000        ALIAS ILBOIFD1                                                      00015102
+ IEW0000        INCLUDE SYSPUNCH(ILBOIFD0)                                          00015202
+ IEW0000        NAME ILBOIFD0(R)                                                    00015302
+ IEW0461  ILBOIFB0
+ IEW0461  ILBOBID1
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOIFD0      00      90
+                                         ILBOIFD1       E
+0
+0  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION
+        88            ILBOIFB0       $UNRESOLVED                    8C            ILBOBID1       $UNRESOLVED
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        90
+ ****ILBOIFD0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBOIFD1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+0
+-                                             DIAGNOSTIC MESSAGE DIRECTORY
+    IEW0461 WARNING - SYMBOL PRINTED IS AN UNRESOLVED EXTERNAL REFERENCE; NCAL WAS SPECIFIED, OR THE REFERENCE WAS
+            MARKED FOR RESTRICTED NO-CALL OR NEVERCALL.
+
+1
+ IEW0000      ENTRY ILBOITB0                                                        00015402
+ IEW0000        INCLUDE SYSPUNCH(ILBOITB0)                                          00015502
+ IEW0000        NAME ILBOITB0(R)                                                    00015602
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOITB0      00     100
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       100
+ ****ILBOITB0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOIVL0                                                        00015702
+ IEW0000        INCLUDE SYSPUNCH(ILBOIVL0)                                          00015802
+ IEW0000        NAME ILBOIVL0(R)                                                    00015902
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOIVL0      00      3A
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        40
+ ****ILBOIVL0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOMVL0                                                        00016002
+ IEW0000        INCLUDE SYSPUNCH(ILBOMVL0)                                          00016102
+ IEW0000        NAME ILBOMVL0(R)                                                    00016202
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOMVL0      00      62
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        68
+ ****ILBOMVL0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOPTV0                                                        00016302
+ IEW0000        ALIAS ILBOPTV1                                                      00016402
+ IEW0000        ALIAS ILBOPTV2                                                      00016502
+ IEW0000        INCLUDE SYSPUNCH(ILBOPTV0)                                          00016602
+ IEW0000        NAME ILBOPTV0(R)                                                    00016702
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOPTV0      00      78
+                                         ILBOPTV1      00    ILBOPTV2      18
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        78
+ ****ILBOPTV0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBOPTV2  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOPTV1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOSAMR                                                        00016802
+ IEW0000        INCLUDE SYSPUNCH(ILBOSAMR)                                          00016902
+ IEW0000        NAME ILBOSAMR(R)                                                    00017002
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOSAMR      00     142
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       148
+ ****ILBOSAMR  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOSAM0                                                        00017102
+ IEW0000        INCLUDE SYSPUNCH(ILBOSAM0)                                          00017202
+ IEW0000        NAME ILBOSAM0(R)                                                    00017302
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOSAM0      00     4EA
+
+0
+0  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       4F0
+ ****ILBOSAM0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOSCH0                                                        00017402
+ IEW0000        INCLUDE SYSPUNCH(ILBOSCH0)                                          00017502
+ IEW0000        NAME ILBOSCH0(R)                                                    00017602
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOSCH0      00     2DC
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       2E0
+ ****ILBOSCH0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOSGM0                                                        00017702
+ IEW0000        ALIAS ILBOSGM1                                                      00017802
+ IEW0000        ALIAS ILBOSGM2                                                      00017902
+ IEW0000        INCLUDE SYSPUNCH(ILBOSGM0)                                          00018002
+ IEW0000        NAME ILBOSGM0(R)                                                    00018102
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOSGM0      00     12F
+                                         ILBOSGM1       4    ILBOSGM2       8    CURSEGM      129
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       130
+ ****ILBOSGM0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBOSGM2  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOSGM1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOSPA0                                                        00018202
+ IEW0000        INCLUDE SYSPUNCH(ILBOSPA0)                                          00018302
+ IEW0000        NAME ILBOSPA0(R)                                                    00018402
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOSPA0      00     2D8
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       2D8
+ ****ILBOSPA0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOSRT0                                                        00018502
+ IEW0000        INCLUDE SYSPUNCH(ILBOSRT0)                                          00018602
+ IEW0000        NAME ILBOSRT0(R)                                                    00018702
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOSRT0      00     3D4
+
+0
+0  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       3D8
+ ****ILBOSRT0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOSTI0                                                        00018802
+ IEW0000        INCLUDE SYSPUNCH(ILBOSTI0)                                          00018902
+ IEW0000        NAME ILBOSTI0(R)                                                    00019002
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOSTI0      00     244
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       248
+ ****ILBOSTI0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOSTP0                                                        00019102
+ IEW0000        ALIAS ILBOSTP1                                                      00019202
+ IEW0000        INCLUDE SYSPUNCH(ILBOSTP0)                                          00019302
+ IEW0000        NAME ILBOSTP0(R)                                                    00019402
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOSTP0      00      35
+                                         ILBOSTP1      16
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        38
+ ****ILBOSTP0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBOSTP1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOTEF0                                                        00019502
+ IEW0000        ALIAS ILBOTEF1                                                      00019602
+ IEW0000        ALIAS ILBOTEF2                                                      00019702
+ IEW0000        ALIAS ILBOTEF3                                                      00019802
+ IEW0000        INCLUDE SYSPUNCH(ILBOTEF0)                                          00019902
+ IEW0000        NAME ILBOTEF0(R)                                                    00020002
+ IEW0461  ILBOBIE1
+ IEW0461  ILBOIFB2
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOTEF0      00     248
+                                         ILBOTEF1       E    ILBOTEF2      48    ILBOTEF3      C0
+0
+0  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION
+       240            ILBOBIE1       $UNRESOLVED                   23C            ILBOIFB2       $UNRESOLVED
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       248
+ ****ILBOTEF0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBOTEF3  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOTEF2  IS AN ALIAS FOR THIS MEMBER
+ ****ILBOTEF1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+0
+-                                             DIAGNOSTIC MESSAGE DIRECTORY
+    IEW0461 WARNING - SYMBOL PRINTED IS AN UNRESOLVED EXTERNAL REFERENCE; NCAL WAS SPECIFIED, OR THE REFERENCE WAS
+            MARKED FOR RESTRICTED NO-CALL OR NEVERCALL.
+
+1
+ IEW0000      ENTRY ILBOTRN0                                                        00020102
+ IEW0000        INCLUDE SYSPUNCH(ILBOTRN0)                                          00020202
+ IEW0000        NAME ILBOTRN0(R)                                                    00020302
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOTRN0      00     100
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       100
+ ****ILBOTRN0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOUTB0                                                        00020402
+ IEW0000         INCLUDE SYSPUNCH(ILBOUTB0)                                         00020502
+ IEW0000         NAME ILBOUTB0(R)                                                   00020602
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOUTB0      00     100
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       100
+ ****ILBOUTB0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOVCO0                                                        00020702
+ IEW0000         INCLUDE SYSPUNCH(ILBOVCO0)                                         00020802
+ IEW0000         NAME ILBOVCO0(R)                                                   00020902
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOVCO0      00     1F2
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       1F8
+ ****ILBOVCO0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOVMO0                                                        00021002
+ IEW0000         ALIAS ILBOVMO1                                                     00021102
+ IEW0000         INCLUDE SYSPUNCH(ILBOVMO0)                                         00021202
+ IEW0000         NAME ILBOVMO0(R)                                                   00021302
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOVMO0      00     20A
+                                         ILBOVMO1       C
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       210
+ ****ILBOVMO0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ ****ILBOVMO1  IS AN ALIAS FOR THIS MEMBER
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOVTR0                                                        00021402
+ IEW0000         INCLUDE SYSPUNCH(ILBOVTR0)                                         00021502
+ IEW0000         NAME ILBOVTR0(R)                                                   00021602
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOVTR0      00      7C
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        80
+ ****ILBOVTR0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOWTB0                                                        00021702
+ IEW0000         INCLUDE SYSPUNCH(ILBOWTB0)                                         00021802
+ IEW0000         NAME ILBOWTB0(R)                                                   00021902
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOWTB0      00     100
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       100
+ ****ILBOWTB0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOXDI0                                                        00022002
+ IEW0000         INCLUDE SYSPUNCH(ILBOXDI0)                                         00022102
+ IEW0000         NAME ILBOXDI0(R)                                                   00022202
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOXDI0      00     103
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       108
+ ****ILBOXDI0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOXMU0                                                        00022302
+ IEW0000         INCLUDE SYSPUNCH(ILBOXMU0)                                         00022402
+ IEW0000         NAME ILBOXMU0(R)                                                   00022502
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOXMU0      00      AA
+
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH        B0
+ ****ILBOXMU0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+
+1
+ IEW0000      ENTRY ILBOXPR0                                                        00022602
+ IEW0000         INCLUDE SYSPUNCH(ILBOXPR0)                                         00022702
+ IEW0000         NAME ILBOXPR0(R)                                                   00022802
+ IEW0461  ILBOXMU0
+ IEW0461  ILBOXDI0
+0
+0                                                CROSS REFERENCE TABLE
+
+0  CONTROL SECTION                       ENTRY
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+   ILBOXPR0      00     258
+
+0
+0  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION
+       244            ILBOXMU0       $UNRESOLVED                   248            ILBOXDI0       $UNRESOLVED
+
+  ENTRY ADDRESS       00
+0 TOTAL LENGTH       258
+ ****ILBOXPR0  DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET
+ AUTHORIZATION CODE IS         0.
+0
+-                                             DIAGNOSTIC MESSAGE DIRECTORY
+    IEW0461 WARNING - SYMBOL PRINTED IS AN UNRESOLVED EXTERNAL REFERENCE; NCAL WAS SPECIFIED, OR THE REFERENCE WAS
+            MARKED FOR RESTRICTED NO-CALL OR NEVERCALL.
+
+

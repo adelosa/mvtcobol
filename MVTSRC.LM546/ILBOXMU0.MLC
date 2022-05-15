@@ -1,0 +1,67 @@
+XMU0     TITLE     'ILBOXMU0'                                           01000018
+*        ILBOXMV0   CALLING SEQ... L    15,V(ILBOXMV0)                  02000018
+*                                                                       03000018
+*        LEVEL  180     09/14/66                                        04000018
+*                                                                       05000018
+*FUNCTION 0 THIS ROUTINE MULTIPLIES TWO 30-DECIMAL-DIGIT NUMBERS TO     06000018
+*   PRODUCE A 60-DECIMAL-DIGIT PRODUCT.                                 07000018
+*ENTRY POINT 0 ILBOXMUL, CALLING SEQUENCE IS 0  ZAP   96(16,13),MPLIER  08000018
+*                                              ZAP   112(16,13),MPCAND  09000018
+*                                              L      15,V(ILBOXMUL)    10000018
+*                                               BALR  14,15             11000018
+*INPUT 0 30-DIGIT INTERNAL DECIMAL MULTIPLIER AND MULTIPLICAND.         12000018
+*         REG13 IS INITIALIZED BY CALLER TO POINT TO START OF TGT.      13000018
+*OUTPUT0  60-DIGIT INTERNAL DECIMAL PRODUCT AT 128(32,13).              14000018
+*EXTERNAL ROUTINES 0 NONE                                               15000018
+*EXITS-NORMAL 0 BY   BC   15,14                                         16000018
+*      ERROR  0 NONE                                                    17000018
+*WORK AREAS 0 BYTES  96-111 OF TGT CONTAIN THE INPUT  MULTIPLIER.       18000018
+*             BYTES 112-127 OF TGT CONTAIN THE INPUT  MULTIPLICAND.     19000018
+*             BYTES 128-159 OF TGT CONTAIN THE OUTPUT PRODUCT.          20000018
+*             BYTES 160-163 OF TGT IS A TEMPRORARY WORK AREA.           21000018
+*ATTRIBUTES 0 REENTRANT CODE. INPUT SIGNS ARE EXPECTED TO BE C,F OR D.  22000018
+*                                                                       23000018
+*                                                                       24000018
+ILBOXMU0 START 0                                                        25000018
+R13      EQU   13                                                       26000018
+R14    EQU   14                                                         27000018
+R15    EQU   15                                                         28000018
+         USING *,R15                           BASE REGISTER            29000018
+         MVN   FIELDX(1,R13),WORKA+31(R13)   SAVE MCAND SIGN            30000018
+         XC    FIELDX(1,R13),WORKA+15(R13)   X-OR MLIER SIGN            31000018
+         NI    FIELDX(R13),HEXF             LIKE SIGNS 0, UNLIKE 1      32000018
+         ZAP   WORKA+25(8,R13),WORKA+24(8,R13)  CREATE MCAND-RIGHT      33000018
+         MVI   WORKA+24(R13),PLUS              PLUS SIGN FOR MCAND-LEFT 34000018
+         MVO   WORKA+17(8,R13),WORKA+16(8,R13)  CREATE MCAND-LEFT       35000018
+         ZAP   WORKA+9(8,R13),WORKA+8(8,R13)    CREATE MLIER-RIGHT      36000018
+         MVI   WORKA+8(R13),PLUS               PLUS SIGN FOR MLIER-LEFT 37000018
+         MVO   WORKA+1(8,R13),WORKA(8,R13)      CREATE MLIER-LEFT       38000018
+         NI    WORKA+16(R13),HEXFC             FORCE MLIER PLUS         39000018
+         NI    WORKA+32(R13),HEXFC             FORCE MCAND PLUS         40000018
+         ZAP   WORKA+49(16,R13),WORKA+25(8,R13) MOVE MCAND-RIGHT        41000018
+         MP    WORKA+49(16,R13),WORKA+9(8,R13)  PROD1 IS MLIER-R BY MCA 42000018
+         MVI   WORKA+40(R13),PLUS              PLUS SIGN FOR PROD1-L    43000018
+         MVO   WORKA+33(8,R13),WORKA+49(8,R13)  SAVE PROD1-L            44000018
+         ZAP   WORKA+41(16,R13),WORKA+25(8,R13) MOVE MCAND-RIGHT        45000018
+         MP    WORKA+41(16,R13),WORKA+1(8,R13)  PROD2 IS MLIER-L BY MCA 46000018
+         AP    WORKA+41(16,R13),WORKA+33(8,R13) ADD PROD2 TO PROD1-L    47000018
+         ZAP   WORKA+25(16,R13),WORKA+17(8,R13) MOVE MCAND-LEFT         48000018
+         MP    WORKA+25(16,R13),WORKA+9(8,R13)  PROD3 IS MLIER-R BY MCA 49000018
+         AP    WORKA+25(16,R13),WORKA+41(16,R13) ADD PROD2 TO PROD3     50000018
+         MVO   WORKA+48(9,R13),WORKA+33(8,R13)  MOVE PROD3-R TO FIN POS 51000018
+         MVO   WORKA+32(9,R13),WORKA+25(8,R13)  PUT SIGN ON PROD3-L     52000018
+         ZAP   WORKA+1(16,R13),WORKA+1(8,R13)   MOVE MPLIER-LEFT        53000018
+         MP    WORKA+1(16,R13),WORKA+17(8,R13)  PROD4 IS MLIER-L BY MCA 54000018
+         AP    WORKA+1(16,R13),WORKA+32(9,R13)  ADD PROD3-L TO PROD4    55000018
+         MVO   WORKA+2(16,R13),WORKA+1(16,R13)  SHIFT PROD4 HALF BYTE R 56000018
+         MVC   WORKA+56(8,R13),WORKA+57(R13)    MOVE PROD1-R TO FIN POS 57000018
+         MVO   WORKA+33(16,R13),WORKA+2(15,R13) MOVE PROD4 TO FIN POSIT 58000018
+         OC    WORKA+63(1,R13),FIELDX(R13)      ADD CORRECT ALGEBRAIC S 59000018
+         BCR   15,R14                          RETURN                   60000018
+WORKA  EQU   96                                                         61000018
+FIELDX EQU   WORKA+66                                                   62000018
+PLUS   EQU   12                             X'0C'                       63000018
+HEXF   EQU   15                             X'0F'                       64000018
+HEXFC  EQU   252                            X'FC'                       65000018
+       END                                                              66000018
+         EJECT                                                          67000018

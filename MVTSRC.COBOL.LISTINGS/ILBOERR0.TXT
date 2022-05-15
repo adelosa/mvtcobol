@@ -1,0 +1,321 @@
+1                                               EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOERR0  SD  0001 000000 00022C
+ ILBOERR1  LD       000000        0001
+ ILBOERR2  LD       000042        0001
+ ILBOERR3  LD       000096        0001
+ ILBOERR4  LD       000070        0001
+ ILBOERR5  LD       0000FE        0001
+ ILBOERR6  LD       00012A        0001
+1                                                                                                               PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *$MODULE       ILBOERR0                                                 00300021
+ 000000                                2 ILBOERR0 START                                                          00600021
+                                       3 ********************************************************************    00900021
+                                       4 *                                                                       01200021
+                                       5 *TITLE:  ILBOERR0                                                       01500021
+                                       6 *                                                                       01800021
+                                       7 *STATUS:  CHANGE LEVEL 0                                                02100021
+                                       8 *                                                                       02400021
+                                       9 *FUNCTION/OPERATION: CHECKS APPRORIATE BITS TO DETERMINE TYPE           02700021
+                                      10 *                  OF I/O ERROR. IF USE AFTER ERROR RTN PRESENT,        03000021
+                                      11 *                  GENERATES EQUIVALENT OF SYNADAF CODE WHICH SETS      03300021
+                                      12 *                  UP EBCDIC MESSAGE EXPLAINING I/O ERROR WHICH         03600021
+                                      13 *                  OCCURRED, EXITS TO USE AFTER ERROR RTN WITH          03900021
+                                      14 *                   REGISTER 1 POINTING TO MESSAGE BUFFER.  IF          04200021
+                                      15 *                  IF INVALID KEY ERROR OCCURRED AND THERE IS AN        04500021
+                                      16 *                  INVALID KEY ROUTINE, EXITS IMMEDIATELY TO INVALID    04800021
+                                      17 *                  KEY ROUTINE                                          05100021
+                                      18 *                                                                       05400021
+                                      19 *ENTRYPOINTS:      ILBOERR1- IF QSAM I/O ERROR                          05700021
+                                      20 *                  ILBOERR2- IF BSAM I/O ERROR                          06000021
+                                      21 *                  ILBOERR3- IF QISAM I/O ERROR                         06300021
+                                      22 *                  ILBOERR4- IF BDAM I/O ERROR                          06600021
+                                      23 *                  ILBOERR5  - IF BISAM I/O ERROR                       06900021
+                                      24 *                                                                       07200021
+                                      25 *   APPROPRIATE ENTRYPOINT IS PLACED IN SYNAD FIELD OF DCB              07500021
+                                      26 *  BY PHASE 5-   REGISTER 2 POINTS TO DCB FOR QSAM, BDAM, QISAM,        07800021
+                                      27 *   BSAM- REGISTER 3 POINTS TO DECB FOR BDAM, BISAM                     08100021
+                                      28 *  ON ENTRANCE TO ILBOERR0.                                             08400021
+                                      29 *                                                                       08700021
+                                      30 * INPUT:    NONE                                                        09000021
+                                      31 *                                                                       09300021
+                                      32 * OUTPUT: NONE                                                          09600021
+                                      33 *                                                                       09900021
+                                      34 *                                                                       10200021
+                                      35 *EXTERNAL ROUTINES: NONE                                                10500021
+                                      36 *                                                                       10800021
+                                      37 *                                                                       11100021
+                                      38 *EXITS:   EXIT TO INVALID KEY ROUTINE IF PRESENT WHEN                   11400021
+                                      39 *       INVALID KEY CONDITION EXISTS                                    11700021
+                                      40 *      L 14,A(INVALID KEY RTN)                                          12000021
+                                      41 *      BR  14                                                           12300021
+                                      42 *                                                                       12600021
+                                      43 *   EXITS TO USE AFTER ERROR RTN IF PRESENTFOR NON-INVALID KEY          12900021
+                                      44 *        ERRORS AND FOR INVALID KEY ERRORS IF NO INVALID KEY ROUTINE    13200021
+                                      45 *        L    15,A(USE ERROR)                                           13500021
+                                      46 *    BR  15                                                             13800021
+                                      47 *                                                                       14100021
+                                      48 *    IF NEITHER INVALID KEY ROUTINE NOR USE ERROR RTN ARE               14400021
+                                      49 *        PRESENT, JOB IS TERMINATED UNLESS A QSAM I/O ERROR OR          14700021
+                                      50 *       AN INVALID KEY CONDITION WAS ENCOUNTERED IN WHICH               15000021
+                                      51 *        CASE CONTROL IS RETURNED TO CALLING ROUTINE.                   15300021
+                                      52 *                                                                       15600021
+                                      53 *TABLES/WORK AREAS: NONE                                                15900021
+                                      54 *                                                                       16200021
+                                      55 *ATTRIBUTES: REENTRANT                                                  16500021
+1                                                                                                               PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                     56 *                                                                       16800021
+                                      57 *NOTES:         SAVE AREA IN TGT USED                                   17100021
+                                      58 *                                                                       17400021
+                                      59 ********************************************************************    17700021
+                                      60          ENTRY ILBOERR1            QSAM                                 18000021
+                                      61          ENTRY ILBOERR2            BSAM                                 18300021
+                                      62          ENTRY ILBOERR3                BDAM                             18600021
+                                      63          ENTRY ILBOERR4                QISAM                            18900021
+                                      64          ENTRY ILBOERR5            BISAM                                19200021
+                                      65          ENTRY ILBOERR6                 QSAM-2                    48401 19500021
+                                      66 * EQUATES                                                               19800021
+                             0000C    67 R12      EQU   12                                                       20100021
+                             00009    68 R9       EQU   9                                                        20400021
+                             0000A    69 R10      EQU   10                                                       20700021
+                             00000    70 R0       EQU   0                                                        21000021
+                             00001    71 R1       EQU   1                                                        21300021
+                             00002    72 R2       EQU   2                                                        21600021
+                             00003    73 R3       EQU   3                                                        21900021
+                             00004    74 R4       EQU   4                                                        22200021
+                             00005    75 R5       EQU   5                                                        22500021
+                             00006    76 R6     EQU   6                                                          22800021
+                             00008    77 R8       EQU   8                                                        23100021
+                             0000D    78 R13      EQU   13                                                       23400021
+                             0000E    79 R14      EQU   14                                                       23700021
+                             0000F    80 R15      EQU   15                                                       24000021
+                             00007    81 R7       EQU   7                                                        24300021
+                             0000E    82 NOTONE   EQU   14                                                       24600021
+                             00007    83 NOTZER   EQU   7                                                        24900021
+                             00000    84          USING TGTSAVE,R13                                              25200021
+                             00000    85 ILBOERR1 EQU   *                       QSAM                             25500021
+                             00000    86          USING *,R15                                                    25800021
+ 000000 90EC D128      00128          87          STM   R14,R12,SAVEAREA                                         26100021
+ 000004 58A0 F1E4      001E4          88          L     R10,ADCON               ADDRESS OF ILBOERR0              26400021
+                                      89          DROP  R15                                                      26700021
+                             00000    90          USING ILBOERR0,R10                                             27000021
+ 000008 41C0 0003      00003          91        LA    R12,3               LOAD R12 WITH ACCESS METHOD CODE       27300021
+ 00000C                               92 TSTKEY   DS    0H                                                       27600021
+ 00000C 94FE D16C      0016C          93          NI    KEYSW,MSWOFF                                             27900021
+ 000010 9542 D134      00134          94          CLI   R1SAV,INVALKEY          INV KEY COND FOR BSAM/QSAM?      28200021
+ 000014 4770 A032      00032          95          BNE   KILKEY                  NO                               28500021
+ 000018                               96 SETKEY   DS    0H                                                       28800021
+ 000018 9601 D16C      0016C          97          OI    KEYSW,MSWON             TURN ON KEYSW                    29100021
+ 00001C 5842 0024      00024          98          L     R4,36(R2)               EXLIST ADDRESS FROM DCB          29400021
+ 000020 9101 401B      0001B          99          TM    27(R4),1                INVALID KEY ADDRESS?             29700021
+ 000024 4710 A140      00140         100          BO    ACTION              COMMON CODING                        30000021
+ 000028 D203 D128 4018 00128 00018   101          MVC   SAVEAREA(4),24(R4)      MOVE INV KEY ADDR TO SA          30300021
+ 00002E 47F0 A052      00052         102          B     INVKY                                                    30600021
+ 000032                              103 KILKEY   DS    0H                                                       30900021
+ 000032 94FE D16C      0016C         104          NI    KEYSW,MSWOFF            TURN OFF KEYSW                   31200021
+ 000036 5842 0024      00024         105          L     R4,36(R2)               EXITLIST ADDRESS FROM DCB        31500021
+ 00003A 9601 401B      0001B         106          OI    27(R4),1                INVALIDATE INVALID KEY ADDRESS   31800021
+ 00003E 47F0 A140      00140         107          B     ACTION                                                   32100021
+                             00042   108 ILBOERR2 EQU   *                       BSAM                             32400021
+                             00042   109          USING *,R15                                                    32700021
+ 000042 90EC D128      00128         110          STM   R14,R12,SAVEAREA                                         33000021
+1                                                                                                               PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000046 58A0 F1A2      001E4         111          L     R10,ADCON               ADDRESS OF ILBOERR0              33300021
+                                     112          DROP  R15                                                      33600021
+                             00000   113          USING ILBOERR0,R10                                             33900021
+ 00004A 41C0 0002      00002         114          LA    R12,2         FOR SYNADAF, 2 IS ACMETH- BSAM             34200021
+ 00004E 47F0 A00C      0000C         115          B     TSTKEY             SEE IF INVALID KEY COND               34500021
+ 000052                              116 INVKY    DS    0H                      GET DDNAME FOR MESSAGE           34800021
+ 000052 9601 401B      0001B         117          OI    27(R4),MSWON            INVALIDATE INV KEY ADDR          35100021
+ 000056 4190 0002      00002         118          LA    R9,2                                                     35400021
+ 00005A 19C9                         119          CR    R12,R9             BSAM?                                 35700021
+ 00005C 4780 A066      00066         120          BE    BSINV                                                    36000021
+ 000060 98EC D128      00128         121          LM    R14,R12,SAVEAREA                                         36300021
+ 000064 07FE                         122          BR    R14                                                      36600021
+ 000066                              123 BSINV    DS    0H                                                       36900021
+ 000066 982C D070      00070         124          LM    R2,R12,SUBRTNSV+16                                       37200021
+ 00006A 58E0 D128      00128         125          L     R14,SAVEAREA                                             37500021
+ 00006E 07FE                         126          BR    R14                                                      37800021
+                             00070   127 ILBOERR4 EQU   *                       QISAM                            38100021
+                             00070   128          USING *,R15                                                    38400021
+ 000070 90EC D128      00128         129          STM   R14,R12,SAVEAREA                                         38700021
+ 000074 58A0 F174      001E4         130          L     R10,ADCON               ADDRESS OF ILBOERR0              39000021
+                                     131          DROP  R15                                                      39300021
+                             00000   132          USING ILBOERR0,R10                                             39600021
+ 000078 41C0 0006      00006         133          LA    R12,6              SYNADAF ACMETH CODE                   39900021
+ 00007C 1812                         134          LR    R1,R2               A(DCB) IN R1 FOR SYNADAF             40200021
+ 00007E 94FE D16C      0016C         135          NI    KEYSW,MSWOFF                                             40500021
+ 000082 9180 2050      00050         136          TM    80(R2),X'80'        CHECK FOR INV KEY COND               40800021
+ 000086 4710 A018      00018         137          BO    SETKEY              FOUND                                41100021
+ 00008A 91C0 2051      00051         138          TM    81(R2),X'C0'                                             41400021
+ 00008E 4770 A018      00018         139          BC    NOTZER,SETKEY       FOUND                                41700021
+ 000092 47F0 A032      00032         140          B     KILKEY              NOT FOUND                            42000021
+                             00096   141 ILBOERR3 EQU   *                       BDAM                             42300021
+                             00096   142          USING *,R15                                                    42600021
+ 000096 90EC D128      00128         143          STM   R14,R12,SAVEAREA                                         42900021
+ 00009A 58A0 F14E      001E4         144          L     R10,ADCON               ADDRESS OF ILBOERR0              43200021
+                                     145          DROP  R15                                                      43500021
+                             00000   146          USING ILBOERR0,R10                                             43800021
+ 00009E 41C0 0004      00004         147          LA    R12,4               SET R12 WITH ACMETH CODE             44100021
+ 0000A2 5823 0008      00008         148          L     R2,8(R3)            PT R2 TO DCB                         44400021
+ 0000A6 94FE D16C      0016C         149          NI    KEYSW,MSWOFF                                             44700021
+ 0000AA 9184 3001      00001         150          TM    1(R3),X'84'         TEST FOR INV KEY COND          36589 45000021
+ 0000AE 4770 A0BE      000BE         151          BNZ   BDBIKEY             FOUND                          36589 45300021
+ 0000B2 9110 3001      00001         152          TM    1(R3),X'10'                                              45600021
+ 0000B6 4710 A0E8      000E8         153          BO    CKMR                CHECK FURTHER  --  INVALID REQUEST   45900021
+ 0000BA 47F0 A0D8      000D8         154          B     KILBDBI            NOT FOUND                             46200021
+                                     155 * INVALID KEY CONDITION EXISTS-SEE IF INV KEY RTN                       46500021
+ 0000BE                              156 BDBIKEY  DS    0H                                                       46800021
+ 0000BE 9601 D16C      0016C         157          OI    KEYSW,MSWON             TURN ON KEYSW                    47100021
+ 0000C2 5852 0024      00024         158          L     R5,36(R2)               EXITLIST ADDRESS IN DCB          47400021
+ 0000C6 9101 501B      0001B         159          TM    27(R5),1                INVALID KEY ADDRESS?             47700021
+ 0000CA 4710 A140      00140         160          BO    ACTION                                                   48000021
+ 0000CE D203 D128 5018 00128 00018   161          MVC   SAVEAREA(4),24(R5)                                       48300021
+ 0000D4 47F0 A0F4      000F4         162          B     BDBINV                                                   48600021
+                             000D8   163 KILBDBI  EQU   *                   PUT 01 IN INVKEY ADDR                48900021
+ 0000D8 94FE D16C      0016C         164          NI    KEYSW,MSWOFF                                             49200021
+ 0000DC 5852 0024      00024         165          L     R5,36(R2)               EXITLIST ADDRESS IN DCB          49500021
+1                                                                                                               PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00000E0 9601 501B      0001B         166          OI    27(R5),1                INVALIDATE INVALID KEY ADDRESS   49800021
+ 0000E4 47F0 A140      00140         167          B     ACTION                                                   50100021
+ 0000E8 9111 3002      00002         168 CKMR     TM    2(R3),X'11'         BDAM-INV KEY COND                    50400021
+ 0000EC 4770 A0BE      000BE         169          BC    NOTZER,BDBIKEY      YES                                  50700021
+ 0000F0 47F0 A0D8      000D8         170          B    KILBDBI              NO                                   51000021
+ 0000F4 9601 501B      0001B         171 BDBINV   OI    27(R5),1                INVALIDATE INVALID KEYADDRESS    51300021
+ 0000F8 98EC D128      00128         172          LM    R14,R12,SAVEAREA                                         51600021
+ 0000FC 07FE                         173          BR    14                                                       51900021
+                             000FE   174 ILBOERR5 EQU   *                       BISAM                            52200021
+                             000FE   175          USING *,R15                                                    52500021
+ 0000FE 90EC D128      00128         176          STM   R14,R12,SAVEAREA                                         52800021
+ 000102 58A0 F0E6      001E4         177          L     R10,ADCON               ADDRESS OF ILBOERR0              53100021
+                                     178          DROP  R15                                                      53400021
+                             00000   179          USING ILBOERR0,R10                                             53700021
+ 000106 41C0 0005      00005         180          LA    R12,5               SET R12                              54000021
+ 00010A 1812                         181          LR    R1,R2                   SET UP PARAMS FOR SYNADAF        54300021
+ 00010C 1803                         182          LR    R0,R3                                                    54600021
+ 00010E 94FE D16C      0016C         183          NI    KEYSW,MSWOFF                                             54900021
+ 000112 9504 3005      00005         184          CLI   5(3),4              WRITE KN...                    01372 55200021
+ 000116 4770 A11E      0011E         185          BNE   NOWRITE             NO                             01372 55500021
+ 00011A 5053 000C      0000C         186          ST    5,12(3)             RESTORE BUFFER POINTER         01372 55800021
+ 00011E                              187 NOWRITE  DS    0H                                                 01372 56100021
+ 00011E 9181 3018      00018         188          TM    24(R3),X'81'        INVALID KEY COND                     56400021
+ 000122 4770 A0BE      000BE         189          BC    NOTZER,BDBIKEY      YES                                  56700021
+ 000126 47F0 A0D8      000D8         190          B     KILBDBI             NO                                   57000021
+ 00012A                              191 ILBOERR6 DS    0H                       QSAM-2                    48401 57300021
+                             0012A   192          USING *,R15                                              48401 57600021
+ 00012A 90EC D128      00128         193          STM   R14,R12,SAVEAREA                                   48401 57900021
+ 00012E 58A0 F0BA      001E4         194          L     R10,ADCON           ADDR ILBOERR0                  48401 58200021
+                                     195          DROP  R15                                                48401 58500021
+                             00000   196          USING ILBOERR0,R10                                       48401 58800021
+ 000132 41C0 0003      00003         197          LA    R12,3               INDICATE QSAM                  48401 59100021
+ 000136 D200 2079 D134 00079 00134   198          MVC   STATBYTE(1,R2),R1SAV     SAVE STATUS INFO AFTER DCB48401 59400021
+ 00013C 47F0 A00C      0000C         199          B     TSTKEY              COMMON PROCESSING              48401 59700021
+                             00140   200 ACTION   EQU   *                                                        60000021
+ 000140 5852 0024      00024         201          L     R5,36(R2)               EXITLIST ADDRESS IN DCB          60300021
+ 000144 9101 501F      0001F         202          TM    31(R5),1                IS THERE 1 IN LOW ORDER OF ADDR? 60600021
+ 000148 4780 A19C      0019C         203          BZ    CALUSE              NO-THERE IS ONE                      60900021
+ 00014C 9101 D16C      0016C         204          TM    KEYSW,MSWON             INV KEY COND?                    61200021
+ 000150 4710 A192      00192         205          BO    ERCON               YES-CONTINUE AFTER MSG               61500021
+ 000154 4190 0003      00003         206          LA    R9,3                SEE IF QSAM ERROR                    61800021
+ 000158 199C                         207          CR    R9,R12                                                   62100021
+ 00015A 4780 A192      00192         208          BE    ERCON              YES- FOR QSAM I/O ERRORS- CONTINUE    62400021
+ 00015E 4832 0028      00028         209          LH    R3,40(R2)               TIOT OFFSET IN DCB               62700021
+ 000162 5842 002C      0002C         210          L     R4,44(R2)               @DEB                             63000021
+ 000166 5844 0000      00000         211          L     R4,0(R4)                @TCB                             63300021
+ 00016A 5844 000C      0000C         212          L     R4,12(R4)               @TIOT                            63600021
+ 00016E 4144 3004      00004         213          LA    R4,4(R4,R3)             @TIOT+TIOT OFFSET+4=@DDNAME      63900021
+ 000172 D243 D128 A1E8 00128 001E8   214          MVC   MESSAGE,MSGLIST         MOVE MESSAGE TO TGTSAVEAREA      64200021
+ 000178 D207 D160 4000 00160 00000   215          MVC   DDNAME,0(R4)            MOVE DDNAME INTO MESSAGE         64500021
+                                     216          WTO   MF=(E,MESSAGE)          WRITE MESSAGE ON CONSOLE         64800021
+ 00017E 4110 D128      00128         217+         LA    1,MESSAGE                         LOAD PARAMETER REG 1   00100000
+ 000182 0A23                         218+         SVC   35                                ISSUE SVC              00750021
+ 000184 58DD 0004      00004         219          L     R13,4(R13)              RETURN TO HIGHER LEVEL PGM       65100021
+ 000188 98EC D00C      0000C         220          LM    R14,R12,12(R13)                                          65400021
+1                                                                                                               PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000018C 41F0 000C      0000C         221          LA    R15,12                                                   65700021
+ 000190 07FE                         222          BR    R14                     RETURN TO NEXT HIGHER LEVEL PGM  66000021
+ 000192                              223 ERCON    DS    0H                                                       66300021
+ 000192 94FE D16C      0016C         224          NI    KEYSW,MSWOFF            TURN OFF KEYSW                   66600021
+ 000196 98EC D128      00128         225          LM    R14,R12,SAVEAREA                                         66900021
+ 00019A 07FE                         226          BR    R14                     RETURN                           67200021
+ 00019C                              227 CALUSE   DS    0H                                                       67500021
+ 00019C 18FC                         228          LR    R15,R12                 ISSUE SYNADAF MACRO              67800021
+ 00019E 89F0 0018      00018         229        SLL   R15,24               MOVE UP TO HIGH ORDER FOR SYNADAF     68100021
+ 0001A2 187D                         230          LR    R7,R13                                                   68400021
+ 0001A4 0A44                         231          SVC   68                                                       68700021
+ 0001A6 180D                         232          LR    R0,R13             R0=A(SYNADAF SAVE AREA)               69000021
+ 0001A8 18D7                         233          LR    R13,R7             R13=A(TGT SAVE AREA)                  69300021
+ 0001AA                              234 EXUSE    DS    0H                                                       69600021
+ 0001AA 58F5 001C      0001C         235          L     R15,28(R5)              LOAD ADDRESS OF USE...STD ERROR  69900021
+ 0001AE 4190 0003      00003         236          LA    R9,3               FINAL QSAM, BSAM CHECKS               70200021
+ 0001B2 199C                         237          CR    R9,R12                                                   70500021
+ 0001B4 4780 A1C4      001C4         238        BE    QSYNC                                                      70800021
+ 0001B8 0690                         239          BCTR  R9,0                    R9=2                             71100021
+ 0001BA 199C                         240          CR    R9,R12                                                   71400021
+ 0001BC 4780 A1D2      001D2         241          BE    BSYNC                                                    71700021
+ 0001C0 47F0 A1DA      001DA         242          B EXUSEND                 RESTORE REGS-GO USE ERROR            72000021
+ 0001C4                              243 QSYNC    DS    0H                                                       72300021
+ 0001C4 9180 D138      00138         244          TM    R2SAV,HIBITON           WAS ERROR IN ILBOSPA0            72600021
+ 0001C8 47E0 A1DA      001DA         245          BC    NOTONE,EXUSEND       NO                                  72900021
+ 0001CC                              246 QSYNC1   DS    0H                                                       73200021
+ 0001CC 982C D070      00070         247          LM    R2,R12,SUBRTNSV+16      YES                              73500021
+ 0001D0 07FF                         248          BR    R15                     GO TO ERROR DECLAR               73800021
+ 0001D2 9180 2030      00030         249 BSYNC    TM    48(R2),X'80'        BSAM WRITE-ONLY                      74100021
+ 0001D6 4710 A1CC      001CC         250          BO    QSYNC1                  YES                              74400021
+ 0001DA                              251 EXUSEND  DS    0H                                                       74700021
+ 0001DA 982C D138      00138         252          LM    R2,R12,SAVEAREA+16                                       75000021
+ 0001DE 58E0 D128      00128         253          L     R14,SAVEAREA                                             75300021
+ 0001E2 07FF                         254          BR    R15                                                      75600021
+ 0001E4 00000000                     255 ADCON    DC    A(ILBOERR0)                                              75900021
+ 0001E8                              256 MSGLIST  DS    0H                                                       76200021
+ 0001E8 0040                         257          DC    AL2(MSGLST1-MSGLIST)                                     76500021
+ 0001EA 8000                         258          DC    X'8000'                                                  76800021
+ 0001EC C9D2C6F1F1F1C940             259 MSGCON   DC    C'IKF111I EXCEPTIONAL I/O CONDITION SENSED PROCESSING DDX77100021
+ 0001F4 C5E7C3C5D7E3C9D6                                NAMEXX'                                                  77400021
+ 000228                              260 MSGLST1  DS    0H                                                       77700021
+ 000228 04004020                     261          DC    X'04004020'         DESCRIPTOR AND ROUTING CODES         78000021
+ 000000                              262 TGTSAVE  DSECT                                                          78300021
+ 000000                      00060   263          ORG   TGTSAVE+96                                               78600021
+ 000060                              264 SUBRTNSV DS    15F                                                      78900021
+ 00009C                      00128   265          ORG   TGTSAVE+X'128'                                           79200021
+ 000128                              266 SAVEAREA DS    15F                                                      79500021
+ 000164                      00128   267          ORG   SAVEAREA                THIS CORE NOT USED IF WE'RE      79800021
+                                     268 *                                      ISSUING MESSAGE                  80100021
+ 000128                              269 MESSAGE  DS    CL(L'MSGCON+8)                                           80400021
+ 00016C                      00160   270          ORG   *-12                                                     80700021
+ 000160                              271 DDNAME   DS    CL8                                                      81000021
+ 000168                              272          DS    CL4                                                      81300021
+ 00016C                              273 KEYSW    DS    C                                                        81600021
+                             00134   274 R1SAV    EQU   SAVEAREA+12                                              81900021
+1                                                                                                               PAGE    7
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                            00138   275 R2SAV    EQU   SAVEAREA+16                                              82200021
+                             00001   276 MSWON    EQU   X'01'                                                    82500021
+                             000FE   277 MSWOFF   EQU   X'FE'                                                    82800021
+                             00080   278 HIBITON  EQU   X'80'                                                    83100021
+                             00042   279 INVALKEY EQU   X'42'                                                    83400021
+                             00079   280 STATBYTE EQU   121            OFFSET OF STATUS BYTE IN DCB        48401 83700021
+                                     281 *                  EXTENSION IN OBJECT PROGRAM                    48401 84000021
+                                     282          END                                                            84300021
+1                                                  RELOCATION DICTIONARY                                        PAGE    8
+-POS.ID   REL.ID   FLAGS   ADDRESS                                                                ASM 0201 11.03 02/14/15
+0 0001     0001      0C     0001E4
+
+1                                                  ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    9
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        281
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY      861
+ TOTAL RECORDS PUNCHED                        15
+ TOTAL RECORDS PRINTED                       321

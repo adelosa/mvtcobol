@@ -1,0 +1,62 @@
+*$MODULE       ILBOITB0                                                 01000020
+*//    ILBOITB0                                                         02000020
+ITB0     TITLE     'ILBOITB0'                                           03000020
+*        ILBOITB0   CALLING SEQ... L    15,V(ILBOITB0)                  04000020
+*FUNCTION 0 INTERNAL DECIMAL TABLE FOR CLASS TEST.                      05000020
+*INPUT 0 N/A                                                            06000020
+*OUTPUT 0 N/A                                                           07000020
+*EXTERNAL ROUTINES 0 N/A                                                08000020
+*EXITS 0 N/A                                                            09000020
+*ATTRIBUTES 0 N/A                                                       10000020
+ILBOITB0 START 0                                                        11000020
+ITBL   DC    16X'01010101010101010101010101010101'                      12000020
+*                                                                       13000020
+*      OVERLAY AREAS OF TABLE CORRESPONDING TO VALID BYTES OF PACKED    14000020
+*            DECIMAL WITH 00                                            15000020
+*                                                                       16000020
+       ORG   ITBL                                                       17000020
+       DC    10X'00'                    00 THRU 09                      18000020
+       ORG   ITBL+16                                                    19000020
+       DC    10X'00'                    10 THRU 19                      20000020
+       ORG   ITBL+32                                                    21000020
+       DC    10X'00'                    20 THRU 29                      22000020
+       ORG   ITBL+48                                                    23000020
+       DC    10X'00'                    30 THRU 39                      24000020
+       ORG   ITBL+64                                                    25000020
+       DC    10X'00'                    40 THRU 49                      26000020
+       ORG   ITBL+80                                                    27000020
+       DC    10X'00'                    50 THRU 59                      28000020
+       ORG   ITBL+96                                                    29000020
+       DC    10X'00'                    60 THRU 69                      30000020
+       ORG   ITBL+112                                                   31000020
+       DC    10X'00'                    70 THRU 79                      32000020
+       ORG   ITBL+128                                                   33000020
+       DC    10X'00'                    80 THRU 89                      34000020
+       ORG   ITBL+144                                                   35000020
+       DC    10X'00'                    90 THRU 99                      36000020
+*                                                                       37000020
+*      OVERLAY AREAS OF TABLE  CORRESPONDING TO VALID BYTES  OF SIGNED  38000020
+*            PACKED DECIMAL WITH 80                                     39000020
+*                                                                       40000020
+       ORG   ITBL+X'0C'            0C  0D                               41000020
+       DC    X'80800180'           0C  0D  0F                           42000020
+       ORG   ITBL+X'1C'            1C  1D                               43000020
+       DC    X'80800180'           0C  0D  0F                           44000020
+       ORG   ITBL+X'2C'            2C  2D                               45000020
+       DC    X'80800180'           0C  0D  0F                           46000020
+       ORG   ITBL+X'3C'            3C  3D                               47000020
+       DC    X'80800180'           0C  0D  0F                           48000020
+       ORG   ITBL+X'4C'            4C  4D                               49000020
+       DC    X'80800180'           0C  0D  0F                           50000020
+       ORG   ITBL+X'5C'            5C  5D                               51000020
+       DC    X'80800180'           0C  0D  0F                           52000020
+       ORG   ITBL+X'6C'            6C  6D                               53000020
+       DC    X'80800180'           0C  0D  0F                           54000020
+       ORG   ITBL+X'7C'            7C  7D                               55000020
+       DC    X'80800180'           0C  0D  0F                           56000020
+       ORG   ITBL+X'8C'            8C  8D                               57000020
+       DC    X'80800180'           0C  0D  0F                           58000020
+       ORG   ITBL+X'9C'            9C  9D                               59000020
+       DC    X'80800180'           0C  0D  0F                           60000020
+       END                                                              61000020
+         EJECT                                                          62000020

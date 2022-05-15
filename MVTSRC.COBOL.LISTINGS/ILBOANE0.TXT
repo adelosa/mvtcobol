@@ -1,0 +1,242 @@
+1ANE0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOANE0  SD  0001 000000 000134
+1ANE0     ILBOANE0                                                                                              PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      2 *//    ILBOANE0                                                         00800018
+                                       3 *        ILBOANE0   CALLING SEQ... L    15,V(ILBOANE0)                  01200018
+ 000000                                4 ILBOANE0 START 0                                                        01600018
+                                       5 *                                                                       02000018
+                                       6 *  ILBOANE0   -  ALPHANUMERIC EDITED ROUTINE.                           02400018
+                                       7 *                CALLING SEQUENCE.                                      02800018
+                                       8 *                                                                       03200018
+                                       9 *                      L    RW0,=LENGTH-OF-SENDING                      03600018
+                                      10 *                      LA   RW1,SENDING                                 04000018
+                                      11 *                      LA   RW2,REC.                                    04400018
+                                      12 *                      LA   RW3,EDITING-MASK                            04800018
+                                      13 *                      L    R15,V(ILBOANE0)                             05200018
+                                      14 *                      BALR R14,R15                                     05600018
+                                      15 *                      DC   X'00'   FLAG BYTE                           06000018
+                                      16 *                      DC   X'00'   MASK LENGTH.                        06400018
+                                      17 *                      DC   X'0000' REC. LENGTH                         06800018
+                                      18 *                                                                       07200018
+                                      19 *                      FLAG  BYTE      BIT0    RIGTH JUST. RECEIV.      07600018
+                                      20 *                                      BIT1    SENDING IS FIGCON.       08000018
+                                      21 *                                      BIT2-7  UNUSED.                  08400018
+                                      22 *                                                                       08800018
+                                      23 *              THIS ROUTINE  MOVE  THE  SEND  TO THE RECEIVING          09200018
+                                      24 *              PERFORMING  THE NECESSARY INSERTION  SPECIFIED BY        09600018
+                                      25 *              THE MASK  -  THE MASK IS THE COBOL  ANE  PICTURE.        10000018
+                                      26 *              IBYTE FOR CHAR. TYPE ( X OR 0  OR B)                     10400018
+                                      27 *              2 BYTES FOR OCCURENCE OF THIS CHARACTER                  10800018
+                                      28 *              THE FOLLOWING IS AN EXAMPLE OF A MASK FOR AN             11200018
+                                      29 *              ALPHA NMR. EDITED ITEM WITH A PIRTURE X(3)0(5)B(2)       11600018
+                                      30 *                              E70003F00005400002                       12000018
+-
+0
+                             00000    32 RW0      EQU   0                                                        12800018
+                             00001    33 RW1      EQU   1                                                        13200018
+                             00002    34 RW2      EQU   2                                                        13600018
+                             00003    35 RW3      EQU   3                                                        14000018
+                             00004    36 RW4      EQU   4                                                        14400018
+                             00005    37 RW5      EQU   5                                                        14800018
+                             00006    38 RW6      EQU   6                                                        15200018
+                             00007    39 RW7      EQU   7                                                        15600018
+                             00008    40 RW8      EQU   8                                                        16000018
+                             00009    41 RW9      EQU   9                                                        16400018
+                             0000A    42 RW10     EQU   10                                                       16800018
+                             0000B    43 RW11     EQU   11                                                       17200018
+                             0000C    44 RW12     EQU   12                                                       17600018
+                             0000C    45 R12      EQU   12                                                       18000018
+                             0000D    46 R13      EQU   13                                                       18400018
+                             0000E    47 R14      EQU   14                                                       18800018
+                             0000F    48 R15      EQU   15                                                       19200018
+                                      49 *                                                                       19600018
+                                      50 * SWITCHES                                                              20000018
+                                      51 *                                                                       20400018
+                             00080    52 RIGTH    EQU   X'80'                                                    20800018
+1ANE0     ILBOANE0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                            00040    53 FIGCON   EQU   X'40'                                                    21200018
+                                      54 *                                                                       21600018
+                             000E7    55 ANEX     EQU   X'E7'                   X VALUE                          22000018
+                                      56 *                                                                       22400018
+-
+0
+                             00000    58          USING TGT,R13                                                  23200018
+                             00000    59          USING INPUT,R14                                                23600018
+                             00000    60          USING *,R15                                                    24000018
+ 000000 90EC D060      00060          61          STM   R14,R12,SAVE                                             24400018
+-
+ 000004 D201 D09E F12E 0009E 0012E    63          MVC   ANEC003(2),MINTHRE                                       25200018
+ 00000A 1B66                          64          SR    RW6,RW6                                                  25600018
+ 00000C 4360 E001      00001          65          IC    RW6,MASKLEN             GET MASK LENGTH                  26000018
+0
+ 000010 9180 E000      00000          67          TM    ANESW,RIGTH                                              26800018
+ 000014 4780 F02A      0002A          68          BZ    ANE000                                                   27200018
+ 000018 D201 D09E F130 0009E 00130    69          MVC   ANEC003(2),THREE         REC IS RIGTH ADJUSTED.          27600018
+ 00001E 4A20 E002      00002          70          AH    RW2,RECVLEN             SRT PTR TO END OF RECV.          28000018
+ 000022 1A10                          71          AR    RW1,RW0                  SET  -   -  -  -  SEND.         28400018
+ 000024 1A36                          72          AR    RW3,RW6                                                  28800018
+ 000026 4B30 F130      00130          73          SH    RW3,THREE                POINT  TO RIGTMOST CHAR. IN     29200018
+                                      74 *                                       MASK                            29600018
+ 00002A 4870 E002      00002          75 ANE000   LH    RW7,RECVLEN                                              30000018
+ 00002E 1BBB                          76          SR    RW11,RW11                RESET REMAIN. COUNT FOR ONE     30400018
+                                      77 *                                       CHAR. IN MASK.                  30800018
+ 000030 1880                          78          LR    RW8,RW0                  REMAIN. LENGTH OF SEND.         31200018
+ 000032 1891                          79          LR    RW9,RW1                  SAVE INITIAL PTR. TO SENDING    31600018
+                                      80 *                                       INCASE  OF A FIGCON.            32000018
+-
+ 000034 D201 D09C 3001 0009C 00001    82 ANE006   MVC   ANETEMP(2),1(RW3)        GET NUMBER OF CHAR. TO          32800018
+ 00003A 48A0 D09C      0009C          83          LH    RW10,ANETEMP             BE MOVED.                       33200018
+ 00003E 18BA                          84          LR    RW11,RW10                SAVE IT IN 11  .                33600018
+0
+ 000040 19A7                          86 ANE008   CR    RW10,RW7                                                 34400018
+ 000042 4720 F0C0      000C0          87          BH    ANE001                   TOO MANY FOR REMAIN. RECEIV.    34800018
+0
+                                      89 *                                                                       35600018
+                                      90 *      TEST FOR INSERTION CHARACTER.                                    36000018
+                                      91 *                                                                       36400018
+ 000046 95E7 3000      00000          92 ANE011   CLI   0(RW3),ANEX                                              36800018
+ 00004A 4770 F0E2      000E2          93          BNE   ANE022                                                   37200018
+0
+ 00004E 19A8                          95          CR    RW10,RW8                                                 38000018
+1ANE0     ILBOANE0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000050 4720 F0C8      000C8          96          BH    ANE002                   TOO MUCH FOR SENDING.           38400018
+0
+ 000054 49A0 F132      00132          98 ANE013   CH    RW10,ANEC256                                             39200018
+ 000058 4720 F0B8      000B8          99          BH    ANE004                   MORE  THAN ONE MVC.             39600018
+0
+ 00005C 18CA                         101 ANE010   LR    RW12,RW10               PREPARE LENGTH FOR EXECUTED      40400018
+ 00005E 06C0                         102          BCTR  RW12,RW0                MOVE.                            40800018
+ 000060 9180 E000      00000         103          TM    ANESW,RIGTH                                              41200018
+ 000064 4710 F0AC      000AC         104          BO    ANE005                                                   41600018
+ 000068 44C0 F128      00128         105          EX    RW12,ANEMOV1             MOVE                            42000018
+ 00006C 1A2A                         106          AR    RW2,RW10                 UPDATE POINTERS                 42400018
+ 00006E 1A1A                         107          AR    RW1,RW10                                                 42800018
+0
+                                     109 *   CONTROLING LOOP                                                     43600018
+                                     110 *                                                                       44000018
+ 000070 1B7A                         111 ANE009   SR    RW7,RW10                                                 44400018
+ 000072 47D0 F094      00094         112          BNH   ANEOUT                   DECREASE COUNTS.                44800018
+ 000076 1B8A                         113          SR    RW8,RW10                                                 45200018
+ 000078 47D0 F09C      0009C         114          BNH   ANE015                                                   45600018
+ 00007C 1BBA                         115 ANE016   SR    RW11,RW10                                                46000018
+ 00007E 47D0 F088      00088         116          BNH   ANE007                                                   46400018
+ 000082 18AB                         117          LR    RW10,RW11                MORE OF THAT CHAR. TO BE MOVED. 46800018
+ 000084 47F0 F040      00040         118          B     ANE008                                                   47200018
+                                     119 *                                                                       47600018
+                                     120 *      GET NEXT CHARACTER IN MASK                                       48000018
+                                     121 *                                                                       48400018
+ 000088 4B30 D09E      0009E         122 ANE007   SH    RW3,ANEC003                                              48800018
+ 00008C 4B60 F130      00130         123          SH    RW6,THREE                                                49200018
+ 000090 4720 F034      00034         124          BH    ANE006                                                   49600018
+                                     125 *                                                                       50000018
+                                     126 *       MASK IS EXHAUSTED . END OF THE GAME.                            50400018
+                                     127 *                                                                       50800018
+ 000094 98EC D060      00060         128 ANEOUT   LM    R14,R12,SAVE                                             51200018
+ 000098 47FE 0004      00004         129          B     4(R14)                   EXIT.                           51600018
+0
+                                     131 *                                                                       52400018
+                                     132 *      IF FIGCON IS EXHAUSTED START AGAIN.                              52800018
+                                     133 *                                                                       53200018
+ 00009C 9140 E000      00000         134 ANE015   TM    ANESW,FIGCON                                             53600018
+ 0000A0 4780 F07C      0007C         135          BZ    ANE016                                                   54000018
+ 0000A4 1819                         136          LR    RW1,RW9                                                  54400018
+ 0000A6 1880                         137          LR    RW8,RW0                                                  54800018
+ 0000A8 47F0 F07C      0007C         138          B     ANE016                                                   55200018
+0
+ 0000AC 1B2A                         140 ANE005   SR    RW2,RW10                 FOR RIGTH ADJUSTED.             56000018
+ 0000AE 1B1A                         141          SR    RW1,RW10                 DECREASE PTR FIRST.             56400018
+ 0000B0 44C0 F128      00128         142          EX    RW12,ANEMOV1                                             56800018
+ 0000B4 47F0 F070      00070         143          B     ANE009                                                   57200018
+0
+1ANE0     ILBOANE0                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00000B8 41A0 0100      00100         145 ANE004   LA    RW10,256                 SET MOVE LENGTH TO A MAX OF     58000018
+ 0000BC 47F0 F05C      0005C         146          B     ANE010                   256.                            58400018
+0
+ 0000C0 18A7                         148 ANE001   LR    RW10,RW7                 RESET  COUNTS  TO  REM. LENGTH  59200018
+ 0000C2 18B7                         149          LR    RW11,RW7                 OF REC.                         59600018
+ 0000C4 47F0 F046      00046         150          B     ANE011                                                   60000018
+0
+ 0000C8 9140 E000      00000         152 ANE002   TM    ANESW,FIGCON                                             60800018
+ 0000CC 4710 F0DC      000DC         153          BO    ANE012                                                   61200018
+ 0000D0 1288                         154          LTR   RW8,RW8                                                  61600018
+ 0000D2 4780 F120      00120         155          BZ    ANEOUT2                  SENDING IS EXHAUSTED.           62000018
+ 0000D6 18A8                         156          LR    RW10,RW8                                                 62400018
+ 0000D8 47F0 F054      00054         157          B     ANE013                                                   62800018
+ 0000DC 18A8                         158 ANE012   LR    RW10,RW8                                                 63200018
+ 0000DE 47F0 F054      00054         159          B     ANE013                                                   63600018
+0
+0
+ 0000E2 D200 D09C 3000 0009C 00000   162 ANE022   MVC   ANETEMP(1),0(RW3)                                        64800018
+                             000E8   163 ANE021   EQU   *                                                        65200018
+                                     164 *                                                                       65600018
+                                     165 *        FOR RIGTH ADJUSTED UPDATE COUNT FIRST.                         66000018
+                                     166 *                                                                       66400018
+ 0000E8 9180 E000      00000         167 ANE020   TM    ANESW,RIGTH                                              66800018
+ 0000EC 4780 F0F2      000F2         168          BZ    ANE019                                                   67200018
+ 0000F0 0620                         169          BCTR  RW2,RW0                                                  67600018
+                             000F2   170 ANE019   EQU   *                                                        68000018
+-
+ 0000F2 D200 2000 D09C 00000 0009C   172 ANE003   MVC   0(1,RW2),ANETEMP                                         68800018
+ 0000F8 0670                         173          BCTR  RW7,RW0                  AND UPDATE COUNTS               69200018
+ 0000FA 9180 E000      00000         174 ANE023   TM    ANESW,RIGTH                                              69600018
+ 0000FE 4710 F10A      0010A         175          BO    ANE018                                                   70000018
+ 000102 4122 0001      00001         176          LA    RW2,1(RW2)                                               70400018
+ 000106 47F0 F10C      0010C         177          B     ANE017                                                   70800018
+ 00010A 0620                         178 ANE018   BCTR  RW2,RW0                                                  71200018
+                             0010C   179 ANE017   EQU   *                                                        71600018
+ 00010C 46B0 F0F2      000F2         180          BCT   RW11,ANE003                                              72000018
+ 000110 9180 E000      00000         181          TM    ANESW,RIGTH                                              72400018
+ 000114 4780 F088      00088         182          BZ    ANE007                                                   72800018
+ 000118 4122 0001      00001         183          LA    RW2,1(RW2)              FOR RIGTH JUSTIFIED RESET POINTR 73200018
+ 00011C 47F0 F088      00088         184          B     ANE007                   GET NEXT CHAR. IN MASK.         73600018
+0
+                                     186 *                                                                       74400018
+                                     187 *      WHEN SENDING IS EXHAUSTED MOVE BLANK INSTAED.                    74800018
+                                     188 *                                                                       75200018
+ 000120 9240 D09C      0009C         189 ANEOUT2  MVI   ANETEMP,X'40'                                            75600018
+ 000124 47F0 F0E8      000E8         190          B     ANE021                                                   76000018
+1ANE0     ILBOANE0                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000128 D200 2000 1000 00000 00000   192 ANEMOV1  MVC   0(0,RW2),0(RW1)                                          76800018
+-
+ 00012E FFFD                         194 MINTHRE  DC    1H'-3'                                                   77600018
+ 000130 0003                         195 THREE    DC    1H'3'                                                    78000018
+ 000132 0100                         196 ANEC256  DC    1H'256'                                                  78400018
+                                     197 *                                                                       78800018
+                                     198 *                                                                       79200018
+                                     199 *   IN LINE DC'S DSECT.                                                 79600018
+                                     200 *                                                                       80000018
+                                     201 *                                                                       80400018
+ 000000                              202 INPUT    DSECT                                                          80800018
+ 000000                              203 ANESW    DS    XL1                     FLAG BYTE.                       81200018
+ 000001                              204 MASKLEN  DS    XL1                     MASK LENGTH.                     81600018
+ 000002                              205 RECVLEN  DS    XL2                     RECEIVING LENGTH.                82000018
+                                     206 *                                                                       82400018
+                                     207 *                                                                       82800018
+                                     208 *      TGT DSECT.                                                       83200018
+                                     209 *                                                                       83600018
+                                     210 *                                                                       84000018
+ 000000                              211 TGT      DSECT                                                          84400018
+ 000000                              212 FILLER   DS    96X                                                      84800018
+ 000060                              213 SAVE     DS    60X                     SAVE AREA IN WORKING CELL IN TGT 85200018
+ 00009C                              214 ANETEMP  DS    2X                      WORKING CELL FOR SUB IN TGT.     85600018
+ 00009E                              215 ANEC003  DS    2X                      CONTAINS INCREMENT FOR MASK PTR. 86000018
+                                     216          END                                                            86400018
+1ANE0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    7
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        216
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                         8
+ TOTAL RECORDS PRINTED                       242

@@ -1,0 +1,251 @@
+*//    ILBOIDT0                                                         00300018
+IDT0     TITLE     'ILBOIDT0'                                           00600018
+*        ILBOIDT0   CALLING SEQ... L    15,V(ILBOIDT0)                  00900018
+*                                                                       01200018
+*        LEVEL  180     09/14/66                                        01500018
+*                                                                       01800018
+*  THIS ROUTINE CONVERTS ANY INTERNAL DECIMAL NUMBER CONTAINED IN A     02100018
+*    16-BYTE FIELD TO ANY STERLING FORMAT SPECIFIED.                    02400018
+*    THE CALLING SEQUENCE IS AS FOLLOWING --                            02700018
+*        L     1,GN= ON-SIZE-ERROR ROUTINE                              03000018
+*         OR                                                            03300018
+*        SR    1,1   IF NO SIZE-ERROR ROUTINE                           03600018
+*        LA    0,STERLING-FIELD                                         03900018
+*        L     15,=V(IDTOST)                                            04200018
+*        BALR  14,15                                                    04500018
+*        DC    AL4(INPUT ID FIELD)                                      04800018
+*        DC    XL2(INFO)                                                05100018
+*  WHERE  'INFO' IS A 2-BYTE PARAMETER WITH THE FOLLOWING INFORMATION-  05400018
+*        BIT   0    =1 IF IBM SHILLING                                  05700018
+*        BIT   1    =1 IF 2 CHARACTER PENCE REPRESENTATION              06000018
+*        BIT   2    =1 IF IBM PENCE                                     06300018
+*        BITS  3 -7 =NUMBER OF DIGITS OF PENCE DECIMALS                 06600018
+*        BITS  8 -12=NUMBER OF DIGITS OF POUND INTEGERS                 06900018
+*        BITS  13-15=000    NO SIGN                                     07200018
+*                   =001   SIGN ON HIGH-ORDER POUND                     07500018
+*                   =010   SIGN ON LOW-ORDER POUND                      07800018
+*                   =011   SIGN ON HIGH-ORDER SHILLING                  08100018
+*                   =100    SIGN ON LOW-ORDER PENCE                     08400018
+*                   =101    SIGN ON LOW-ORDER DECIMAL                   08700018
+*ENTRY POINT 0 ILBOIDST                                                 09000018
+*INPUT 0 SEE ABOVE. REG13 IS INITIALIZED BY CALLER TO POINT TO TGT.     09300018
+*OUTPUT 0 CONVERTED STELING FIELDS AT ADDRESS SPECIFIED IN CALLING      09600018
+*   SEQUENCE.                                                           09900018
+*   ON SIZE ERROR, HIGH ORDER POUND INTEGERS ARE TRUNCATED.             10200018
+*EXTERNAL ROUTINES 0 NONE                                               10500018
+*EXITS - NORMAL 0  BY   BC   15,10(14)                                  10800018
+*      - ERROR  0  ON ON-SIZE ERROR, ERROR RETURN ADDRESS IS TAKEN IF   11100018
+*                  GIVEN IN CALLING SEQUENCE, ELSE NORMAL EXIT IS TAKEN 11400018
+*WORK AREAS 0 BYTES 96-220  OF TGT.                                     11700018
+*ATTRIBUTES 0 SERIALLY REUSABLE. INPUT SIGNS ARE EXPECTED TO BE C,F ORD 12000018
+*                                                                       12300018
+ILBOIDT0 START 0                                                        12600018
+R13      EQU   13                                                       12900018
+R14      EQU   14                                                       13200018
+R15      EQU   15                                                       13500018
+R0       EQU   0                                                        13800018
+R1       EQU   1                                                        14100018
+R2       EQU   2                                                        14400018
+R3       EQU   3                                                        14700018
+R4       EQU   4                                                        15000018
+R5       EQU   5                                                        15300018
+R6       EQU   6                                                        15600018
+HI       EQU   2                                                        15900018
+LO       EQU   4                                                        16200018
+NOTLO    EQU   11                                                       16500018
+EQ       EQU   8                                                        16800018
+NOTEQ    EQU   7                                                        17100018
+NOTPOS   EQU   13                                                       17400018
+ONES     EQU   1                                                        17700018
+NOTONE   EQU   14                                                       18000018
+ZERO     EQU   8                                                        18300018
+MIXED    EQU   4                                                        18600018
+NOTMXD   EQU   11                                                       18900018
+UNCOND   EQU   15                                                       19200018
+*                                                                       19500018
+         USING WC,R13                                                   19800018
+         USING *,R15                                                    20100018
+IDTOST   STM   R1,R6,RS1                                                20400018
+       MVC   96(1,R13),0(R14)  MOVE  REGISTER CODE BYTE TO WORK      CS 20700018
+       OI    96(R13),X'10'    SET UP TO LOAD INTO REG1               CS 21000018
+       IC    R2,96(R13)       REGISTER CODE INTO WORK REGISTER       CS 21300018
+       EX    R2,LDREG         LOAD REG 11,12, OR 13 BASE TO REG1     CS 21600018
+       AH    R1,2(R14)        ADD DISPLACEMENT.                      CS 21900018
+         TM    15(R1),X'03'                                             22200018
+         BC    NOTMXD,IDS000                                            22500018
+         MVI   SIGN,X'D0'                                               22800018
+         BC    UNCOND,IDS005                                            23100018
+IDS000   MVI   SIGN,X'C0'                                               23400018
+IDS005   EQU   *                                                        23700018
+         IC    R2,4(R14)            CALCULATE LGN OF STERLING OUTPUT=R3 24000018
+         N     R2,MK2832               PENCE DECIMAL,                   24300018
+         LR    R5,R2                                                    24600018
+         IC    R3,5(R14)                                                24900018
+         SRL   R3,3                                                     25200018
+         N     R3,MK2832               + POUND INTEGER,                 25500018
+         AR    R3,R2                                                    25800018
+         TM    4(R14),X'C0'                                             26100018
+         BC    MIXED,IDS010            + SHILLING AND PENCE DIGITS.     26400018
+         BC    ZERO,IDS020                                              26700018
+         LA    R3,1(R3)                                                 27000018
+IDS010   LA    R3,1(R3)                                                 27300018
+IDS020   LA    R3,2(R3)                                                 27600018
+         AR    R3,R0               R3 POINTS TO LAST/NEXT BYTE OF       27900018
+         BCTR  R3,R0                                                    28200018
+         LTR   R2,R2                   STERLING OUTPUT.                 28500018
+         BC    ZERO,IDS060                                              28800018
+         LR    R6,R3                                                    29100018
+         UNPK  96(16,R13),0(9,R1)                                       29400018
+         UNPK  111(15,R13),8(8,R1)                                      29700018
+         OI    125(R13),X'F0'                                           30000018
+         LA    R4,125(R13)                                              30300018
+IDS030   MVC   0(1,R3),0(R4)       MOVE PENCE DECIMAL TO OUTPUT AREA    30600018
+         BCTR  R3,R0                                                    30900018
+         BCTR  R4,R0                                                    31200018
+         BCT   R2,IDS030                                                31500018
+IDS040   EQU   *                   SAVE ONLY THE TOTAL NUMBER OF PENCE, 31800018
+         TM    5(R14),X'05'                                             32100018
+         BC    NOTONE,IDS045                                            32400018
+         MVZ   0(1,R6),SIGN                                             32700018
+IDS045   LA    R2,18(R0)                                                33000018
+         SR    R2,R5                                                    33300018
+         BCTR  R2,R0                                                    33600018
+         EX    R2,MVC                                                   33900018
+         CL    R2,CON15                                                 34200018
+         BC    HI,IDS050                                                34500018
+         EX    R2,PACK                                                  34800018
+         BC    UNCOND,IDS070                                            35100018
+IDS050   PACK  DIVID+7(2),WORK2(3)    MORE THAN 16 DIGITS IN PENCE      35400018
+         PACK  DIVID+8(8),WORK2+2(15)    TOTAL (I.E. 17 DIGITS)         35700018
+         XC    DIVID(7),DIVID                                           36000018
+         BC    UNCOND,IDS070                                            36300018
+IDS060   ZAP   DIVID(16),0(16,R1)                                       36600018
+         OI    DIVID+15,X'0F'      CHANGE SIGN TO + TO WORK WITH.       36900018
+IDS070   DP    DIVID(16),TWELVE(2)    DIVIDE BY 12 TO GET SHILLINGS.    37200018
+         UNPK  WORK2(3),DIVID+14(2)   REMAINDER = NO. OF PENCE.         37500018
+         TM    4(R14),X'40'                                             37800018
+         BC    ZERO,IDS090                                              38100018
+IDS080   BCTR  R3,R0      2 CHARACTER PENCE REPRESENTATION.             38400018
+         MVC   0(2,R3),WORK2+1                                          38700018
+         TM    5(R14),X'05'                                             39000018
+         BC    ONES,IDS085                                              39300018
+         TM    5(R14),X'04'                                             39600018
+         BC    ZERO,IDS085                                              39900018
+         MVZ   1(1,R3),SIGN                                             40200018
+         BCT   R3,IDS120                                                40500018
+IDS085   OI    1(R3),X'F0'                                              40800018
+         BCTR  R3,R0                                                    41100018
+         BC    UNCOND,IDS120                                            41400018
+IDS090   CP    DIVID+14(2),TEN(2)  1 CHARACTER PENCE REPRESENTATION.    41700018
+         BC    LO,IDS110                  0-9 PENCE.                    42000018
+         BC    EQ,IDS100                                                42300018
+         TM    4(R14),X'20'        ***    11  PENCE,                    42600018
+         BC    ZERO,IDS095                                              42900018
+         MVI   0(R3),X'50'                  IN IBM REP.                 43200018
+         BCT   R3,IDS120                                                43500018
+IDS095   MVI   0(R3),X'60'                  IN BSI REP.                 43800018
+         BCT   R3,IDS120                                                44100018
+IDS100   TM    4(R14),X'20'         ***    10  PENCE,                   44400018
+         BC    ZERO,IDS105                                              44700018
+         MVI   0(R3),X'60'                  IN IBM REP.                 45000018
+         BCT   R3,IDS120                                                45300018
+IDS105   MVI   0(R3),X'50'                  IN BSI REP.                 45600018
+         BCT   R3,IDS120                                                45900018
+IDS110   OI    WORK2+2,X'F0'                                            46200018
+         MVC   0(1,R3),WORK2+2                                          46500018
+         BCTR  R3,R0                                                    46800018
+IDS120   ZAP   WORK2(16),DIVID(14)                                      47100018
+         MVC   96(16,R13),WORK2                                         47400018
+         DP    96(16,R13),CON20(2)     DIVIDE BY 20 TO GET POUND.       47700018
+         UNPK  WORK2(3),110(2,R13)    REMAINDER = NO. OF SHILLINGS      48000018
+         TM    4(R14),X'80'                                             48300018
+         BC    ZERO,IDS130                                              48600018
+IDS125   BCTR  R3,R0                                                    48900018
+         MVC   0(2,R3),WORK2+1     SHILLING IN IBM REPRESENTATION,2CHAR 49200018
+         TM    5(R14),X'03'                                             49500018
+         BC    NOTONE,IDS127       NO SIGN IN SHILLING FIELD.           49800018
+         MVZ   0(1,R3),SIGN                                             50100018
+IDS127   OI    1(R3),X'F0'                                              50400018
+         BCTR  R3,R0                                                    50700018
+         BC    UNCOND,IDS150                                            51000018
+IDS130   CP    110(2,R13),TEN(2)         SHILLING IN BSI REPRESENTATION 51300018
+         BC    LO,IDS135                                                51600018
+         BC    HI,IDS138                                                51900018
+         MVI   0(R3),X'50'                 10 SHILLINGS.                52200018
+         BCTR  R3,R0                                                    52500018
+         BC    UNCOND,IDS150                                            52800018
+IDS135   OI    WORK2+2,X'F0'                                            53100018
+         BC    UNCOND,IDS140                                            53400018
+IDS138   NI    WORK2+2,X'CF'             11-19 SHILLINGS HAS FORM C1-C9 53700018
+IDS140   MVC   0(1,R3),WORK2+2                                          54000018
+         BCTR  R3,R0                                                    54300018
+IDS150   UNPK  WORK2(15),96+6(8,R13)   MAX NO. OF POUND DIGITS = 15.    54600018
+         LA    R5,2(R0)                                                 54900018
+         IC    R1,5(R14)                                                55200018
+         N     R1,MK3032                                                55500018
+         CR    R1,R5                                                    55800018
+         BC    NOTEQ,IDS155          SIGN NOT ON LO-ORDER POUND.        56100018
+         MVZ   WORK2+14(1),SIGN                                         56400018
+         BC    UNCOND,IDS158                                            56700018
+IDS155   OI    WORK2+14,X'F0'                                           57000018
+IDS158   LA    R2,WORK2+14                                              57300018
+         IC    R4,5(R14)                                                57600018
+         SRL   R4,3                                                     57900018
+         N     R4,MK2832                R4 HAS NUMBER OF POUND INTEGERS 58200018
+         LR    R6,R4               SAVE IT IN R6 ALSO.                  58500018
+IDS160   MVC   0(1,R3),0(R2)                                            58800018
+         BCTR  R3,R0                                                    59100018
+         BCTR  R2,R0                                                    59400018
+         BCT   R4,IDS160                                                59700018
+         LA    R5,1(R0)                                                 60000018
+         CR    R1,R5                                                    60300018
+         BC    NOTEQ,IDS170                                             60600018
+         MVZ   1(1,R3),SIGN            SIGN ON HIGH ORDER POUND.        60900018
+IDS170   XC    MAXIM(9),MAXIM                                           61200018
+         MVI   MAXIM+8,X'0C'       DO SIZE-ERROR CHECKING.              61500018
+         LA    R6,1(R6)                                                 61800018
+         STC   R6,TEMP                                                  62100018
+         SRA   R6,1                                                     62400018
+         LA    R5,MAXIM+8                                               62700018
+         SR    R5,R6                                                    63000018
+         TM    TEMP,1                                                   63300018
+         BC    ONES,IDS174                                              63600018
+         OI    0(R5),X'01'                                              63900018
+         BC    UNCOND,IDS175                                            64200018
+IDS174   OI    0(R5),X'10'                                              64500018
+IDS175   CP    96(14,R13),MAXIM(9)                                      64800018
+         BC    NOTLO,IDS180                                             65100018
+EXIT     LM    R1,R6,RS1                                                65400018
+         LA    R14,6(R14)          RETURN TO INSTRUCT AFTER CALL        65700018
+         BCR   UNCOND,R14                                               66000018
+*                                                                       66300018
+IDS180 L     R1,RS1               PICK UP SIZE-ERROR ADDR               66600018
+       LTR   R1,R1                IS THERE AN ADDR....                  66900018
+         BZ    EXIT                NO, RETURN TO NSI AFTER CALL         67200018
+         LM    R1,R6,RS1                                                67500018
+       LR    R14,R1                                                     67800018
+         BCR   UNCOND,R14                                               68100018
+MVC      MVC   WORK2(0),96+12(R13)                                      68400018
+PACK     PACK  DIVID(16),WORK2(0)                                       68700018
+LDREG  LR    R0,R0            LOAD BASE TO REG1                      CS 69000018
+ZEROS    DC    X'000F'                                                  69300018
+CON15    DC    F'15'                                                    69600018
+MK3032   DC    F'7'                                                     69900018
+MK2832   DC    X'0000001F'                                              70200018
+TEN      DC    X'010C'                                                  70500018
+ELEVEN   DC    X'011C'                                                  70800018
+TWELVE   DC    X'012F'                                                  71100018
+CON20    DC    X'020C'                                                  71400018
+CON18    DC    F'18'                                                    71700018
+NIL      DC    F'0'                                                     72000018
+WC       DSECT                                                          72300018
+         DS    96C                                                      72600018
+         DS    36C                                                      72900018
+WORK2    DS    36C                                                      73200018
+DIVID    DS    16C                                                      73500018
+MAXIM    DS    9C                                                       73800018
+TEMP     DS    C                                                        74100018
+RS1      DS    6F                                                       74400018
+SIGN     DS    C                                                        74700018
+         END                                                            75000018
+         EJECT                                                          75300018

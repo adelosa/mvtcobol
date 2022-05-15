@@ -1,0 +1,233 @@
+1SGM0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOSGM0  SD  0001 000000 00012F
+ CURSEGM   LD       000129        0001
+ ILBOSGM1  LD       000004        0001
+ ILBOSGM2  LD       000008        0001
+1SGM0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *$MODULE       ILBOSGM0                                                 00400021
+                                       2 *//    ILBOSGM0                                                         00800021
+1SGM0     ILBOSGM0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      4 *        ILBOSGM0   CALLING SEQ... L    15,V(ILBOSGM0)                  01600021
+ 000000                                5 ILBOSGM0 CSECT                                                          02000021
+                                       6 *********************************************************************** 02400021
+                                       7 *                                                                     * 02800021
+                                       8 *TITLE 'ILBOSEGM' - SEGMENTATION AT OBJECT TIME                       * 03200021
+                                       9 *                                                                     * 03600021
+                                      10 *STATUS: CHANGE LEVEL 0                                               * 04000021
+                                      11 *                                                                     * 04400021
+                                      12 *FUNCTION/OPERATION:                                                  * 04800021
+                                      13 *        THIS PROGRAM IS CALLED INTO ACTION WHENEVER A PROGRAM THAT   * 05200021
+                                      14 *        USES LARGE AMOUNTS OF CORE STORAGE FOR ITS DATA AND/OR       * 05600021
+                                      15 *        PROCEDURE DIVISIONS IS DIVIDED INTO SEGMENTS WITH VARYING    * 06000021
+                                      16 *        PRIORITIES.  THE FUNCTION OF    SEGM IS TO LOAD THE SEGMENT  * 06400021
+                                      17 *        REQUIRED FOR A COBOL 'GO TO', AND WHEN NECESSARY, PERFORM    * 06800021
+                                      18 *        INITIALIZATION OF THE SEGMENT.                               * 07200021
+                                      19 *                                                                     * 07600021
+                                      20 *ENTRY POINTS:                                                        * 08000021
+                                      21 *        ILBOSEGM - THE CALLING SEQUENCES ARE AS FOLLOWS:             * 08400021
+                                      22 *                     FOR COMPILATIONS PRIOR TO R21.7 LEVEL -         * 08800021
+                                      23 *                       FOR A 'GO TO' WITH A PN AS AN OPERAND -       * 09200021
+                                      24 *                             L   15,V(ILBOSGM0)                      * 09600021
+                                      25 *                             L   0,PN#                               * 10000021
+                                      26 *                             LCR 0,0                                 * 10400021
+                                      27 *                             BALR 14,15                              * 10800021
+                                      28 *                       FOR A 'GO TO' WITH A VN AS AN OPERAND -       * 11200021
+                                      29 *                             L   15,V(ILBOSGM0)                      * 11600021
+                                      30 *                             L   0,VN#                               * 12000021
+                                      31 *                             BALR 14,15                              * 12400021
+                                      32 *                             DC  X'PTY'                              * 12800021
+                                      33 *                             DC  X'00'                               * 13200021
+                                      34 *                     OTHERS -                                        * 13600021
+                                      35 *                       GO TO PN -                                    * 14000021
+                                      36 *                             L   15,V(ILBOSGM1)                      * 14400021
+                                      37 *                             L   0,PN#                               * 14800021
+                                      38 *                             BALR 14,15                              * 15200021
+                                      39 *                       GO TO VN'S                                    * 15600021
+                                      40 *                             L   15,V(ILBOSGM2)                      * 16000021
+                                      41 *                             (REST IS SAME AS ABOVE FOR VN'S)        * 16400021
+                                      42 *                                                                     * 16800021
+                                      43 *INPUT:                                                               * 17200021
+                                      44 *        REGISTER 0 - CONTAINING THE PRIORITY # OF THE SEGMENT OF     * 17600021
+                                      45 *        DESTINATION IN THE HIGH ORDER BYTE AND THE ENTRY POINT       * 18000021
+                                      46 *        ADDRESS IN THE LOW ORDER THREE BYTES.                        * 18400021
+                                      47 *                                                                     * 18800021
+                                      48 *        REGISTER 13 - CONTAINING THE ADDRESS OF THE TGT              * 19200021
+                                      49 *        REGISTER 14 - CONTAINING THE ADDRESS OF THE PRIORITY # OF    * 19600021
+                                      50 *        THE SEGMENT OF ORIGIN IF REGISTER 0 > 0.                     * 20000021
+                                      51 *                                                                     * 20400021
+                                      52 *OUTPUT: N/A                                                          * 20800021
+                                      53 *                                                                     * 21200021
+                                      54 *EXTERNAL ROUTINES: N/A                                               * 21600021
+                                      55 *                                                                     * 22000021
+                                      56 *EXITS - NORMAL:                                                      * 22400021
+                                      57 *        BRANCHING TO THE SEGMENT JUST LOADED AT THE ENTRY POINT      * 22800021
+                                      58 *        PASSED AS A PARAMETER IN REGISTER 0.                         * 23200021
+1SGM0     ILBOSGM0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                     59 *                                                                     * 23600021
+                                      60 *EXITS - ERROR: N/A                                                   * 24000021
+                                      61 *                                                                     * 24400021
+                                      62 *TABLES/WORK AREAS:                                                   * 24800021
+                                      63 *        COBOL OBJECT TGT                                             * 25200021
+                                      64 *                                                                     * 25600021
+                                      65 *ATTRIBUTES: SERIALLY REUSABLE                                        * 26000021
+                                      66 *                                                                     * 26400021
+                                      67 *********************************************************************** 26800021
+                             00000    68 R0       EQU   0                                                        27200021
+                             00001    69 R1       EQU   1                                                        27600021
+                             00002    70 R2       EQU   2                                                        28000021
+                             00003    71 R3       EQU   3                                                        28400021
+                             00004    72 R4       EQU   4                                                        28800021
+                             00005    73 R5       EQU   5                                                        29200021
+                             00006    74 R6       EQU   6                                                        29600021
+                             00007    75 R7       EQU   7                                                        30000021
+                             00008    76 R8       EQU   8                                                        30400021
+                             00009    77 R9       EQU   9                                                        30800021
+                             0000A    78 R10      EQU   10                                                       31200021
+                             0000B    79 R11      EQU   11                                                       31600021
+                             0000C    80 R12      EQU   12                                                       32000021
+                             0000D    81 R13      EQU   13                                                       32400021
+                             0000E    82 R14      EQU   14                                                       32800021
+                             0000F    83 R15      EQU   15                                                       33200021
+                                      84 *  TGT DISPLACEMENTS                                                    33600021
+                             00198    85 VNPGT    EQU   408                 VNI TBL ADDR                         34000021
+                             0019C    86 VNTGT    EQU   412                 VN-I TBL ADDR                        34400021
+                             001A0    87 VCONTGT  EQU   416                 VCON TBL ADDR                        34800021
+                             001A4    88 VNILN    EQU   420                 LENGTH OF VNI TBL                    35200021
+                             001A8    89 PGMID    EQU   424                 PGM NAME                             35600021
+                             001B0    90 INIT1AD  EQU   432                 INIT1 ADDR                           36000021
+                                      91          ENTRY CURSEGM                                                  36400021
+                                      92          ENTRY ILBOSGM1                                           59713 36800021
+                                      93          ENTRY ILBOSGM2                                           59713 37200021
+                             00000    94          USING *,R15                                                    37600021
+ 000000 47F0 F0D4      000D4          95          B     SGM0                                               59713 38000021
+                             00004    96 ILBOSGM1 EQU   *                                                  59713 38400021
+                             00004    97          USING *,R15                                              59713 38800021
+ 000004 47F0 F0DC      000E0          98          B     SGM1                                               59713 39200021
+                             00008    99 ILBOSGM2 EQU   *                                                  59713 39600021
+                             00008   100          USING *,R15                                              59713 40000021
+ 000008 47F0 F0EA      000F2         101          B     SGM2                                               59713 40400021
+                                     102 *DEL                                                                    40800021
+                                     103 *DEL                                                                    41200021
+                                     104 *DEL                                                                    41600021
+                                     105 *DEL                                                                    42000021
+                                     106 *DEL                                                                    42400021
+                                     107 *DEL                                                                    42800021
+                                     108 *DEL                                                                    43200021
+                                     109 *DEL                                                                    43600021
+                                     110 *DEL                                                                    44000021
+ 00000C 8C20 0018      00018         111 SEGLAB1  SRDL  R2,24               R2=PTY OF SEGM OF DESTINATION        44400021
+ 000010 8830 0008      00008         112          SRL   R3,8                R3=ENTRY POINT ADDRESS               44800021
+ 000014 5420 F118      00120         113          N     R2,MASK                                                  45200021
+1SGM0     ILBOSGM0                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000018 D201 F122 F124 0012A 0012C   114          MVC   ORGPTY(2),DESTPTY   MOVE CURPTY TO OLD PTY               45600021
+ 00001E 4020 F124      0012C         115          STH   R2,DESTPTY          UPDATE NEW PRIORITY                  46000021
+ 000022 1222                         116          LTR   R2,R2               IS SEGM OF DESTINATION ROOT SEGM     46400021
+                                     117 *******************************************************************     46800021
+ 000024 4780 F09A      000A2         118          BC    8,EXIT                                                   47200021
+                                     119 *******************************************************************     47600021
+ 000028 4920 F120      00128         120          CH    R2,CURPTY           IS SEGM OF DEST IN CORE              48000021
+ 00002C 4780 F04E      00056         121          BC    8,INCORE            YES,BR                               48400021
+                                     122 *********************************************************************   48800021
+                             00030   123 SEGWT    EQU   *                                                        49200021
+ 000030 581D 01A0      001A0         124          L     R1,VCONTGT(R13)     GET VCON TBL ADDR                    49600021
+ 000034 4220 F031      00039         125          STC   R2,*+5              SPECIFY PTY NMBR AS SEARCH ARG       50000021
+ 000038 9500 1000      00000         126 SEGWT0   CLI   0(R1),0                                                  50400021
+ 00003C 4780 F040      00048         127          BC    8,SEGWT1            PTY EQU,BRANCH                       50800021
+ 000040 4111 0008      00008         128          LA    R1,8(R1)            NO,POINT TO NEXT ENTRY               51200021
+ 000044 47F0 F030      00038         129          B     SEGWT0                                                   51600021
+ 000048 5811 0004      00004         130 SEGWT1   L     1,4(1)              SEGWT MACRO EXPANSION                52000021
+ 00004C 4100 0001      00001         131          LA    0,1                                                      52400021
+ 000050 0A25                         132          SVC   37                                                       52800021
+ 000052 4020 F120      00128         133          STH   R2,CURPTY           SAVE CURRENT PTY                     53200021
+                                     134 *******************************************************************     53600021
+ 000056                              135 INCORE   DS    0H                                                       54000021
+ 000056 4100 0032      00032         136          LA    R0,50                                                    54400021
+ 00005A 1920                         137          CR    R2,R0               IS SEGM OF DEST INDEPENDENT          54800021
+ 00005C 4740 F09A      000A2         138          BC    4,EXIT              NO,EXIT                              55200021
+ 000060 9140 F126      0012E         139          TM    SWITCH,PNSW         IS PN IN THE OPERAND                 55600021
+ 000064 4710 F0A8      000B0         140          BC    R1,CHKPTY           CHECK PRIORITY                       56000021
+ 000068 D500 F121 E000 00129 00000   141          CLC   CURPTY+1(1),0(R14)  IS ORIGIN= SEGM OF DESTINATION       56400021
+ 00006E 4780 F09A      000A2         142          BC    8,EXIT              YES,BR                               56800021
+                                     143 *********************************************************************   57200021
+ 000072                              144 INIT     DS    0H                                                       57600021
+ 000072 481D 01A4      001A4         145          LH    R1,VNILN(R13)       GET LNGTH OF VNI TBL FROM TGT        58000021
+ 000076 8810 0002      00002         146          SRL   R1,2                DEVELOP LOOP CONTROL VALUE           58400021
+ 00007A 585D 019C      0019C         147          L     R5,VNTGT(R13)       GET ADDR OF VN'S IN THE TGT          58800021
+ 00007E 586D 0198      00198         148          L     R6,VNPGT(R13)       GET ADDR OF VN'S IN THE PGT          59200021
+ 000082 1211                         149          LTR   R1,R1               ARE THERE ANY VNS                    59600021
+ 000084 4780 F09A      000A2         150          BC    8,EXIT              NO,EXIT                              60000021
+ 000088 9180 6000      00000         151 INIT4    TM    0(R6),X'80'                                              60400021
+ 00008C 4710 F08E      00096         152          BC    1,INIT3             NO,BR                                60800021
+ 000090 D203 5000 6000 00000 00000   153          MVC   0(4,R5),0(R6)       INITIALIZE VN IN THE TGT             61200021
+ 000096 4155 0004      00004         154 INIT3    LA    R5,4(R5)            PONT TO NEXT VN                      61600021
+ 00009A 4166 0004      00004         155          LA    R6,4(R6)                                                 62000021
+ 00009E 4610 F080      00088         156          BCT   R1,INIT4                                                 62400021
+                                     157 *********************************************************************   62800021
+ 0000A2 503D 000C      0000C         158 EXIT     ST    R3,12(R13)          SAVE ENTRY POINT ADDR                63200021
+ 0000A6 98EC D00C      0000C         159          LM    R14,R12,12(R13)     RESTORE                              63600021
+ 0000AA 94BF F126      0012E         160 EXIT2    NI    SWITCH,255-PNSW                                          64000021
+ 0000AE 07FE                         161          BR    R14                 GIVE CONTROL TO SEGMENT              64400021
+ 0000B0                              162 CHKPTY   DS    0H                                                       64800021
+ 0000B0 D501 F122 F124 0012A 0012C   163          CLC   ORGPTY(2),DESTPTY   DOES OLD PTY = NEW PTY               65200021
+ 0000B6 4770 F06A      00072         164          BNE   INIT                                                     65600021
+ 0000BA 581D 01B0      001B0         165          L     R1,INIT1AD(R13)     ADDR OF INIT1                        66000021
+ 0000BE 5811 001C      0001C         166          L     R1,28(R1)           ADDR OF INIT3                        66400021
+ 0000C2 19E1                         167          CR    R14,R1              IS DEST INDEP SEP                    66800021
+ 0000C4 4740 F06A      00072         168          BL    INIT      NO                                             67200021
+1SGM0     ILBOSGM0                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00000C8 47F0 F09A      000A2         169          B     EXIT                                                     67600021
+                                     170 *******************************************************************     68000021
+ 0000CC 5420 F11C      00124         171 VNOP     N     R2,MASK2                                                 68400021
+ 0000D0 47F0 F004      0000C         172          B     SEGLAB1                                                  68800021
+                                     173 *******************************************************************     69200021
+ 0000D4 90EC D00C      0000C         174 SGM0     STM   R14,R12,12(R13)    SAVE REGISTERS                  59713 69600021
+ 0000D8 41FF 0008      00008         175          LA    R15,8(R15)         ESTABLISH BASE OFF ILBOSGM2     59713 70000021
+ 0000DC 47F0 F0F4      000FC         176          B     NOTFST                                             59713 70400021
+ 0000E0 90EC D00C      0000C         177 SGM1     STM   R14,R12,12(R13)    SAVE REGISTERS                  59713 70800021
+ 0000E4 41FF 0004      00004         178          LA    R15,4(R15)         ESTABLISH BASE OFF ILBOSGM2     59713 71200021
+ 0000E8 9640 F126      0012E         179          OI    SWITCH,PNSW        TURN ON PN SW                   59713 71600021
+ 0000EC 1820                         180          LR    R2,R0              GET INPUT PARAMETER             59713 72000021
+ 0000EE 47F0 F004      0000C         181          B     SEGLAB1                                            59713 72400021
+ 0000F2 90EC D00C      0000C         182 SGM2     STM   R14,R12,12(R13)    SAVE REGISTERS                  59713 72800021
+ 0000F6 1820                         183          LR    R2,R0              GET INPUT PARAMETER             59713 73200021
+ 0000F8 47F0 F004      0000C         184          B     SEGLAB1                                            59713 73600021
+ 0000FC 1820                         185 NOTFST   LR    R2,R0              GET INPUT PARAMETER             59713 74000021
+ 0000FE 1222                         186          LTR   R2,R2              IS PN IN THE OPERAND?           59713 74400021
+ 000100 4720 F004      0000C         187          BC    2,SEGLAB1          NO, BRANCH                      59713 74800021
+ 000104 5020 F114      0011C         188          ST    R2,SAVE2                                           59713 75200021
+ 000108 9180 F115      0011D         189          TM    SAVE2+1,X'80'      IS VN IN THE OPERAND?           59713 75600021
+ 00010C 4780 F0C4      000CC         190          BC    8,VNOP             YES, GO TURN OFF HI-ORDER BIT   59713 76000021
+ 000110 9640 F126      0012E         191          OI    SWITCH,PNSW        NO, TURN ON PN SW               59713 76400021
+ 000114 1322                         192          LCR   R2,R2              COMPLEMENT PARAMETER REG        59713 76800021
+ 000116 47F0 F004      0000C         193          B     SEGLAB1                                            59713 77200021
+ 00011C                              194          DS    0F                                                       77600021
+ 00011C                              195 SAVE2    DS    F                                                        78000021
+ 000120 0000007F                     196 MASK     DC    X'0000007F'                                              78400021
+ 000124 7FFFFFFF                     197 MASK2    DC    X'7FFFFFFF'                                              78800021
+                                     198 * THE FOLLOWING 2 STATEMENTS MUST NOT BE SEPERATED                      79200021
+ 000128 00                           199 CURPTY   DC    X'00'                                                    79600021
+ 000129 00                           200 CURSEGM  DC    X'00'               CURRENT PRIORITY                     80000021
+ 00012A 0000                         201 ORGPTY   DC    H'0'                PRIORITY OF ORIGIN                   80400021
+ 00012C 0000                         202 DESTPTY  DC    H'0'                PRIORITY OF DESTINATION              80800021
+ 00012E 00                           203 SWITCH   DC    X'00'                                                    81200021
+                             00040   204 PNSW     EQU   X'40'               PN SWITCH                            81600021
+                                     205          END                                                            82000021
+1SGM0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    7
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        205
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                        10
+ TOTAL RECORDS PRINTED                       233

@@ -1,0 +1,71 @@
+*//    ILBOIDB0                                                         01000018
+IDB0     TITLE     'ILBOIDB0'                                           02000018
+*        ILBOIDB0   CALLING SEQ... L    15,V(ILBOIDB0)                  03000018
+*                                                                       04000018
+*        LEVEL  180     09/14/66                                        05000018
+*                                                                       06000018
+*FUNCTION 0 THIS ROUTINE CONVERTS EITHER A 10-BYTE INTERNAL DECIMAL     07000018
+*   NUMBER OR AN 18-BYTE EXTERNAL DECIMAL NUMBER INTO A DOUBLE          08000018
+*   PRECISION BINARY NUMBER.                                            09000018
+*ENTRY POINTS 0 ILBOIDBI, ILBOEDBI                                      10000018
+*INPUT 0 THE DECIMAL FIELD STARTS AT WORKA(13) WHERE 13 IS THE REGISTER 11000018
+*   POINTING TO THE TGT OF COBOL OBJECT PROGRAM, AND IS INITIALIZED BY  12000018
+*   THE CALLING PROGRAM.                                                13000018
+*OUTPUT 0 A DOUBLE PRECISION BINARY NUMBER IN REGISTERS 0 AND 1         14000018
+*EXTERNAL ROUTINES 0 NONE                                               15000018
+*EXITS- NORMAL0  BY  BCR  15,14                                         16000018
+*       ERROR 0  NONE                                                   17000018
+*WORK AREA 0 BYTES 96-156 OF TGT.                                       18000018
+*ATTRIBUTES 0 REENTRANT CODE. NO CHARACTER DEPENDENCY.                  19000018
+*                                                                       20000018
+ILBOIDB0 START 0                                                        21000018
+         ENTRY ILBOIDB1                                                 22000018
+*                                                                       23000018
+R0     EQU   0                                                          24000018
+R1     EQU   1                                                          25000018
+R2     EQU   2                                                          26000018
+R3     EQU   3                                                          27000018
+R4     EQU   4                                                          28000018
+R5     EQU   5                                                          29000018
+R6     EQU   6                                                          30000018
+R7     EQU   7                                                          31000018
+R8     EQU   8                                                          32000018
+R9     EQU   9                                                          33000018
+R10    EQU   10                                                         34000018
+R11    EQU   11                                                         35000018
+R12    EQU   12                                                         36000018
+R13    EQU   13                                                         37000018
+R14    EQU   14                                                         38000018
+R15    EQU   15                                                         39000018
+         USING *,R15             SET BASE REG                           40000018
+         XC    WORKA3(3,R13),WORKA3(R13)                                41000018
+         MVC   WORKA3+3(5,R13),WORKA+5(R13)                             42000018
+         MVC   WORKA2+7(1,R13),WORKA3+7(R13)  MOVE SIGN BYTE TO WORKA2  43000018
+         MVO   WORKA2(8,R13),WORKA(5,R13)     HI-ORD 9 DIGS TO WORKA2   44000018
+         BAL   R15,COMMON        GO TO COMMON                           45000018
+         USING *,R15             SET BASE REG                           46000018
+ILBOIDB1 PACK  WORKA3(8,R13),WORKA2+1(9,R13) PACK LO-ORD 9 DIGITS       47000018
+         PACK  WORKA2(8,R13),WORKA(9,R13)    PACK HI-ORD 9 DIGS         48000018
+         MVN   WORKA2+7(1,R13),WORKA3+7(R13)  MOVE SIGN TO HI-ORD FIELD 49000018
+COMMON   ST    R2,SVREG2(R13)     SAVE REG2                             50000018
+         CVB   R1,WORKA2(R13)     CONV HI-ORD 9 DIGS                    51000018
+         CVB   R2,WORKA3(R13)     CONV LO-ORD 9 DIGS                    52000018
+         M     R0,TNPW9          MULT HI-ORD 9 DIGS BY 10 **9 IN REGS 0 53000018
+         LTR   R2,R2                                                    54000018
+       BC      8,EXIT                                                   55000018
+         ALR   R1,R2              ADD IN LO-ORD 9 DIGS                  56000018
+       BC    12,*+8           NO CARRY OUT                              57000018
+         AH    R0,H1             CARRY OUT - ADD 1 TO HI-ORDER          58000018
+         TM    WORKA3+7(R13),1   TEST FOR NEGATIVE                      59000018
+       BC    14,EXIT           BIT NOT ON - NUMBER IS PLUS              60000018
+         SH    R0,H1              NEG - SUBTR 1                         61000018
+EXIT     L     R2,SVREG2(R13)     RESTORE REG 2                         62000018
+         BCR   15,R14            RETURN                                 63000018
+WORKA  EQU   96                                                         64000018
+WORKA2 EQU   104                                                        65000018
+WORKA3 EQU   112                                                        66000018
+SVREG2 EQU   152                                                        67000018
+H1     DC    H'1'                                                       68000018
+TNPW9  DC    F'1000000000'                                              69000018
+       END                                                              70000018
+         EJECT                                                          71000018

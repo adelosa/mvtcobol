@@ -1,0 +1,978 @@
+1PH6A                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0IKF6A01   SD  0001 000000 000835
+1PH6A                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *$MODULE       PHASE6A                                                  00100020
+ 000000                                2 IKF6A01  CSECT                                                          00200020
+                                       3 *                                                                       00300020
+                                       4 *                                  PHASE IDENTIFICATION                 00400020
+                                       5 *                                                                       00500020
+1PH6A     IKFCBL6A                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      7 *   INPUT      DN/PN REFS ON SYSUT3                                     00700020
+                                       8 *        DN DEFS ON SYSUT1                                              00800020
+                                       9 *        PN DEFS ON SYSUT1 (FOLLOWING DN DEFS)                          00900020
+1PH6A     IKFCBL6A                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                     11 *  EQUATES                                                              01100020
+                             00000    12 R0       EQU   0              PARAMETER REGISTERS                       01200020
+                             00001    13 R1       EQU   1                                                        01300020
+                             00002    14 R2       EQU   2                                                        01400020
+                             00003    15 R3       EQU   3                                                        01500020
+                             00004    16 RW1      EQU   4              WORK REGS                                 01600020
+                             00005    17 RW2      EQU   5                                                        01700020
+                             00006    18 RW3      EQU   6                                                        01800020
+                             00007    19 RET2     EQU   7                                                        01900020
+                             00008    20 RW5      EQU   8                                                        02000020
+                             00009    21 INPUTR   EQU   9              POINTS TO INPUT ELEMENT                   02100020
+                             0000A    22 COSREG   EQU   10             POINTS TO COMMON                          02200020
+                             0000B    23 R11      EQU   11                                                       02300020
+                             0000C    24 BASE     EQU   12             BASE REG                                  02400020
+                             0000D    25 R13      EQU   13             SAVE AREA ADDR                            02500020
+                             0000E    26 R14      EQU   14             RETURN REG                                02600020
+                             0000F    27 R15      EQU   15                                                       02700020
+                             00004    28 LOW      EQU   4                   FOUR                                 02800020
+                             00007    29 NOTEQUAL EQU   7                   SEVEN                                02900020
+                             00008    30 EQUAL    EQU   8                   EIGHT                                03000020
+                             00005    31 REFLN    EQU   5                   LENGTH OF REF ELEMENT                03100020
+                             00005    32 DNLN     EQU   5              LENGTH OF TDNREF TBL ENTRY                03200020
+                             00004    33 PNLN     EQU   4                   LENGTH OF TPNREF TBL ENTRY           03300020
+1PH6A     IKFCBL6A                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000000                               35 IKFCBL6A DS    0H                                                       03500020
+ 000000 90EC D00C      0000C          36          STM   R14,R12,DX12(R13)        SAVE REGISTERS                  03600020
+ 000004 182D                          37          LR    R2,R13         GET HIGHER SAVE AREA ADDR                 03700020
+ 000006 05C0                          38          BALR  BASE,R0         ESTABLISH ADDRESABILITY                  03800020
+                             00008    39          USING *,BASE                                                   03900020
+                             00000    40          USING COS,COSREG                                               04000020
+                             00000    41          USING INREC,INPUTR                                             04100020
+ 000008 47F0 C00E      00016          42          B     PH6A                BRANCH AROUND ID                     04200020
+ 00000C C9D2C6C3C2D3F6C1              43         DC     C'IKFCBL6A'              PHASE NAME                      04300020
+ 000014 C2                            44          DC    C'B'                    BUILD                            04400020
+ 000015 20                            45          DC    X'20'                   NUMBER IN HEX                    04500020
+ 000016 41D0 C734      0073C          46 PH6A     LA    R13,SAVE6A         GET LOWER SA ADDRESS                  04600020
+ 00001A 502D 0004      00004          47          ST    R2,DX4(R13)     PROVIDE BACK CHAINING(REQUIRED)          04700020
+ 00001E 50D2 0008      00008          48          ST    R13,DX8(R2)     PROVIDE FORWARD CHAINING                 04800020
+ 000022 58A1 0000      00000          49          L     COSREG,DX0(R1)  GET COMMON TABLE ADDR                    04900020
+                                      50 *                                                                       05000020
+                                      51 * PRINT HEADER LINE                                                     05100020
+                                      52 *                                                                       05200020
+ 000026 050A                          53          BALR  R0,COSREG           EJECT                                05300020
+ 000028 D6                            54          DC    X'D6'               EJECT A PAGE                         05400020
+ 000029 00
+ 00002A 9240 C6A3      006AB          55          MVI   OUTBUF,XX40          BLANK OUTPUT LINE                   05500020
+ 00002E D276 C6A4 C6A3 006AC 006AB    56          MVC   OUTBUF+NX1(L119),OUTBUF OF PRINT FIELD                   05600020
+ 000034 D219 C6D0 C7DD 006D8 007E5    57          MVC   OUTBUF+NX45(L'HDG),HDG GENERATE HEADER LINE              05700020
+ 00003A 4550 C628      00630          58          BAL   RW2,PRINTLN         BLANK LINE                           05800020
+ 00003E 4550 C628      00630          59          BAL   RW2,PRINTLN         BLANK LINE                           05900020
+ 000042 4550 C628      00630          60          BAL   RW2,PRINTLN         BLANK LINE                           06000020
+ 000046 D209 C6A3 C7F7 006AB 007FF    61          MVC   OUTBUF(L'NAMEMSG),NAMEMSG                                06100020
+ 00004C D203 C6C4 C80A 006CC 00812    62          MVC   OUTDEF(L'DEFMSG),DEFMSG                                  06200020
+ 000052 D208 C6CF C7E3 006D7 007EB    63          MVC   OUTREF(D9),HDG+NX6  MOVE HEADER LINELD                   06300020
+                                      64 * SAVE 4000 BYTES FOR THE SYSTEM                                        06400020
+ 000058 58F0 A1FC      001FC          65          L     R15,AGETALL         GET ADDR OF SUBRTN TO GET CORE       06500020
+ 00005C 05EF                          66          BALR  R14,R15             BRANCH                               06600020
+                                      67 * UPON RETURN R0 CONTAINS STARTING ADDR, R1 LENGTH                      06700020
+ 00005E 5000 C7C4      007CC          68          ST    R0,TBLADDR          INITIALIZE POINTERS                  06800020
+ 000062 5000 C7CC      007D4          69          ST    R0,TBLENTRY         CURRENT ENTRY ADDRESS                06900020
+ 000066 1A01                          70          AR    R0,R1               END OF TABLE                         07000020
+ 000068 5000 C7C8      007D0          71          ST    R0,TBLEND           SAVE                                 07100020
+                                      72 *                                                                       07200020
+                                      73 *                                                                       07300020
+                                      74 * READ DATA/FILE NAME REFERENCE ELEMENTS                                07400020
+                                      75 *   FORMAT     //DDDDDD CCCC//                                          07500020
+                                      76 *   WHERE DDDDDD V DICT PTR OR PN NUMBER (IF BIT 0 IN CCCC IS ONE)      07600020
+                                      77 *         CCCC = CARD NUMBER                                            07700020
+ 00006C 050A                          78 READREF  BALR  R0,COSREG           CALL PH00                            07800020
+ 00006E 03                            79          DC    X'03'               READ FROM SYSUT3                     07900020
+ 00006F 00
+ 000070 4780 C0A8      000B0          80          BC    EQUAL,EOFDN         BTANCH - EOF                         08000020
+ 000074 1890                          81          LR    INPUTR,R0      GET ADDRESS OF AN ELEMENT                 08100020
+ 000076 9577 9000      00000          82          CLI   DX0(INPUTR),XX77     IS XREF TO BE PRODUCED              08200020
+ 00007A 4780 C0A8      000B0          83          BE    EOFDN               NO,BR THEN EXIT                      08300020
+ 00007E 95FF 9000      00000          84 NEXTREF  CLI   DX0(INPUTR),XXFF    HAS END OF BLOCK BEEN REACHED ?      08400020
+ 000082 4780 C064      0006C          85          BC    EQUAL,READREF       YES, READ NEXT BLOCK                 08500020
+ 000086 5820 C7CC      007D4          86          L     R2,TBLENTRY         GET CURRENT ENTRY ADDR               08600020
+ 00008A 5920 C7C8      007D0          87          C     R2,TBLEND           TABLE OVERFOW                        08700020
+1PH6A     IKFCBL6A                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000008E 47A0 C2B0      002B8          88          BC    NOTLOW,OVFLOW       YES,BR                               08800020
+ 000092 D204 2000 9000 00000 00000    89          MVC   DX0(REFLN,R2),DX0(INPUTR) MAKE AN ENTRY IN REFTBL        08900020
+ 000098 4122 0005      00005          90          LA    R2,REFLN(R2)        POINT TO NEXT ENTRY                  09000020
+ 00009C 5020 C7CC      007D4          91          ST    R2,TBLENTRY         SAVE                                 09100020
+ 0000A0 4199 0005      00005          92          LA    INPUTR,REFLN(INPUTR)  POINT TO NEXT ELEMENT              09200020
+ 0000A4 9577 9000      00000          93          CLI   DX0(INPUTR),XX77    IS XREF TO BE PRODUCED               09300020
+ 0000A8 4780 C0A8      000B0          94          BE    EOFDN         NO,BR THEN EXIT                            09400020
+ 0000AC 47F0 C076      0007E          95         B     NEXTREF             PROCESS NEXT ENTRY                    09500020
+1PH6A     IKFCBL6A                                                                                              PAGE    7
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00000B0                               97 EOFDN    DS    0H                                                       09700020
+ 0000B0 D202 2000 C7DA 00000 007E2    98          MVC   ZERDSPL(DICTSZ,R2),ZEROS MOVE ZEROS IN AT END OF TBL     09800020
+ 0000B6 45E0 C43A      00442          99          BAL   R14,SORT            SORT REFTBL                          09900020
+ 0000BA 9180 C7D5      007DD         100          TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  10000020
+ 0000BE 4710 C300      00308         101          BC    ONES,EOF1           YES,BR                               10100020
+                                     102 *                                                                       10200020
+                                     103 * PRINT XREF DICTIONARY FOR DATA/FILE NAMES                             10300020
+                                     104 *                                                                       10400020
+ 0000C2 5810 C7C4      007CC         105          L     R1,TBLADDR          GET REFTBL ADDRESS                   10500020
+ 0000C6 1841                         106          LR    RW1,R1              YES,SEARCH USING DICT PTR AS SAR     10600020
+ 0000C8 5860 C7CC      007D4         107          L     RW3,TBLENTRY        GET CURRENT ENTRY ADDRESS            10700020
+ 0000CC 1946                         108          CR    RW1,RW3             ANY ENTRIES IN REFTBL                10800020
+ 0000CE 4780 C280      00288         109          BC    EQUAL,EXIT          EXIT,NAMES ARE NOT REFERENCED        10900020
+                             000D2   110 XREFDN1  EQU   *                                                        11000020
+ 0000D2 050A                         111          BALR  R0,COSREG           READ DN DEFS                         11100020
+ 0000D4 01                           112 INFILE   DC    X'01'                                                    11200020
+ 0000D5 00
+ 0000D6 4780 C280      00288         113          BC    EQUAL,EXIT          EOF BR                               11300020
+ 0000DA 1890                         114          LR    INPUTR,R0                                                11400020
+ 0000DC 95FF 9000      00000         115 XREFDN2  CLI   DX0(INPUTR),XXFF     END OF BLOCK                        11500020
+ 0000E0 4780 C0CA      000D2         116          BC    EQUAL,XREFDN1       YES,READ NEXT BLOCK                  11600020
+ 0000E4 952C 9000      00000         117          CLI   DX0(INPUTR),XX2C     IS THIS A CARD NUMB.                11700020
+ 0000E8 4780 C19C      001A4         118          BC    EQUAL,XREFDN8        YES,BR                              11800020
+ 0000EC 954C 9000      00000         119          CLI   INDNID,XX4C          IS THIS PN DEF                      11900020
+ 0000F0 4780 C1AE      001B6         120          BC    EQUAL,XREFPN        YES,BR                               12000020
+ 0000F4 9548 9000      00000         121          CLI   DX0(INPUTR),XX48     IS THIS A DN DEF                    12100020
+ 0000F8 4770 C296      0029E         122          BC    NOTEQUAL,ERROR      NO,ERROR BRANCH                      12200020
+ 0000FC 9110 C7D5      007DD         123          TM    SWITCHX,FSTDN       IS THIS 1ST DN DEF ELMNT             12300020
+ 000100 4710 C108      00110         124          BC    ONES,XREFDN20       NO,BR                                12400020
+ 000104 9610 C7D5      007DD         125          OI    SWITCHX,FSTDN       INDICATE-DN DEFS ARE PRESENT         12500020
+ 000108 4550 C628      00630         126          BAL   RW2,PRINTLN         PRINT SUB-TITLE FOR DATA NAMES       12600020
+ 00010C 4550 C628      00630         127          BAL   RW2,PRINTLN         SPACE                                12700020
+ 000110                              128 XREFDN20 DS    0H                                                       12800020
+ 000110 94BF C7D5      007DD         129          NI    SWITCHX,XXFF-PNDEF   SET DN DEF INDICATOR                12900020
+ 000114 9180 C7D5      007DD         130          TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  13000020
+ 000118 4780 C124      0012C         131          BC    EQUAL,XREFDN3        NO,BR                               13100020
+ 00011C 1B33                         132          SR    R3,R3               YES,WRITE DN DEF ELMNT               13200020
+ 00011E 4330 9006      00006         133          IC    R3,INDNLN           GET LNGTH OF DN DEF ELMNT            13300020
+ 000122 4133 0007      00007         134          LA    R3,DX7(R3)                                               13400020
+ 000126 1829                         135          LR    R2,INPUTR           SPECIFY ADDR OF DN DEF ELMNT         13500020
+ 000128 45E0 C27A      00282         136          BAL   R14,OUTPUT          WRITE ON OUTFILE                     13600020
+ 00012C                              137 XREFDN3  DS    0H                                                       13700020
+ 00012C D202 C720 9003 00728 00003   138          MVC   HOLD(LX3),INDNDICT   GET SEARCH ARG                      13800020
+ 000132 D202 C7D0 C720 007D8 00728   139          MVC   SARG(LX3),HOLD       SAVE SEARCH ARG                     13900020
+ 000138 45E0 C4C6      004CE         140          BAL   R14,SEARCH          FIND REFS                            14000020
+ 00013C 47F0 C138      00140         141          B     XREFDN4             BR,FOUND                             14100020
+ 000140                              142 XREFDN4  DS    0H                                                       14200020
+ 000140 9180 C7D5      007DD         143          TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  14300020
+ 000144 4780 C178      00180         144          BC    EQUAL,XREFDN40      NO,BR                                14400020
+ 000148                              145 XREFDN35 DS    0H                                                       14500020
+ 000148 5940 C7CC      007D4         146          C     RW1,TBLENTRY        ARE ALL REFS PROCESSED ?             14600020
+ 00014C 47A0 C18E      00196         147          BC    NOTLOW,XREFDN7      EX,BR                                14700020
+ 000150 D502 9003 4000 00003 00000   148          CLC   INDNDICT(D3),DX0(RW1) ARE ALL REFS PROCD                 14800020
+ 000156 4770 C18E      00196         149          BC    NOTEQUAL,XREFDN7    YES,BR                               14900020
+ 00015A 9180 4003      00003         150          TM    DX3(RW1),XX80        IS CURRENT REF ENTRY A PN R         15000020
+1PH6A     IKFCBL6A                                                                                              PAGE    8
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000015E 4780 C162      0016A         151          BC    EQUAL,XREFDN39      NO,DN REF-PROCESS IT                 15100020
+ 000162 4144 0005      00005         152 XREFDN38 LA    RW1,REFLN(RW1)      IGNORE PN REFS,POINT TO NEXT ENT     15200020
+ 000166 47F0 C140      00148         153          B     XREFDN35            PROCESS NEXT ENTRY                   15300020
+ 00016A                              154 XREFDN39 DS    0H                                                       15400020
+ 00016A D201 C7D8 4003 007E0 00003   155          MVC   REFOUT+NX1(D2),DX3(RW1) EXTR REF CARD NO.                15500020
+ 000170 4130 0003      00003         156          LA    R3,DX3               SPECIFY LNGTH OF CARD NMBR ELMNT    15600020
+ 000174 4120 C7D7      007DF         157          LA    R2,REFOUT                                                15700020
+ 000178 45E0 C27A      00282         158          BAL   R14,OUTPUT          WRITE CARD NMBR ON OUTFILE           15800020
+ 00017C 47F0 C15A      00162         159          B     XREFDN38            NEXT ENTRY                           15900020
+ 000180                              160 XREFDN40 DS    0H                                                       16000020
+ 000180 1B55                         161          SR    RW2,RW2                                                  16100020
+ 000182 4350 9006      00006         162          IC    RW2,INDNLN          GET LENGTH OF SOURCE NAME            16200020
+ 000186 0650                         163          BCTR  RW2,R0              LN-1                                 16300020
+ 000188 4450 C66C      00674         164          EX    RW2,MOVEDN          MVC  OUTBUF(1),INDNM                 16400020
+ 00018C D201 C720 9001 00728 00001   165          MVC   HOLD(LX2),INDNCRD    GET CARD NO. FROM DN DEF            16500020
+ 000192 45E0 C586      0058E         166          BAL   R14,PRINT           PRINT                                16600020
+ 000196                              167 XREFDN7  DS    0H                                                       16700020
+ 000196 1B55                         168          SR    RW2,RW2                                                  16800020
+ 000198 4350 9006      00006         169          IC    RW2,INDNLN          GET LN OF NAME                       16900020
+ 00019C 4195 9007      00007         170          LA    INPUTR,DX7(RW2,INPUTR) POINT TO NEXT DN DEF              17000020
+ 0001A0 47F0 C0D4      000DC         171          B     XREFDN2             NEXT DN DEF                          17100020
+ 0001A4 1829                         172 XREFDN8  LR    R2,INPUTR           SPECIFY ADDR OF CARD NMBR ELMNT      17200020
+ 0001A6 4130 0003      00003         173          LA    R3,DX3               SPECIFY LENGTH                      17300020
+ 0001AA 45E0 C27A      00282         174          BAL   R14,OUTPUT          WRITE CARD NMBR ELMNT                17400020
+ 0001AE 4199 0003      00003         175          LA    INPUTR,DX3(INPUTR)   POINT TO NEXT ELMNT ON INFILE       17500020
+ 0001B2 47F0 C0D4      000DC         176          B     XREFDN2             PROCESS NEXT                         17600020
+                                     177 *                                                                       17700020
+                                     178 *                                                                       17800020
+                                     179 *    PRINT XREF DICTIONARY FOR PROCEDURE NAMES                          17900020
+                                     180 *                                                                       18000020
+ 0001B6                              181 XREFPN   DS    0H                                                       18100020
+ 0001B6 9640 C7D5      007DD         182          OI    SWITCHX,PNDEF       SET PN DEF INDICATOR                 18200020
+ 0001BA 9180 C7D5      007DD         183          TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  18300020
+ 0001BE 4710 C26E      00276         184          BC    ONES,XREFPN90       YES,BR                               18400020
+ 0001C2 9108 C7D5      007DD         185          TM    SWITCHX,FSTPN       IS CURRENT PN 1ST PN                 18500020
+ 0001C6 4710 C1DA      001E2         186          BC    ONES,XREFPN12       NO,BR                                18600020
+ 0001CA 9608 C7D5      007DD         187          OI    SWITCHX,FSTPN       INDICATE-1ST PN DEF PROCESSED        18700020
+ 0001CE 9110 C7D5      007DD         188          TM    SWITCHX,FSTDN       WERE DN DEFS PRESENT                 18800020
+ 0001D2 4780 C1D6      001DE         189          BC    EQUAL,XREFPN10      YES,BR                               18900020
+ 0001D6 45E0 C678      00680         190          BAL   R14,GENPROC         GENERATE SUB-TITLE                   19000020
+ 0001DA 47F0 C1DA      001E2         191          B     XREFPN12            BRANCH                               19100020
+ 0001DE 45E0 C680      00688         192 XREFPN10 BAL   R14,GENPROC1        GENERATE SUB-TITLE                   19200020
+ 0001E2                              193 XREFPN12 DS    0H                                                       19300020
+ 0001E2 9180 C7D5      007DD         194          TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  19400020
+ 0001E6 4780 C1F2      001FA         195          BC      EQUAL,XREFPN2      NO,BR                               19500020
+ 0001EA 1B33                         196          SR    R3,R3               YES,GET LNGTH OF PN DEF ELMNT        19600020
+ 0001EC 4330 9005      00005         197          IC    R3,INPNLN                                                19700020
+ 0001F0 4133 0006      00006         198          LA    R3,DX6(R3)                                               19800020
+ 0001F4 1829                         199          LR    R2,INPUTR           SPECIFY ADDR OF ELMNT                19900020
+ 0001F6 45E0 C27A      00282         200          BAL   R14,OUTPUT          WRITE PN DEF ON OUTFILE              20000020
+ 0001FA                              201 XREFPN2  DS    0H                                                       20100020
+ 0001FA 9200 C720      00728         202          MVI   HOLD,XX00                                                20200020
+ 0001FE D201 C721 9001 00729 00001   203          MVC   HOLD+NX1(D2),INPNNO GET SEARCH ARGUMENT                  20300020
+ 000204 D202 C7D0 C720 007D8 00728   204          MVC   SARG(LX3),HOLD       SAVE SEARCH ARG                     20400020
+ 00020A 45E0 C4C6      004CE         205          BAL   R14,SEARCH          SEARCH RTN                           20500020
+1PH6A     IKFCBL6A                                                                                              PAGE    9
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000020E 47F0 C20A      00212         206          B     XREFPN5             FOUND,BR                             20600020
+ 000212                              207 XREFPN5  DS    0H                                                       20700020
+ 000212 9180 C7D5      007DD         208          TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  20800020
+ 000216 4780 C24A      00252         209          BC    R8,XREFPN53          NO,BR                               20900020
+ 00021A 5940 C7CC      007D4         210 XREFPN51 C     RW1,TBLENTRY        ARE ALL REFS PROCESSED               21000020
+ 00021E 47A0 C260      00268         211          BC    NOTLOW,XREFPN9      YES,BR                               21100020
+ 000222 D501 9001 4001 00001 00001   212          CLC   INPNNO(D2),DX1(RW1) ARE ALL REFS PROCD                   21200020
+ 000228 4770 C260      00268         213          BC    NOTEQUAL,XREFPN9    YES,BR                               21300020
+ 00022C 9180 4003      00003         214          TM    DX3(RW1),XX80        IS THIS PN REF                      21400020
+ 000230 4710 C234      0023C         215          BC    ONES,XREFPN52       YES,BR                               21500020
+ 000234 4144 0005      00005         216 XREFXYZ  LA    RW1,REFLN(RW1)      IGNORE DN REFS,POINT TO NEXT TBL     21600020
+ 000238 47F0 C212      0021A         217          B     XREFPN51            NEXT TBL                             21700020
+ 00023C D201 C7D8 4003 007E0 00003   218 XREFPN52 MVC   REFOUT+NX1(D2),DX3(RW1) EXTR REFS FROM TABLE             21800020
+ 000242 4130 0003      00003         219          LA    R3,DX3               LNGTH                               21900020
+ 000246 4120 C7D7      007DF         220          LA    R2,REFOUT           ADDR                                 22000020
+ 00024A 45E0 C27A      00282         221          BAL   R14,OUTPUT          WRITE REF CRD NMBR                   22100020
+ 00024E 47F0 C22C      00234         222          B     XREFXYZ             POINT TO NEXT TBL ENTRY              22200020
+ 000252                              223 XREFPN53 DS    0H                                                       22300020
+ 000252 1B55                         224          SR    RW2,RW2                                                  22400020
+ 000254 4350 9005      00005         225          IC    RW2,INPNLN          GET LENGTH OF SOURCE NAME            22500020
+ 000258 0650                         226          BCTR  RW2,R0               LN-1                                22600020
+ 00025A 4450 C672      0067A         227          EX    RW2,MOVEPN          MVC  OUTBUF(1),INPNM                 22700020
+ 00025E D201 C720 9003 00728 00003   228          MVC   HOLD(LX2),INPNCRD    GET CARD NO.                        22800020
+ 000264 45E0 C586      0058E         229          BAL   R14,PRINT           GENERATE A REFERENCE                 22900020
+ 000268 1B55                         230 XREFPN9  SR    RW2,RW2                                                  23000020
+ 00026A 4350 9005      00005         231          IC    RW2,INPNLN          GET LENGTH OF NAME                   23100020
+ 00026E 4195 9006      00006         232          LA    INPUTR,DX6(RW2,INPUTR) POINT TO NEXT PN DEF              23200020
+ 000272 47F0 C0D4      000DC         233          B     XREFDN2             NEXT DN DEF                          23300020
+ 000276 9110 C7D5      007DD         234 XREFPN90 TM    SWITCHX,FSTDN       WERE DN'S PRESENT                    23400020
+ 00027A 4780 C1D6      001DE         235          BC    EQUAL,XREFPN10      NO,BR                                23500020
+ 00027E 47F0 C1DA      001E2         236          B     XREFPN12            YES,BR                               23600020
+                                     237 *******************************************************************     23700020
+                                     238 *       OUTPUT RTN                                                      23800020
+                                     239 *******************************************************************     23900020
+ 000282 050A                         240 OUTPUT   BALR  R0,COSREG           CALL PH00                            24000020
+ 000284 00                           241 OUTFILE  DC    X'00'                                                    24100020
+ 000285 00
+ 000286 07FE                         242          BR    R14                 RETURN                               24200020
+                                     243 *******************************************************************     24300020
+ 000288                              244 EXIT     DS    0H                                                       24400020
+ 000288 9180 C7D5      007DD         245          TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  24500020
+ 00028C 4780 C2A0      002A8         246          BC    EQUAL,EXIT2         NO,BRANCH  EOJ                       24600020
+ 000290 5890 C7BC      007C4         247          L     INPUTR,SAVEIN       RESTORE REFS ADDR                    24700020
+ 000294 D203 C7CC C7C4 007D4 007CC   248          MVC   TBLENTRY(LX4),TBLADDR RESTORE CURRENT ENTRY ADDR         24800020
+ 00029A 47F0 C076      0007E         249          B     NEXTREF             NEXT REF                             24900020
+ 00029E D21E C6A3 C80E 006AB 00816   250 ERROR    MVC   OUTBUF(L'ERRMSG),ERRMSG                             PH6A 25000020
+ 0002A4 4550 C628      00630         251          BAL   RW2,PRINTLN         PRINT ERROR MSG                 PH6A 25100020
+ 0002A8                              252 EXIT2    DS    0H                                                       25200020
+ 0002A8 9102 A183      00183         253          TM    SWITCH+NX1,DOPH7     IS NEXT PHASE TO BE EXECUTED        25300020
+ 0002AC 4780 C2AC      002B4         254          BC    EQUAL,EXIT3         NO,EOJ-RETURN                        25400020
+ 0002B0 050A                         255          BALR  R0,COSREG           LINK TO NEXT PHASE                   25500020
+ 0002B2 A0                           256          DC    X'A0'               LOAD NEXT PHASE                      25600020
+ 0002B3 00
+ 0002B4 050A                         257 EXIT3    BALR  R0,COSREG           EOJ                                  25700020
+ 0002B6 B0                           258          DC    X'B0'               EOJ                                  25800020
+1PH6A     IKFCBL6A                                                                                              PAGE   10
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    259 *******************************************************************     25900020
+1PH6A     IKFCBL6A                                                                                              PAGE   11
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    261 *                                                                       26100020
+                                     262 *        TABLE OVERFLOW ROUTINE                                         26200020
+                                     263 *                                                                       26300020
+ 0002B8                              264 OVFLOW   DS    0H                                                       26400020
+ 0002B8 9680 C7D5      007DD         265          OI    SWITCHX,TBLOVFL     SET OVERFLOW SWITCH                  26500020
+ 0002BC 5090 C7BC      007C4         266          ST    INPUTR,SAVEIN       SAVE REFS ADDR                       26600020
+ 0002C0 45E0 C43A      00442         267          BAL   R14,SORT            SORT RTN                             26700020
+ 0002C4 1B44                         268          SR    RW1,RW1                                                  26800020
+ 0002C6 4340 C7D6      007DE         269          IC    RW1,OVFLCTR         GET TBL OVFL CTR                     26900020
+ 0002CA 1244                         270          LTR   RW1,RW1             IS THIS 1ST TBL OVFL                 27000020
+ 0002CC 4780 C2EC      002F4         271          BC    EQUAL,OVFLOW5       YES,BRANCH                           27100020
+ 0002D0 9101 C7D6      007DE         272          TM    OVFLCTR,XX01         IS OVFL CTR ODD                     27200020
+ 0002D4 4780 C2E4      002EC         273          BC    EQUAL,OVFLOW4       NO,EVEN-BRANCH                       27300020
+ 0002D8 050A                         274          BALR  R0,COSREG           CALL PH00                            27400020
+ 0002DA 61                           275          DC    X'61'               REWIND UT1                           27500020
+ 0002DB 00                           276          DC    X'00'               INDICATE-READ WAS LAST ON UT1        27600020
+ 0002DC 050A                         277          BALR  R0,COSREG           CALL PH00                            27700020
+ 0002DE 64                           278          DC    X'64'               REWIND UT4                           27800020
+ 0002DF 01                           279          DC    X'01'               INDICATE-WRITE WAS LAST ON UT4       27900020
+ 0002E0 9204 C0CC      000D4         280          MVI   INFILE,XX04          YES,SWAP FILE ASSIGNMENT            28000020
+ 0002E4 9211 C27C      00284         281          MVI   OUTFILE,XX11                                             28100020
+ 0002E8 47F0 C2F4      002FC         282          B     OVFLOW10            BRANCH                               28200020
+ 0002EC 050A                         283 OVFLOW4  BALR  R0,COSREG           REWIND                               28300020
+ 0002EE 61                           284          DC    X'61'               UT1                                  28400020
+ 0002EF 01                           285          DC    X'01'               INDICATE-WRITE WAS LAST ON UT1       28500020
+ 0002F0 050A                         286          BALR  R0,COSREG           REWIND                               28600020
+ 0002F2 64                           287          DC    X'64'               UT4                                  28700020
+ 0002F3 00                           288          DC    X'00'               INDICATE-READ WAS LAST ON UT4        28800020
+ 0002F4 9201 C0CC      000D4         289 OVFLOW5  MVI   INFILE,XX01          SWAP FILE ASSIGNMENT                28900020
+ 0002F8 9214 C27C      00284         290          MVI   OUTFILE,XX14                                             29000020
+ 0002FC 4144 0001      00001         291 OVFLOW10 LA    RW1,DX1(RW1)         BUMP OVERFL. CTR                    29100020
+ 000300 4240 C7D6      007DE         292          STC   RW1,OVFLCTR                                              29200020
+ 000304 47F0 C0CA      000D2         293          B     XREFDN1             READ NEXT DN                         29300020
+ 000308                              294 EOF1     DS    0H                                                       29400020
+                                     295 *   IF OVFLCTR IS ODD-UT4 CONTAINS DEFS FOLLOWED BY REFS                29500020
+                                     296 *   IF OVFLCTR IS EVEN-UT1 CONTAINS DEFS FOLLOWED BY REFS               29600020
+ 000308 9101 C7D6      007DE         297          TM    OVFLCTR,XX01         ARE DEFS/REFS ON UT4                29700020
+ 00030C 4710 C31C      00324         298          BC    ONES,EOF2           YES,BR                               29800020
+ 000310 9261 C312      0031A         299          MVI   REWFILE,XX61         NO,REWIND UT1                       29900020
+ 000314 9201 C316      0031E         300          MVI   RDFILE,XX01          READ UT1                            30000020
+ 000318 050A                         301 LASTRW   BALR  R0,COSREG           REWIND                               30100020
+ 00031A 00                           302 REWFILE  DC    X'00'               UT1 OR UT4                           30200020
+ 00031B 01                           303          DC    X'01'               INDICATE-WRITE WAS LAST ON FILE      30300020
+ 00031C 050A                         304 LASTRD   BALR  R0,COSREG           READ UT1 OR UT4                      30400020
+ 00031E 00                           305 RDFILE   DC    X'00'               FILE TO BE READ CONSTANT             30500020
+ 00031F 00
+ 000320 47F0 C328      00330         306          B     EOF3                EOF BR                               30600020
+ 000324 9264 C312      0031A         307 EOF2     MVI   REWFILE,XX64         REWIND UT4                          30700020
+ 000328 9204 C316      0031E         308          MVI   RDFILE,XX04          READ UT4                            30800020
+ 00032C 47F0 C310      00318         309          B     LASTRW              REWIND                               30900020
+ 000330 4780 C41C      00424         310 EOF3     BC    EQUAL,EOF40         EOF BRANCH                           31000020
+ 000334 1890                         311          LR    INPUTR,R0                                                31100020
+ 000336 95FF 9000      00000         312 LASTLOOP CLI   DX0(INPUTR),XXFF     IS THIS END OF BLOCK IND.           31200020
+ 00033A 4780 C314      0031C         313          BC    EQUAL,LASTRD        YES,READ NET REC                     31300020
+ 00033E 952C 9000      00000         314          CLI   DX0(INPUTR),XX2C     IS THIS A CARD NMBR ELMNT(REF)      31400020
+1PH6A     IKFCBL6A                                                                                              PAGE   12
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000342 4780 C410      00418         315          BC    EQUAL,EOF30         YES,BR                               31500020
+ 000346 9120 C7D5      007DD         316          TM    SWITCHX,NAME        WAS DEF FOLLOWED BY REFS             31600020
+ 00034A 4710 C394      0039C         317          BC    ONES,EOF10          NO,BR                                31700020
+ 00034E 9540 C6A3      006AB         318          CLI   OUTBUF,XX40          IS LINE READY TO BE WRITTEN         31800020
+ 000352 4770 C394      0039C         319          BC    NOTEQUAL,EOF10      SEARCH FOR MORE                      31900020
+ 000356 954C 9000      00000         320          CLI   DX0(INPUTR),XX4C     IS THIS A PN DEF                    32000020
+ 00035A 4780 C3CC      003D4         321          BC    EQUAL,EOF20         YES,BR                               32100020
+ 00035E 9548 9000      00000         322          CLI   DX0(INPUTR),XX48     IS THIS A DN DEF                PH6 32200020
+ 000362 4770 C296      0029E         323          BC    NOTEQUAL,ERROR      NO,ERROR BRANCH                      32300020
+ 000366 94BF C7D5      007DD         324          NI    SWITCHX,XXFF-PNDEF   DN DEF IS BEEING PROCESSED SW       32400020
+ 00036A 1B55                         325          SR    RW2,RW2                                                  32500020
+ 00036C 4350 9006      00006         326          IC    RW2,INDNLN          GET NAME LNGTH                       32600020
+ 000370 0650                         327          BCTR  RW2,R0              LN-1                                 32700020
+ 000372 4450 C66C      00674         328          EX    RW2,MOVEDN                                               32800020
+ 000376 D201 C720 9001 00728 00001   329          MVC   HOLD(LX2),INDNCRD    GET DEF CARD NMBR                   32900020
+ 00037C D202 C7D0 9003 007D8 00003   330          MVC   SARG(LX3),INDNDICT   GET SARG                            33000020
+ 000382 4155 0001      00001         331          LA    RW2,DX1(RW2)         RESTORE L-&T&                       33100020
+ 000386 4199 5007      00007         332          LA    INPUTR,DX7(INPUTR,RW2) POINT TO NEXT ELMNT               33200020
+ 00038A 4550 C650      00658         333 EOF8     BAL   RW2,CONVERT         CONVERT DEF CARD NMBR                33300020
+ 00038E D204 C6C4 C729 006CC 00731   334          MVC   OUTDEF(LX5),HOLD2+NX1 AND PLACE IN OUTPUT BUFFER         33400020
+ 000394 9620 C7D5      007DD         335          OI    SWITCHX,NAME                                             33500020
+ 000398 47F0 C32E      00336         336          B     LASTLOOP            LOOP FOR NEXT ELMNT                  33600020
+ 00039C D202 C720 C7D0 00728 007D8   337 EOF10    MVC   HOLD(LX3),SARG       GET SEARCH ARG                      33700020
+ 0003A2 45E0 C4C6      004CE         338          BAL   R14,SEARCH          SEARCH RTN                           33800020
+ 0003A6 47F0 C3C4      003CC         339          B     EOF15               BR,FOUND                             33900020
+ 0003AA 9120 C7D5      007DD         340          TM    SWITCHX,NAME                                             34000020
+ 0003AE 4710 C3B2      003BA         341          BC    ONES,EOF12          BRANCH                               34100020
+ 0003B2 4550 C628      00630         342          BAL   RW2,PRINTLN         NO MORE REFS,PRINT A LINE            34200020
+ 0003B6 47F0 C32E      00336         343          B     LASTLOOP            LOOP FOR NEXT ELMNT                  34300020
+ 0003BA 9240 C6A3      006AB         344 EOF12    MVI   OUTBUF,XX40          BLANK NAME AND DEF                  34400020
+ 0003BE D225 C6A4 C6A3 006AC 006AB   345          MVC   OUTBUF+NX1(D38),OUTBUF OUTBUF OF PRINTE LINE             34500020
+ 0003C4                              346 EOF13    DS    0H                                                       34600020
+ 0003C4 94DF C7D5      007DD         347          NI    SWITCHX,XXFF-NAME    NO NAME IN OUTBUF                   34700020
+ 0003C8 47F0 C32E      00336         348          B     LASTLOOP            LOOP FOR NEXT ELMNT                  34800020
+                                     349 *          GENERATE REFS IN OUTBUF                                      34900020
+ 0003CC 45E0 C5B0      005B8         350 EOF15    BAL   R14,PRINT1          GENERATE REFS                        35000020
+ 0003D0 47F0 C3BC      003C4         351          B     EOF13               BRANCH                               35100020
+ 0003D4 9640 C7D5      007DD         352 EOF20    OI    SWITCHX,PNDEF       PN DEF BEEING PROCESSED              35200020
+ 0003D8 9108 C7D5      007DD         353          TM    SWITCHX,FSTPN       IS CURRENT PN 1ST PN                 35300020
+ 0003DC 4710 C3E8      003F0         354          BC    ONES,EOF27          NO.BRANCH                            35400020
+ 0003E0 9608 C7D5      007DD         355          OI    SWITCHX,FSTPN       SET 1ST PN PROCESSED SW              35500020
+ 0003E4 9110 C7D5      007DD         356          TM    SWITCHX,FSTDN       WERE DN'S PRESENT                    35600020
+ 0003E8 4780 C3E8      003F0         357          BC    R8,EOF27             NO,BR                               35700020
+ 0003EC 45E0 C678      00680         358          BAL   R14,GENPROC         YES,GENERATE SUB-TITLE               35800020
+ 0003F0                              359 EOF27    DS    0H                                                       35900020
+ 0003F0 1B55                         360          SR    RW2,RW2                                                  36000020
+ 0003F2 4350 9005      00005         361          IC    RW2,INPNLN          GET LNGTH                            36100020
+ 0003F6 0650                         362          BCTR  RW2,R0              LN-1                                 36200020
+ 0003F8 4450 C672      0067A         363          EX    RW2,MOVEPN                                               36300020
+ 0003FC D201 C720 9003 00728 00003   364          MVC   HOLD(LX2),INPNCRD    GET CARD NMBR(DEF)                  36400020
+ 000402 9200 C7D0      007D8         365          MVI   SARG,XX00            SPECIFY SEARCH ARG                  36500020
+ 000406 D201 C7D1 9001 007D9 00001   366          MVC   SARG+NX1(D2),INPNNO GET PN NUMBER                        36600020
+ 00040C 4155 0001      00001         367          LA    RW2,DX1(RW2)         RESTORE LNGTH                       36700020
+ 000410 4199 5006      00006         368          LA    INPUTR,DX6(INPUTR,RW2) POINT TO NEXT ELMNT               36800020
+ 000414 47F0 C382      0038A         369          B     EOF8                EOF BR                               36900020
+1PH6A     IKFCBL6A                                                                                              PAGE   13
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000418 94DF C7D5      007DD         370 EOF30    NI    SWITCHX,XXFF-NAME                                        37000020
+ 00041C 45E0 C590      00598         371          BAL   R14,PRINT0          GENERATE REFS                        37100020
+ 000420 47F0 C32E      00336         372          B     LASTLOOP            LOOP FOR NEXT ELMNT                  37200020
+ 000424                              373 EOF40    DS    0H                                                       37300020
+ 000424 D202 C720 C7D0 00728 007D8   374          MVC   HOLD(LX3),SARG       GET SEARCH ARG                      37400020
+ 00042A 45E0 C4C6      004CE         375          BAL   R14,SEARCH          LAST TIME SEARCH                     37500020
+ 00042E 45E0 C5B0      005B8         376          BAL   R14,PRINT1          FOUND,GENERATE REF                   37600020
+ 000432 9540 C6A3      006AB         377          CLI   OUTBUF,XX40          IS OUTBUF BLANK                     37700020
+ 000436 4780 C2A0      002A8         378          BC    EQUAL,EXIT2         YES,EOF                              37800020
+ 00043A 4550 C628      00630         379          BAL   RW2,PRINTLN         PRINT LAST LINE                      37900020
+ 00043E 47F0 C2A0      002A8         380          B     EXIT2               EOJ                                  38000020
+1PH6A     IKFCBL6A                                                                                              PAGE   14
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    382 *                                                                       38200020
+                                     383 *        SORT REFTBL ROUTINE                                            38300020
+                                     384 *                                                                       38400020
+ 000442                              385 SORT     DS    0H                                                       38500020
+ 000442 5810 C7C4      007CC         386          L     R1,TBLADDR          GET STARTING ADDR                    38600020
+ 000446 5820 C7CC      007D4         387          L     R2,TBLENTRY         GET CURRENT ENTRY ADDR               38700020
+ 00044A 1B21                         388          SR    R2,R1               SIZE OF REFTBL                       38800020
+ 00044C 1222                         389          LTR   R2,R2               ANY ENTRIES IN TDNREF                38900020
+ 00044E 078E                         390          BCR   EQUAL,R14           RETURN                               39000020
+ 000450 1841                         391          LR    RW1,R1              YES,GET STARTING ADDR                39100020
+ 000452 4161 2000      00000         392          LA    RW3,DX0(R1,R2)       END+1                               39200020
+ 000456 4154 0005      00005         393 SORTDN1  LA    RW2,DNLN(RW1)       NEXT ENTRY ADDR                      39300020
+ 00045A 1946                         394          CR    RW1,RW3             ALL DONE                             39400020
+ 00045C 078E                         395          BCR   EQUAL,R14            YES,RETURN                          39500020
+ 00045E 1956                         396 SORTDN2  CR    RW2,RW3             IS CURRENT PASS FINISHED             39600020
+ 000460 4740 C464      0046C         397          BC    LOW,SORTDN3         NO,BRANCH                            39700020
+ 000464 4144 0005      00005         398          LA    RW1,DNLN(RW1)       YES, START NEXT PASS                 39800020
+ 000468 47F0 C44E      00456         399          B     SORTDN1             NEXT ENTRY                           39900020
+ 00046C D502 4000 5000 00000 00000   400 SORTDN3  CLC   ZERDSPL(D3,RW1),ZERDSPL(RW2) ARE ENTRIES ORDERED         40000020
+ 000472 4740 C484      0048C         401          BC    LOW,SORTDN4         YES, LOOP AGAIN                      40100020
+ 000476 4780 C48C      00494         402          BC    EQUAL,SORTDN5       EQUAL, SORT CARD NUMBERS             40200020
+ 00047A D204 C720 4000 00728 00000   403          MVC   HOLD(DNLN),ZERDSPL(RW1) NO, MOVE HI TO SAVE AREA         40300020
+ 000480 D204 4000 5000 00000 00000   404          MVC   ZERDSPL(DNLN,RW1),ZERDSPL(RW2)  MOVE NEW LOW TO FIRST    40400020
+ 000486 D204 5000 C720 00000 00728   405          MVC   ZERDSPL(DNLN,RW2),HOLD MOVE SAVED TO NEW LOW             40500020
+ 00048C 4155 0005      00005         406 SORTDN4  LA    RW2,DNLN(RW2)       BUMP POINTER                         40600020
+ 000490 47F0 C456      0045E         407          B     SORTDN2             NEXT PASS                            40700020
+ 000494                              408 SORTDN5  DS    0H                                                       40800020
+ 000494 D201 C720 4003 00728 00003   409          MVC   HOLD(D2),DX3(RW1)   GET CD ENT FROM NXT ENDTRY           40900020
+ 00049A 947F C720      00728         410          NI    HOLD,XX7F            GET RID OF EVENTUAL PN REF BIT      41000020
+ 00049E D201 C722 5003 0072A 00003   411          MVC   HOLD+NX2(D2),DX3(RW2) GET CD NO. FROM NXT ENT            41100020
+ 0004A4 947F C722      0072A         412          NI    HOLD+NX2,XX7F                                            41200020
+ 0004A8 D501 C720 C722 00728 0072A   413          CLC   HOLD(D2),HOLD+NX2   ARE CD NUMBERS ALSO IN ORDER         41300020
+ 0004AE 47C0 C484      0048C         414          BC    NOTHI,SORTDN4       YES, LOOP AGAIN                      41400020
+ 0004B2 D601 C720 4003 00728 00003   415          OC    HOLD(D2),DX3(RW1)   RESTORE PN REF BIT                   41500020
+ 0004B8 D601 C722 5003 0072A 00003   416          OC    HOLD+NX2(D2),DX3(RW2) RESTORE PN REF BIT                 41600020
+ 0004BE D201 5003 C720 00003 00728   417          MVC   DX3(D2,RW2),HOLD    SWAP CARD NUMBERS                    41700020
+ 0004C4 D201 4003 C722 00003 0072A   418          MVC   DX3(D2,RW1),HOLD+NX2 OF ADJOINING FIELDS                 41800020
+ 0004CA 47F0 C484      0048C         419          B     SORTDN4             LOOP AGAIN                           41900020
+                                     420 *                                                                       42000020
+                                     421 *******************************************************************     42100020
+                                     422 *        BINARY SEARCH RTN                                              42200020
+                                     423 *******************************************************************     42300020
+                                     424 *   INPUT-HOLD CONTAINING SEARCH ARG                                    42400020
+                                     425 *   OUTPUT-RW1=FOUND ENTRY ADDR                                         42500020
+                                     426 *                                                                       42600020
+ 0004CE                              427 SEARCH   DS    0H                                                       42700020
+ 0004CE 900F C77C      00784         428          STM   R0,R15,SAVEINTR      SAVE                                42800020
+ 0004D2 1B44                         429          SR    RW1,RW1             INITIALIZE CTR                       42900020
+ 0004D4 5810 C7CC      007D4         430          L     R1,TBLENTRY         GET CURRENT ENTRY ADDR               43000020
+ 0004D8 5B10 C7C4      007CC         431          S     R1,TBLADDR          COMPUTE SIZE                         43100020
+ 0004DC 1211                         432          LTR   R1,R1               ANY ENTRIES IN REFTBL                43200020
+ 0004DE 4780 C580      00588         433          BC    EQUAL,NOTFOUND      NO,BRANCH                            43300020
+ 0004E2 1B00                         434          SR    R0,R0                                                    43400020
+ 0004E4 5D00 C7C0      007C8         435          D     R0,FIVE             COMPUTE NUMB OF ENTRIES-1            43500020
+ 0004E8 0610                         436          BCTR  R1,R0               REDUCE BY ONE                        43600020
+1PH6A     IKFCBL6A                                                                                              PAGE   15
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00004EA 1914                         437 SRCHLOOP CR    R1,RW1              ALL DONE                             43700020
+ 0004EC 4740 C580      00588         438          BC    LOW,NOTFOUND        BR - NOT FOUND                       43800020
+ 0004F0 4154 1000      00000         439          LA    RW2,DX0(RW1,R1)      COMPUTE A LOOP CTRL CTR             43900020
+ 0004F4 8850 0001      00001         440          SRL   RW2,DX1                                                  44000020
+ 0004F8 1835                         441          LR    R3,RW2                                                   44100020
+ 0004FA 1B22                         442          SR    R2,R2                                                    44200020
+ 0004FC 5C20 C7C0      007C8         443          M     R2,FIVE             COMPUTE MIDDLE POINT ADDR            44300020
+ 000500 5860 C7C4      007CC         444          L     RW3,TBLADDR         GET ADDR OF TBL                      44400020
+ 000504 1A63                         445          AR    RW3,R3              ADD DISPLACEMENT TO MIDDLE POINT     44500020
+ 000506 D502 C720 6000 00728 00000   446          CLC   HOLD(D3),DX0(RW3)   FOUND                                44600020
+ 00050C 4780 C51E      00526         447          BC    EQUAL,HIT           YES,BRANCH                           44700020
+ 000510 4720 C514      0051C         448          BC    HI,HIGH             BR, HIGH                             44800020
+ 000514 1815                         449          LR    R1,RW2                                                   44900020
+ 000516 0610                         450          BCTR  R1,R0                REDUCE LOOP CONTROL CTR             45000020
+ 000518 47F0 C4E2      004EA         451          B     SRCHLOOP            LOOP FOR NEXT PASS                   45100020
+ 00051C 1845                         452 HIGH     LR  RW1,RW2                                                    45200020
+ 00051E 4144 0001      00001         453          LA    RW1,DX1(RW1)         BUMP CTR                            45300020
+ 000522 47F0 C4E2      004EA         454          B     SRCHLOOP            LOOP FOR NEXT PASS                   45400020
+ 000526 1846                         455 HIT      LR    RW1,RW3             GET ENTRY ADDR                       45500020
+ 000528 5940 C7C4      007CC         456 FINDFST  C     RW1,TBLADDR         FIND 1ST ENTRY EQUAL SEARCH ARG      45600020
+ 00052C 4780 C53E      00546         457          BC    EQUAL,SRCHRET       RETURN 1ST ENTADDR IN RW1            45700020
+ 000530 1854                         458          LR    RW2,RW1                                                  45800020
+ 000532 5B50 C7C0      007C8         459          S     RW2,FIVE            GET ADDR OF LOWER ENTRY              45900020
+ 000536 D502 4000 5000 00000 00000   460          CLC   DX0(D3,RW1),DX0(RW2) IS LOW ENT ALSO EQ TO SEA ARG       46000020
+ 00053C 4770 C53E      00546         461          BC    NOTEQUAL,SRCHRET    NO,RETURN                            46100020
+ 000540 1845                         462          LR    RW1,RW2             YES,GET NEXT LOWER ENTRY ADDR        46200020
+ 000542 47F0 C520      00528         463          B     FINDFST             BR                                   46300020
+ 000546 1854                         464 SRCHRET  LR    RW2,RW1             GET 1ST ENTRY ADDR                   46400020
+ 000548 5950 C7CC      007D4         465 SRCHRET1 C     RW2,TBLENTRY                                             46500020
+ 00054C 47A0 C580      00588         466          BC    NOTLOW,NOTFOUND     BR,ENTRY FOUND                       46600020
+ 000550 D502 C720 5000 00728 00000   467          CLC   HOLD(D3),DX0(RW2)   FOUND                                46700020
+ 000556 4770 C580      00588         468          BC    NOTEQUAL,NOTFOUND   BR,ENTRY FOUND                       46800020
+ 00055A 9140 C7D5      007DD         469          TM    SWITCHX,PNDEF       ARE PN DEFS BEEING PROCESSED         46900020
+ 00055E 4710 C574      0057C         470          BC    ONES,SRCHRET9       YES,BR                               47000020
+ 000562 9180 5003      00003         471          TM    DX3(RW2),XX80        IS ENTRY A PN REF                   47100020
+ 000566 4710 C56C      00574         472          BC    ONES,SRCHRET8       YES,IGNORE THIS ENTRY                47200020
+ 00056A 9803 C77C      00784         473 SRCHRET2 LM    R0,R3,SAVEINTR       RESTORE ALL REGS EXEPT RW1          47300020
+ 00056E 985F C790      00798         474          LM    R5,R15,SAVEINTR+NX20                                     47400020
+ 000572 07FE                         475          BR    R14                 RETURN                               47500020
+ 000574 4155 0005      00005         476 SRCHRET8 LA    RW2,DX5(RW2)         POINT TO NEXT TBL ENTRY             47600020
+ 000578 47F0 C540      00548         477          B     SRCHRET1            SEARCH AGAIN                         47700020
+ 00057C 9180 5003      00003         478 SRCHRET9 TM    DX3(RW2),XX80        IS THIS A PN REF                    47800020
+ 000580 4710 C562      0056A         479          BC    ONES,SRCHRET2       YES,CORRECT ENTRY                    47900020
+ 000584 47F0 C56C      00574         480          B     SRCHRET8            BR,ENTRY FOUND IS NOT OF REQ. KI     48000020
+ 000588 980F C77C      00784         481 NOTFOUND LM    R0,R15,SAVEINTR      RESTORE                             48100020
+ 00058C 07FE                         482          BR    R14                 RETURN                               48200020
+                                     483 *******************************************************************     48300020
+                                     484 *        PRINT ROUTINE                                                  48400020
+                                     485 *******************************************************************     48500020
+                                     486 *  INPUT:HOLD CONTAINING CARD NO. OF DEFINITION                         48600020
+                                     487 *   RW1 CONTAINING ADDR OF CURRENT ENTRY IN REFTBL                      48700020
+                                     488 *   INPUTR CONTAINING ADDR OF A CARD NUMBER ELEMENT                     48800020
+ 00058E                              489 PRINT    DS    0H                                                       48900020
+ 00058E 4550 C650      00658         490          BAL   RW2,CONVERT         CONVERT CARD NUMBER                  49000020
+ 000592 D204 C6C4 C729 006CC 00731   491          MVC   OUTDEF(D5),HOLD2+NX1 GET CONV CARD NUMBER                49100020
+1PH6A     IKFCBL6A                                                                                              PAGE   16
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000598 9180 C7D5      007DD         492 PRINT0   TM    SWITCHX,TBLOVFL     HAS TABLE OVERFLOWN                  49200020
+ 00059C 4780 C5B0      005B8         493          BC    EQUAL,PRINT1        NO,BRANCH                            49300020
+ 0005A0 952C 9000      00000         494 PRINT01  CLI   DX0(INPUTR),XX2C     ARE ALL CARD NMBR ELMNTS PROCESS    49400020
+ 0005A4 077E                         495          BCR   NOTEQUAL,R14        0&SZN&U9N-                           49500020
+ 0005A6 1849                         496          LR    RW1,INPUTR          INITIALIZE RW1                       49600020
+ 0005A8 0640                         497          BCTR  RW1,R0              SUBT ONE                             49700020
+ 0005AA 0640                         498          BCTR  RW1,R0              SUBT ONE                             49800020
+ 0005AC 4570 C5C6      005CE         499          BAL   RET2,PRINT3         GENERATE A REFERENCE                 49900020
+ 0005B0 4199 0003      00003         500          LA    INPUTR,DX3(INPUTR)   POINT TO NEXT ELEMENT               50000020
+ 0005B4 47F0 C598      005A0         501          B     PRINT01             PRINT NEXT ELMNT                     50100020
+ 0005B8                              502 PRINT1   DS    0H                                                       50200020
+ 0005B8 4170 C5B0      005B8         503          LA    RET2,PRINT1         SPECIFY RET ADDR                     50300020
+ 0005BC 5940 C7CC      007D4         504          C     RW1,TBLENTRY        ARE ALL REFS PROCESSED               50400020
+ 0005C0 47A0 C622      0062A         505          BC    NOTLOW,PRINT15      YES,BRANCH TO PRINT ROUTINE          50500020
+ 0005C4 D502 C7D0 4000 007D8 00000   506          CLC   SARG(D3),DX0(RW1)   ARE ALL REFS PROCD                   50600020
+ 0005CA 4770 C622      0062A         507          BC    NOTEQUAL,PRINT15    YES,BR TO PRINT ROUTIEN              50700020
+ 0005CE                              508 PRINT3   DS    0H                                                       50800020
+ 0005CE D500 C7D4 C7D3 007DC 007DB   509          CLC   REFCTR(LX1),MAXREF   HAS MAX. OF REFS BEEN REACHED       50900020
+ 0005D4 4740 C5D4      005DC         510          BC    LOW,*+NX8           NO SKIP PRINT ROUTINE                51000020
+ 0005D8 4550 C628      00630         511          BAL   RW2,PRINTLN         YES,PRINT A LINE                     51100020
+ 0005DC 9140 C7D5      007DD         512          TM    SWITCHX,PNDEF       IS PN DEF BEEING PROCESSED           51200020
+ 0005E0 4710 C616      0061E         513          BC    ONES,PRINT10        YES,BR                               51300020
+ 0005E4 9180 4003      00003         514          TM    DX3(RW1),XX80        IS THIS A PN REF                    51400020
+ 0005E8 4710 C610      00618         515          BC    ONES,PRINT6         YES,IGNORE THIS ENTRY                51500020
+ 0005EC                              516 PRINT5   DS    0H                                                       51600020
+ 0005EC D201 C720 4003 00728 00003   517          MVC   HOLD(D2),DX3(RW1)   GET REF CAD NUMBER                   51700020
+ 0005F2 947F C720      00728         518          NI    HOLD,XX7F            GET RID OF EVENTUAL PN REF BIT      51800020
+ 0005F6 4550 C650      00658         519          BAL   RW2,CONVERT         CONVERT CARD NUMBER                  51900020
+ 0005FA 5880 C730      00738         520          L     RW5,CUREF           GET ADDR OF NEXT REF IN OUTBUF       52000020
+ 0005FE D204 8000 C729 00000 00731   521          MVC   DX0(D5,RW5),HOLD2+NX1 GET CONV CARD NUMBER               52100020
+ 000604 4188 0007      00007         522          LA    RW5,DX7(RW5)         POINT TO NEXT REF                   52200020
+ 000608 5080 C730      00738         523          ST    RW5,CUREF           SAVE                                 52300020
+ 00060C 4380 C7D4      007DC         524          IC    RW5,REFCTR          GET NO. OF REFS                      52400020
+ 000610 4188 0001      00001         525          LA    RW5,DX1(RW5)         BUMP CTR                            52500020
+ 000614 4280 C7D4      007DC         526          STC   RW5,REFCTR                                               52600020
+ 000618 4144 0005      00005         527 PRINT6   LA    RW1,DX5(RW1)         POINT T- N&0T TBL E-T-0             52700020
+ 00061C 07F7                         528          BR    RET2                RETURN                               52800020
+ 00061E 9180 4003      00003         529 PRINT10  TM    DX3(RW1),XX80        IS THIS A PN REF                    52900020
+ 000622 4780 C610      00618         530          BC    EQUAL,PRINT6        NO,IGNORE ENTRY                      53000020
+ 000626 47F0 C5E4      005EC         531          B     PRINT5              YES,GENERATE A REF CRD NUMBR         53100020
+ 00062A 4550 C628      00630         532 PRINT15  BAL   RW2,PRINTLN         PRINT A LINE                         53200020
+ 00062E 07FE                         533          BR    R14                 RETURN                               53300020
+                                     534 *******************************************************************     53400020
+ 000630 4120 C6A2      006AA         535 PRINTLN  LA    R2,OUTREC           SPECIFY LINE ADDR                    53500020
+ 000634 4130 0078      00078         536          LA    R3,DX120             SPECIFY SIZE                        53600020
+ 000638 050A                         537          BALR  R0,COSREG           PRINT A LINE                         53700020
+ 00063A 16                           538          DC    X'16'               WRITE OUT FIELD                      53800020
+ 00063B 00
+ 00063C 050A                         539          BALR  R0,COSREG           CALL PH00                            53900020
+ 00063E 86                           540          DC    X'86'               WRITE ON SYSOUT                      54000020
+ 00063F 00
+ 000640 9240 C6A3      006AB         541          MVI   OUTBUF,XX40          BLANK OUTPUT BUFFER                 54100020
+ 000644 D276 C6A4 C6A3 006AC 006AB   542          MVC   OUTBUF+NX1(L119),OUTBUF FOR PRINT LINE                   54200020
+ 00064A 4180 C6CF      006D7         543          LA    RW5,OUTREF          RE-INITIALIZE                        54300020
+ 00064E 5080 C730      00738         544          ST    RW5,CUREF                                                54400020
+1PH6A     IKFCBL6A                                                                                              PAGE   17
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000652 9400 C7D4      007DC         545          NI    REFCTR,XX00                                              54500020
+ 000656 07F5                         546          BR    RW2                 RETURN                               54600020
+                                     547 *******************************************************************     54700020
+ 000658                              548 CONVERT  DS    0H                                                       54800020
+ 000658 4880 C720      00728         549          LH    RW5,HOLD            CONVERT CARD NO. TO DEC              54900020
+ 00065C 4E80 C720      00728         550          CVD   RW5,HOLD                                                 55000020
+ 000660 5800 C724      0072C         551          L     R0,HOLD+NX4                                              55100020
+ 000664 8800 0004      00004         552          SRL   R0,DX4              GET RID OF SIGNN                     55200020
+ 000668 5000 C724      0072C         553          ST    R0,HOLD+NX4                                              55300020
+ 00066C F363 C728 C725 00730 0072D   554          UNPK  HOLD2(LX7),HOLD+NX5(LX4)                                 55400020
+ 000672 07F5                         555          BR    RW2                 RETURN                               55500020
+                                     556 *******************************************************************     55600020
+ 000674 D200 C6A3 9007 006AB 00007   557 MOVEDN   MVC   OUTBUF(LX1),INDNM                                        55700020
+ 00067A D200 C6A3 9006 006AB 00006   558 MOVEPN   MVC   OUTBUF(LX1),INPNM                                        55800020
+                                     559 *******************************************************************     55900020
+ 000680                              560 GENPROC  DS    0H                                                       56000020
+ 000680 4550 C628      00630         561          BAL   RW2,PRINTLN         SPACE BETWEEN DATA AND PROC NAME     56100020
+ 000684 4550 C628      00630         562          BAL   RW2,PRINTLN         SPACE A LINE                         56200020
+ 000688 D208 C6A3 C801 006AB 00809   563 GENPROC1 MVC   OUTBUF(L'PROC),PROC                                      56300020
+ 00068E D205 C6AC C7FB 006B4 00803   564          MVC   OUTBUF+NX9(D6),NAMEMSG+NX4 PRINT HEADER                  56400020
+ 000694 D203 C6C4 C80A 006CC 00812   565          MVC   OUTDEF(L'DEFMSG),DEFMSG                                  56500020
+ 00069A D208 C6CF C7E3 006D7 007EB   566          MVC   OUTREF(D9),HDG+NX6 PRINT HEADER                          56600020
+ 0006A0 4550 C628      00630         567          BAL   RW2,PRINTLN         PRINT SUB-TITLE FOR PROC NAMES       56700020
+ 0006A4 4550 C628      00630         568          BAL   RW2,PRINTLN         SPACE                                56800020
+ 0006A8 07FE                         569          BR    R14                 RETURN                               56900020
+1PH6A     IKFCBL6A                                                                                              PAGE   18
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    571 *******************************************************************     57100020
+                                     572 *      OUTPUT BUFFER-120 BYTES                                          57200020
+ 0006AA 40                           573 OUTREC   DC    C' '                CARRIAGE CTRL                   PH6A 57300020
+ 0006AB                              574 OUTBUF   DS    CL30           SOURCE NAME                               57400020
+ 0006C9                              575          DS    CL3                 SPACE                                57500020
+ 0006CC                              576 OUTDEF   DS    CL5            DEF                                       57600020
+ 0006D1                              577          DS    CL6                 SPACE                                57700020
+ 0006D7                              578 OUTREF   DS    CL75                ROOM FOR 11 REFS                     57800020
+                                     579 *                                                                       57900020
+ 000728                              580 HOLD     DS    D                                                        58000020
+ 000730                              581 HOLD2    DS    2F                                                       58100020
+ 000738 000006D7                     582 CUREF    DC    A(OUTREF)                                                58200020
+ 00073C                              583 SAVE6A   DS    18F                                                      58300020
+ 000784                              584 SAVEINTR DS    16F                 INTERNAL SA                          58400020
+ 0007C4                              585 SAVEIN   DS    F                                                        58500020
+ 0007C8 00000005                     586 FIVE     DC    A(REFLN)            LENGTH OF REFTBL ENTRY               58600020
+ 0007CC 00000000                     587 TBLADDR  DC    A(0)                STARTING ADDR OF REF TBL             58700020
+ 0007D0 00000000                     588 TBLEND   DC    A(0)                HIGHEST ENTRY IN REFTBL              58800020
+ 0007D4 00000000                     589 TBLENTRY DC    A(0)                CURRENT ENTRY IN REFTBL              58900020
+ 0007D8                              590 SARG     DS    CL3                 SEARCH ARG SAVE AREA                 59000020
+ 0007DB 0B                           591 MAXREF   DC    X'0B'               MAXIMUM NMBR OF REFS PER LINE        59100020
+ 0007DC 00                           592 REFCTR   DC    X'00'               CURRENT NO. OF REFS PER LINE         59200020
+ 0007DD 00                           593 SWITCHX  DC    X'00'                                                    59300020
+                             00080   594 TBLOVFL  EQU   X'80'               TABLE OVERFLOW SWITCH                59400020
+                             00040   595 PNDEF    EQU   X'40'               PN DEFS ARE BEING PROCESSED SW       59500020
+                             00020   596 NAME     EQU   X'20'               NAME AND DEF ALREADY IN OUTBUF       59600020
+                             00010   597 FSTDN    EQU   X'10'               1ST DN DEF PROCESSED-SWITCH          59700020
+                             00008   598 FSTPN    EQU   X'08'               1ST PN DEF PROCESSED-SWITCH          59800020
+ 0007DE 00                           599 OVFLCTR  DC    X'00'               TABLE OVERFL. CTR                    59900020
+ 0007DF 2C0000                       600 REFOUT   DC    X'2C0000'                                                60000020
+ 0007E2 000000                       601 ZEROS    DC    X'000000'           END-TABLE ZERO CONSTANT              60100020
+ 0007E5 C3D9D6E2E260D9C5             602 HDG      DC    C'CROSS-REFERENCE DICTIONARY'                            60200020
+ 0007FF C4C1E3C140D5C1D4             603 NAMEMSG  DC    C'DATA NAMES'                                            60300020
+ 000809 D7D9D6C3C5C4E4D9             604 PROC     DC    C'PROCEDURE'                                             60400020
+ 000812 C4C5C6D5                     605 DEFMSG   DC    C'DEFN'                                                  60500020
+ 000816 5C5CC9D5E5C1D3C9             606 ERRMSG   DC    C'**INVALID TEXT PASSED TO PH6A**'                  PH6A 60600020
+1PH6A     IKFCBL6A                                                                                              PAGE   19
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000000                              608 INREC    DSECT                                                          60800020
+ 000000                              609 INDNID   DS    C                   48-DN DEF ID BYTE                    60900020
+ 000001                              610 INDNCRD  DS    2C             CARD NO.                                  61000020
+ 000003                              611 INDNDICT DS    3C             DICTIONARY POINTER                        61100020
+ 000006                              612 INDNLN   DS    1C             LENGTH OF NAME THAT FOLLOWS               61200020
+ 000007                              613 INDNM    DS    1C             SOURCE NAME                               61300020
+ 000008                      00000   614          ORG   INREC                                                    61400020
+ 000000                              615 INPNID   DS    C                   4C-PN DEF ID BYTE                    61500020
+ 000001                              616 INPNNO   DS    2C             PN NO.                                    61600020
+ 000003                              617 INPNCRD  DS    2C             CARD NO.                                  61700020
+ 000005                              618 INPNLN   DS    1C             LENGTH OF PN THAT FOLLOWS                 61800020
+ 000006                              619 INPNM    DS    1C             SOURCE PN                                 61900020
+                                     620          IHBCOB                                                         62000020
+                                     621+*     THIS IS A MACRO GENERATING COBOL COMMON AS A DSECT USED
+                                     622+*      BY EVERY PHASE OF THE COBOL COMPILER
+                                     623+*
+                                     624+***********************************************************************
+                                     625+*      COMMON - THE COMMUNICATIONS AREA
+                                     626+***********************************************************************
+                                     627+*      THIS TABLE IS LOCATED IN PH0 FOLLOWING THE ENTRY POINT- COS.
+                                     628+*      AT ENTRY TO EACH PHASE R1 POINTS TO THE SLOT CONTAINING COSADDR.
+ 000000                              629+COS    DSECT
+ 000000                              630+       DS    3F          EXECUTABLE CODE IN PH0
+ 00000C                              631+TIB0     DS    2F
+ 000014                              632+TIB1     DS    2F
+ 00001C                              633+TIB2     DS    2F
+ 000024                              634+TIB3     DS    2F
+ 00002C                              635+TIB4     DS    2F
+ 000034                              636+TIB5     DS    2F
+ 00003C                              637+TIB6     DS    2F
+ 000044                              638+TIB7     DS    2F
+ 00004C                              639+TIB8     DS    2F
+ 000054                              640+TIB9     DS    2F
+ 00005C                              641+TIB10    DS    2F
+ 000064                              642+TIB11    DS    2F
+ 00006C                              643+TIB12    DS    2F
+ 000074                              644+TIB13    DS    2F
+ 00007C                              645+TIB14    DS    2F
+ 000084                              646+TIB15    DS    2F
+ 00008C                              647+TIB16    DS    2F
+ 000094                              648+TIB17    DS    2F
+ 00009C                              649+TIB18    DS    2F
+ 0000A4                              650+TIB19    DS    2F
+ 0000AC                              651+TIB20    DS    2F
+ 0000B4                              652+TIB21    DS    2F
+ 0000BC                              653+TIB22    DS    2F
+ 0000C4                              654+TIB23    DS    2F
+ 0000CC                              655+TIB24    DS    2F
+ 0000D4                              656+TIB25    DS    2F
+ 0000DC                              657+TIB26    DS    2F
+ 0000E4                              658+TIB27    DS    2F
+ 0000EC                              659+TIB28    DS    2F
+ 0000F4                              660+TIB29    DS    2F
+ 0000FC                              661+TIB30    DS    2F
+ 000104                              662+TIB31    DS    2F
+1PH6A     IKFCBL6A                                                                                              PAGE   20
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000010C                              663+TIB32    DS    2F
+ 000114                              664+TIB33    DS    2F
+ 00011C                              665+TIB34    DS    2F
+ 000124                              666+TIB35    DS    2F
+ 00012C                              667+APRIME DS    F           ADDRESS OF SUBROUTINE-PRIME   IN TAMER
+ 000130                              668+AINSRT DS    F           ADDRESS OF SUBROUTINE-INSERT  IN TAMER
+ 000134                              669+ADSTAT DS    F           ADDRESS OF SUBROUTINE-STATIC  IN TAMER
+ 000138                              670+RELADD DS    F           ADDRESS OF SUBROUTINE-TABREL  IN TAMER
+ 00013C                              671+TAMNAD DS    F
+ 000140                              672+ACCESW DS    C           ACCESS INITIALIZATION SWITCH
+ 000141                              673+AMAINF   DS    CL3       POINTER TO THE MAIN FREE AREA FOR TABLES/DICT.
+ 000144                              674+ALSTAM DS    F           POINTER TO THE LAST ENTRY IN TAMM
+ 000148                              675+LOCCTR DS    F           RELATIVE ADDRESS OF THE NEXT AVAILABLE LOC
+ 00014C                              676+LOCCTR1  DS    F
+ 000150                              677+PROGID   DS    CL8       PROGRAM-ID FROM THE IDENTICATION DIVISION
+ 000158                              678+LABELS DS    H           CONTAINS LABEL INFORMATION.
+ 00015A                              679+SEGCNTR  DS    H         NUMBER OF SEGMENTS HIGHER THAN SEGMENT LIMIT -
+                                     680+*                        USED BY PHASE 6
+ 00015C                              681+PNCTR  DS    H           COUNTER FOR ASSIGNING PB NUMBERS TO PROC.NAMES
+ 00015E                              682+GNCTR  DS    H           CTR. ASSIGNING GN NO.TO GENERATED PROC. NAMES
+ 000160                              683+DCBCTR DS    H           CTR. ASSIGNING ID.NO.TO DCB'S
+ 000162                              684+VIRCTR DS    H           CTR. ASSIGNING ID.NO.TO VIRTUALS
+ 000164                              685+LTLCTR DS    H           CTR. ASSIGNING ID.NO.TO LITERALS
+ 000166                              686+WCMAX  DS    H           SIZE OF THE LARGEST WORK AREA FOR LIBRARY SUBR
+ 000168                              687+TSMAX  DS    H           SIZE OF THE TEMP. STORAGE FOR ARITHM. STMNTS
+ 00016A                              688+TS2MAX DS    H           SAME AS ABOVE FOR NON-ARITHMETIC STATEMENTS
+ 00016C                              689+ODOCTR DS    H           NUMBER OF Q-ROUTINES
+ 00016E                              690+CKPCTR DS    H           NUMBER OF CHECKPOINT REQUESTS
+ 000170                              691+INDCTR DS    H           AVAILABLE
+ 000172                              692+SBLOMX   DS    H                   AVAILABLE
+ 000174                              693+VLCOMX   DS    H                   AVAILABLE
+ 000176                              694+SBLIMX DS    H           SAME AS SBLOMX FOR IN-LINE PROC.
+ 000178                              695+VLCIMX DS    H           SAME AS VLCOMX FOR IN-LINE PROC.
+ 00017A                              696+SBLCTR DS    H           COUNTER FOR ASSIGNING  SBL'S
+ 00017C                              697+VLCCTR DS    H           USED TO DETERMINE VLCOMX AND VLCIMX
+ 00017E                              698+BLLCTR DS    H           CTR. FOR ASSIGNING ID. NO.TO LINKAGE SEC. BL'S
+ 000180                              699+SEQERR DS    H           NO. OF OUT-OF-SEQUENCE CARDS
+ 000182                              700+SWITCH   DS    H
+                                     701+*                        BITS MARKED BY * MAY STILL BE IN USE BY
+                                     702+*                        COBOLF - ASSIGN THESE AS A LAST RESORT
+                             00080   703+SWTRCE EQU   X'80'       BIT 0  TRACE
+                                     704+*              *         BIT 1
+                                     705+*              *         BIT 2
+                             00010   706+SPILL    EQU   X'10'     BIT 3  SET IF DICTIONARY SPILL
+                                     707+*              *         BIT 4
+                             00004   708+MQVAR    EQU   X'04'     BIT 5  SET IF PH2 BUILDS A QVAR TABLE
+                                     709+*              *         BIT 6
+                             00001   710+MQFILE   EQU   X'01'     BIT 7  SET IF PH2 BUILDS A QFILE TABLE
+                                     711+*
+                                     712+*                        SECOND BYTE OF SWITCH
+                                     713+*              *         BIT 0
+                                     714+*              *         BIT 1
+                             00020   715+SORTRTN  EQU   X'20'     BIT 2  SORT RETURN SET BY PHASE2 USED BY PH5
+                             00010   716+RERUNN   EQU   X'10'     BIT 3  RERUN USED BY PHASE 1, 2 AND 5
+                             00008   717+DSOU     EQU   X'08'     BIT 4  SOURCE INDICATOR FOR STATISTICS
+1PH6A     IKFCBL6A                                                                                              PAGE   21
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                            00004   718+NOFITSW  EQU   X'04'     BIT 5  SET BY PH6 IF E-TEXT ON FILE3
+                                     719+*                               USED BY PH7 & PH00
+                             00002   720+DOPH7    EQU   X'02'     BIT 6  PH6 LOOK AHEAD FOR PH7 YES OR NO
+                             00001   721+RDERRFIL EQU   X'01'     BIT 7  PH6 INPUT INDICATOR
+ 000184                              722+DICND2 DS    F           DICTIONARY POINTER USED IN PH2
+ 000188                              723+DICND1 DS    F           DICTIONARY POINTER USED IN PH1
+ 00018C                              724+DATE     DS    CL15      DATE/TIME OF COMPILATION
+                                     725+*                        REUSED IN PHASE1 AS FOLLOWS
+                                     726+*                                  BYTES 1-4 NUMBER OF DATA NAMES
+                                     727+*                                        5-8 NUMBER OF VERBS
+                                     728+*                                        9-12 NUMBER OF SOURCE CARDS
+                                     729+*                                       13-15 NOT USED
+ 00019B                              730+WSDEF  DS    0CL7        LAST 7 BYTES OF DATA A-TEXT EL.FOR WORK.ST.SEC
+ 00019B                              731+         DS    CL3
+ 00019E                              732+WSBL   DS    C
+ 00019F                              733+WSSIZE   DS    CL3
+ 0001A2                              734+ERRSEV DS    C           HIGHEST ERROR SEVERITY LEVEL
+ 0001A3                              735+PHZSW  DS    C           OPTIONS SWITCH :
+                             00080   736+LIST     EQU X'80'       SOURCE(OS)
+                             00040   737+LISTX    EQU   X'40'     PMAP
+                             00020   738+DECK     EQU   X'20'
+                             00010   739+LINK     EQU   X'10'     LOAD
+                             00008   740+SEQ      EQU   X'08'
+                             00004   741+FLAGW    EQU   X'04'
+                             00002   742+LIBR     EQU   X'02'
+                             00001   743+ZWB      EQU   X'01'
+ 0001A4                              744+PHZSW1 DS    C
+                             00080   745+XREF     EQU   X'80'
+                             00040   746+CLIST    EQU   X'40'
+                             00020   747+SYM      EQU   X'20'      DMAP
+                             00010   748+PDT      EQU   X'10'
+                             00004   749+APOST    EQU   X'04'
+                             00002   750+MAPSP    EQU     X'02'
+                             00001   751+TRUNC    EQU   X'01'
+ 0001A5                              752+PHZSW2   DS    C         RESERVED FOR ADDITIONAL OPTIONS
+                             00080   753+STAT     EQU   X'80'     RESERVED FOR STATEMENT NUMBER OPTION
+                             00002   754+NO6A     EQU   X'02'     SET BY PH6 TO TELL PH7 THAT PH6A WAS BYPASSED
+ 0001A8                              755+DICADR DS    F
+ 0001AC                              756+DLSVAL DS    F           ACCESS RTN. COMMUNICATION CELL
+ 0001B0                              757+DICPTR DS    C           ACCESS RTN. COMMUNICATION CELL
+ 0001B1                              758+DCPTR  DS    3C          ACCESS RTN. COMMUNICATION CELL
+ 0001B4                              759+RPTSAV DS    H           REPORT SAVE AREA CELL
+ 0001B6                              760+BLSCTR   DS    H         AVAILABLE
+ 0001B8                              761+LCSECT   DS    F
+ 0001BC                              762+PH7LOD   DS    F
+ 0001C0                              763+RGNCTR DS    H           COUNT OF UNIQUE GN'S
+ 0001C2                              764+ERF4SW DS    C           SWITCH USED BY PH6/PH7
+ 0001C3                              765+PTYNO    DS    C                   CURRENT PRIORITY NO
+                                     766+*                                  SET BY PH5  USED BY PH00
+ 0001C4                              767+COMMAD   DS    H
+ 0001C6                              768+PHZSW3   DS    C                   OPTION SWITCH
+                             00001   769+VERBR    EQU   X'01'               LISTING A-TEXT
+ 0001C7                              770+PHZSW4   DS    C                   RESERVED FOR ADDITIONAL OPTIONS
+ 0001C8                              771+AMOVDC   DS    F
+ 0001CC                              772+SDSIZ    DS    F         BIGGEST SD IN PGM.
+1PH6A     IKFCBL6A                                                                                              PAGE   22
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00001D0                              773+SEGLMT   DS    C
+ 0001D1                              774+DTFNUM   DS    C
+ 0001D2                              775+CURSGN   DS    C
+ 0001D3                              776+PH1BYTE  DS    C         PHASE 1 COMMUNICATION TO PHASE 2
+                             00001   777+UPSIBT   EQU   X'01'     PASSES INFORMATION FROM PHASE 1A TO PHASE 2
+                             00002   778+EOPPH1   EQU   X'02'     PASSES INFORMATION FROM PHASE 1A TO PHASE 1B
+                             00004   779+INITBIT  EQU   X'04'     PASSES INFORMATION FROM PHASE 1A TO PHASE 2
+                             00008   780+BASINSQ  EQU   X'08'           PH1A TO PH1B
+                             00020   781+BASIS    EQU   X'20'
+                             00080   782+F3TEXT   EQU   X'80'
+ 0001D4                              783+DECBCT   DS    H         NO OF DECB'S FOR PGM
+ 0001D6                              784+INDEXS   DS    H         AVAILABLE
+ 0001D8                              785+INDEX1   DS    H        # INDEX NAMES DEFNED IN IN-LINE FILES
+ 0001DA                              786+CYCTOTAL DS    H         AVAILABLE
+ 0001DC                              787+IOPTRCTR DS    H        # I/O POINTERS FOR APPLY-WRITE-ONLY
+ 0001DE                              788+TS3MAX   DS    H
+ 0001E0                              789+TS4MAX   DS    H
+ 0001E4                              790+BUFSIZE  DS    F         USED FOR STATISTICS
+ 0001E8                              791+CORESIZE DS    F         USED FOR STATISTICS
+ 0001EC                              792+CNTLINE  DS    H         USED FOR STATISTICS
+ 0001EE                              793+CURCRD   DS    H
+ 0001F0                              794+SPACING  DS    C         USED FOR STATISTICS
+ 0001F1                              795+PDTCHR   DS    C                   SET BY PH01 USED BY PH6
+ 0001F2                              796+         DS    H
+ 0001F4                              797+BASINS   DS    1F
+ 0001F8                              798+         DS    1F
+                                     799+*
+                                     800+*
+ 0001FC                              801+         DS    0F
+ 0001FC                              802+AGETALL  DS    F                   ADDRESS OF TAMER RTN - GETALL
+ 000200                              803+         DS    F                   AVAILABLE
+ 000204                              804+RPDNUM   DS    H         AVAILABLE
+ 000206                              805+CYCNUM   DS    H         AVAILABLE
+ 000208                              806+IDENTL DS    F           REL. LOC. OF CODING IN OBJECT MODULE FOR THE
+                                     807+*                        RANDOM PROC IDENTIFIED IN RPDNUM
+ 00020C                              808+BLCTR  DS    H           ID NO ASSIGNED TO BL'S FOR FILES
+ 00020E                              809+VNCTR  DS    H           COUNTER FOR ASSIGNING VN NUMBERS
+ 000210                              810+ONCTR  DS    H           COUNTER FOR ASSIGNING ID NO.TO ON CONTROL CELL
+ 000212                              811+PFMCTR DS    H           COUNTER FOR ASSIGNING ID NO.TO PERFORM CELLS
+ 000214                              812+PSVCTR DS    H           CTR FOR ASSIGNING ID'S TO PERFORM SAVE CELLS
+ 000216                              813+XSACTR DS    H           LOC  WITHIN EXHIBIT OR SORT SAVE AREA
+ 000218                              814+XSWCTR DS    H           CTR FOR ASSIGNING ID'S TO EXHIBIT/ON SWITCHES
+ 00021C                              815+RELLOC DS    F           DISPL OF TGT/SGT FROM THE BEG. OF OBJECT MOD.
+ 000220                              816+GTLNG  DS    H           LENGTH OF TGT OR SGT SPECIFIED IN RELLOC
+ 000222                              817+RPILOC   DS    H         AVAILABLE
+ 000224                              818+VNILOC DS    H           DISPL OF VNI FIELDS IN PGT
+ 000226                              819+VNLOC  DS    H           DISPL OF VN FIELDS IN TGT OR SGT
+ 000228                              820+SUBCTR DS    H           CTR TO ASSIGN ID'S TO SUBSCRIPTED REFERENCES
+ 00022A                              821+PARMAX DS    H           SIZE OF PARAMETER AREA
+ 00022C                              822+BLSVAL   DS    H         AVAILABLE
+ 00022E                              823+BLSLOC   DS    H         AVAILABLE
+ 000230                              824+CMTBSW   DS    H         AVAILABLE
+ 000232                              825+SA2CTR DS    H           SET IF OPTION 2 OF USE  SPECIFIED
+ 000234                              826+SA3CTR DS    H           SET IF OPTION 5 OF USE  SPECIFIED
+ 000236                              827+BLSEND   DS    H         AVAILABLE
+1PH6A     IKFCBL6A                                                                                              PAGE   23
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000238                              828+INDEX    DS    F
+ 00023C                              829+INDEX0   DS    H         AVAILABLE
+ 000240                              830+       DS    6F
+                                     831+*
+                                     832+*      END OF COMMON
+                                     833+*
+                                     834+*
+1PH6A     IKFCBL6A                                                                                              PAGE   24
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                            00004   836 R4       EQU   4                                                        62100020
+                             00005   837 R5       EQU   5                                                        62200020
+                             00007   838 R7       EQU   7                                                        62300020
+                             00008   839 R8       EQU   8                                                        62400020
+                             0000A   840 R10      EQU   10                                                       62500020
+                             0000C   841 R12      EQU   12                                                       62600020
+                             00040   842 BLANK    EQU   X'40'                                                    62700020
+                             00003   843 DICTSZ   EQU   3                                                        62800020
+                             00002   844 CARDSZ   EQU   2                                                        62900020
+                             00001   845 SZCODE48 EQU   1                                                        63000020
+                             00000   846 ZERDSPL  EQU   0                                                        63100020
+                             00001   847 FILE1    EQU   X'01'                                                    63200020
+                             00000   848 DX0      EQU   0                                                        63300020
+                             00001   849 DX1      EQU   1                                                        63400020
+                             00001   850 NX1      EQU   1                                                        63500020
+                             00002   851 NX2      EQU   2                                                        63600020
+                             00002   852 DX2      EQU   2                                                        63700020
+                             00003   853 DX3      EQU   3                                                        63800020
+                             00004   854 DX4      EQU   4                                                        63900020
+                             00004   855 NX4      EQU   4                                                        64000020
+                             00004   856 LX4      EQU   4                                                        64100020
+                             00005   857 DX5      EQU   5                                                        64200020
+                             00005   858 NX5      EQU   5                                                        64300020
+                             00006   859 DX6      EQU   6                                                        64400020
+                             00006   860 NX6      EQU   6                                                        64500020
+                             00007   861 DX7      EQU   7                                                        64600020
+                             00007   862 LX7      EQU   7                                                        64700020
+                             00008   863 DX8      EQU   8                                                        64800020
+                             00008   864 NX8      EQU   8                                                        64900020
+                             00009   865 NX9      EQU   9                                                        65000020
+                             0000C   866 DX12     EQU   12                                                       65100020
+                             00014   867 NX20     EQU   20                                                       65200020
+                             0002D   868 NX45     EQU   45                                                       65300020
+                             00078   869 DX120    EQU   120                                                      65400020
+                             00040   870 XX40     EQU   X'40'                                                    65500020
+                             00077   871 XX77     EQU   X'77'                                                    65600020
+                             000FE   872 XXFE     EQU   X'FE'                                                    65700020
+                             000FF   873 XXFF     EQU   X'FF'                                                    65800020
+                             0002C   874 XX2C     EQU   X'2C'                                                    65900020
+                             0004C   875 XX4C     EQU   X'4C'                                                    66000020
+                             00048   876 XX48     EQU   X'48'                                                    66100020
+                             00080   877 XX80     EQU   X'80'                                                    66200020
+                             00000   878 XX00     EQU   X'00'                                                    66300020
+                             00001   879 XX01     EQU   X'01'                                                    66400020
+                             00004   880 XX04     EQU   X'04'                                                    66500020
+                             00011   881 XX11     EQU   X'11'                                                    66600020
+                             00014   882 XX14     EQU   X'14'                                                    66700020
+                             00061   883 XX61     EQU   X'61'                                                    66800020
+                             00064   884 XX64     EQU   X'64'                                                    66900020
+                             0007F   885 XX7F     EQU   X'7F'                                                    67000020
+                             000F0   886 XC0      EQU   C'0'                                                     67100020
+                             00001   887 ONES     EQU   1                                                        67200020
+                             00002   888 HI       EQU   2                                                        67300020
+                             0000A   889 NOTLOW   EQU   10                                                       67400020
+                             0000C   890 NOTHI    EQU   12                                                       67500020
+1PH6A     IKFCBL6A                                                                                              PAGE   25
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                            00001   891 D1       EQU   1                                                        67600020
+                             00002   892 D2       EQU   2                                                        67700020
+                             00003   893 D3       EQU   3                                                        67800020
+                             00004   894 D4       EQU   4                                                        67900020
+                             00005   895 D5       EQU   5                                                        68000020
+                             00006   896 D6       EQU   6                                                        68100020
+                             00007   897 D7       EQU   7                                                        68200020
+                             00008   898 D8       EQU   8                                                        68300020
+                             00009   899 D9       EQU   9                                                        68400020
+                             0000A   900 D10      EQU   10                                                       68500020
+                             0000B   901 D11      EQU   11                                                       68600020
+                             0000C   902 D12      EQU   12                                                       68700020
+                             0000D   903 D13      EQU   13                                                       68800020
+                             00026   904 D38      EQU   38                                                       68900020
+                             00077   905 L119     EQU   119                                                      69000020
+                             00053   906 L83      EQU   83                                                       69100020
+                             00001   907 LX1      EQU   1                                                        69200020
+                             00002   908 LX2      EQU   2                                                        69300020
+                             00003   909 LX3      EQU   3                                                        69400020
+                             00005   910 LX5      EQU   5                                                        69500020
+                                     911          END                                                            69600020
+1PH6A                                              RELOCATION DICTIONARY                                        PAGE   26
+-POS.ID   REL.ID   FLAGS   ADDRESS                                                                ASM 0201 11.03 02/14/15
+0 0001     0001      0C     000738
+
+1PH6A                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE   27
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER = 2558/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        697
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY      218
+ TOTAL RECORDS PUNCHED                        39
+ TOTAL RECORDS PRINTED                       978

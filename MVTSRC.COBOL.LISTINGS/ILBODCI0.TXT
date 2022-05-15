@@ -1,0 +1,135 @@
+1DCI0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBODCI0  SD  0001 000000 0000A1
+ ILBODCI1  LD       000014        0001
+ ILBOIDB1  ER  0002
+ ILBOIDB0  ER  0003
+ ILBOBII2  ER  0004
+1DCI0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBODCI0                                                         00900018
+1DCI0     ILBODCI0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      3 *        ILBODCI0   CALLING SEQ... L    15,V(ILBODCI0)                  02700018
+                                       4 *                                                                       03600018
+                                       5 *        LEVEL  180     09/14/66                                        04500018
+                                       6 *                                                                       05400018
+                                       7 *FUNCTION 0 THIS ROUTINE CONVERTS A 16-BYTE INTERNAL DECIMAL NO. OR AN  06300018
+                                       8 *   18-BYTE EXTERNAL DECIMAL NO. INTO A DOUBLE PRECISION INTERNAL       07200018
+                                       9 *   FLOATING POINT NUMBER.                                              08100018
+                                      10 *ENTRY POINTS 0 ILBODCIF - FROM EXTERNAL DECIMAL TO INTERNAL FLT POINT. 09000018
+                                      11 *               ILBOIDIF - FROM INTERNAL DECIMAL TO INTERNAL FLT POINT. 09900018
+                                      12 *               CALLING SEQUENCE 0   MVC   96(L,13),ED OR ID FIELD      10800018
+                                      13 *                                    L     15,V(ILBODCIF) OR V(ILBOIDIF 11700018
+                                      14 *                                    BALR  14,15                        12600018
+                                      15 *                                    DC    XL2'DECIMALS IN INPUT NO'    13500018
+                                      16 *               WHERE L=18 FOR ED NUMBER AND L=16 FOR ID NUMBER.        14400018
+                                      17 *               REG13 IS INITIALIZED BY CALLER TO POINT TO THE TGT.     15300018
+                                      18 *OUTPUT 0 A DOUBLE PRECISION INTERNAL FLOATING POINT NUMBER IN FP REG 0 16200018
+                                      19 *EXTERNAL ROUTINES 0 ILBOEDBI - CONVERSION FROM EXT DECIMAL TO BINARY   17100018
+                                      20 *                    ILBOIDBI - CONVERSION FROM INT DECIMAL TO BINARY   18000018
+                                      21 *                    ILBOBIIL - CONVERSION FROM INT DECIMAL TO INT FLT  18900018
+                                      22 *EXITS-NORMAL 0 BY  BCR    15,2(14)                                     19800018
+                                      23 *      ERROR  0 NONE                                                    20700018
+                                      24 *WORK AREAS 0 BYTES 96-200 OF TGT.                                      21600018
+                                      25 *ATTRIBUTES 0 REENTRANT CODE. NO CHARACTER DEPENDENCY.                  22500018
+                                      26 *                                  L    15,V(ILBODISP)                  23400018
+                                      27 *                                                                       24300018
+ 000000                               28 ILBODCI0 START 0                                                        25200018
+                                      29          ENTRY ILBODCI1                                                 26100018
+                                      30          EXTRN ILBOIDB1                                                 27000018
+                                      31          EXTRN ILBOIDB0                                                 27900018
+                                      32          EXTRN ILBOBII2                                                 28800018
+                                      33 *                                                                       29700018
+                             00000    34 R0     EQU   0                                                          30600018
+                             00001    35 R1     EQU   1                                                          31500018
+                             00002    36 R2     EQU   2                                                          32400018
+                             00003    37 R3     EQU   3                                                          33300018
+                             00004    38 R4     EQU   4                                                          34200018
+                             00005    39 R5     EQU   5                                                          35100018
+                             00006    40 R6     EQU   6                                                          36000018
+                             00007    41 R7     EQU   7                                                          36900018
+                             00008    42 R8     EQU   8                                                          37800018
+                             00009    43 R9     EQU   9                                                          38700018
+                             0000A    44 R10    EQU   10                                                         39600018
+                             0000B    45 R11    EQU   11                                                         40500018
+                             0000C    46 R12    EQU   12                                                         41400018
+                             0000D    47 R13    EQU   13                                                         42300018
+                             0000E    48 R14    EQU   14                                                         43200018
+                             0000F    49 R15    EQU   15                                                         44100018
+                             00000    50 FR0    EQU   0                                                          45000018
+                             00002    51 FR2    EQU   2                                                          45900018
+                             00004    52 FR4    EQU   4                                                          46800018
+                             00006    53 FR6    EQU   6                                                          47700018
+                             0000C    54 SAVE     EQU   12                                                       48600018
+                             00000    55          USING *,R10                                                    49500018
+ 000000 90EC D00C      0000C          56          STM   R14,R12,SAVE(R13)   SAVE CALLING REGS                    50400018
+ 000004 18AF                          57          LR    R10,R15            LOAD BASE 10                          51300018
+1DCI0     ILBODCI0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000006 482E 0000      00000          58          LH    R2,0(R14)                                                52200018
+ 00000A 58F0 A090      00090          59          L     R15,ADEDBI        GO TO                                  53100018
+ 00000E 05EF                          60          BALR  R14,R15             ED-BI                                54000018
+ 000010 45A0 A06A      0006A          61          BAL   R10,COMMON        GO TO COMMON                           54900018
+                             00014    62          USING *,R10                                                    55800018
+ 000014 90EC D00C      0000C          63 ILBODCI1 STM   R14,R12,SAVE(R13)    SAVE CALLING REGS                   56700018
+ 000018 18AF                          64          LR    R10,R15            LOAD BASE                             57600018
+ 00001A 482E 0000      00000          65          LH    R2,0(R14)          LOAD NO OF DECIMALS                   58500018
+                                      66 *                                                                       59400018
+                                      67 * THIS ROUTINE SCALES A 16 BYTE ID NO. TO A 10 BYTE ID NO. IN WORKA     60300018
+                                      68 *                                                                       61200018
+ 00001E 414D 0060      00060          69          LA    R4,WORKA(R13)      POINT TO FIRST BYTE OF ID             62100018
+ 000022 4130 0006      00006          70          LA    R3,6              INIT FOR 6 TIMES THRU                  63000018
+ 000026 9500 4000      00000          71 LOOP     CLI   0(R4),0           COMP HI BYTES TO ZERO                  63900018
+ 00002A 4770 A02C      00040          72        BC    7,TRUNC          TRUNCATION REQUIRED                       64800018
+ 00002E 4144 0001      00001          73          LA    R4,1(R4)           UP POINTER BY 1                       65700018
+ 000032 4630 A012      00026          74          BCT   R3,LOOP           REPEAT 6 TIMES                         66600018
+ 000036 D504 4000 A088 00000 0009C    75        CLC   0(5,R4),MAXNUM             MAX POSSIBLE NUM FOR CONV  2213 67500018
+ 00003C 47C0 A044      00058          76        BC    12,MVLEFT                  OK. EQUAL OR LESS THAN MAX 2213 68400018
+ 000040 8930 0001      00001          77 TRUNC    SLL   R3,1              MULT BY 2 GIVING DIGITS TRUNCATED      69300018
+ 000044 91F0 4000      00000          78          TM    0(R4),X'F0'       TEST HI ORD ZERO                       70200018
+ 000048 4780 A042      00056          79        BC    8,ADPW10          YES                                      71100018
+ 00004C 4133 0001      00001          80          LA    R3,1(R3)            NO - ADD 1 MORE DIG TRUNC            72000018
+ 000050 F198 4000 4000 00000 00000    81          MVO   0(10,R4),0(9,R4)   SHIFT RIGHT ONE DIGIT                 72900018
+ 000056 1A23                          82 ADPW10   AR    R2,R3              ADD DIGS TRUNC TO PWR-10-EXP          73800018
+ 000058 D209 D060 4000 00060 00000    83 MVLEFT   MVC   WORKA(10,R13),0(R4)  SHIFT LEFT                          74700018
+ 00005E D100 D069 D06F 00069 0006F    84          MVN   WORKA+9(1,R13),WORKA+15(R13)  MOVE SIGN                  75600018
+ 000064 58F0 A084      00098          85 CONVID   L     R15,ADIDBI        GO TO                                  76500018
+ 000068 05EF                          86          BALR  R14,R15             ID BI                                77400018
+ 00006A 602D 00B0      000B0          87 COMMON   STD   FR2,SVFPRG+8(R13)   SAVE                                 78300018
+ 00006E 604D 00B8      000B8          88          STD   FR4,SVFPRG+16(R13)   FP                                  79200018
+ 000072 606D 00C0      000C0          89          STD   FR6,SVFPRG+24(R13)    REGS                               80100018
+ 000076 58F0 A080      00094          90          L     R15,ADBIIF        GO TO CONVERT                          81000018
+ 00007A 05EF                          91          BALR  R14,R15             BI-IF                                81900018
+ 00007C 98EC D00C      0000C          92          LM    R14,R12,SAVE(R13)                                        82800018
+ 000080 682D 00B0      000B0          93          LD    FR2,SVFPRG+8(R13)   RESTORE                              83700018
+ 000084 684D 00B8      000B8          94          LD    FR4,SVFPRG+16(R13)   FP                                  84600018
+ 000088 686D 00C0      000C0          95          LD    FR6,SVFPRG+24(R13)    REGS                               85500018
+ 00008C 47FE 0002      00002          96          BC    15,2(R14)         RETURN                                 86400018
+                                      97 *                                                                       87300018
+ 000090 00000000                      98 ADEDBI   DC    A(ILBOIDB1)                                              88200018
+ 000094 00000000                      99 ADBIIF   DC    A(ILBOBII2)                                              89100018
+ 000098 00000000                     100 ADIDBI   DC    A(ILBOIDB0)                                              90000018
+                             000A8   101 SVFPRG EQU   168                                                        90900018
+                             00060   102 WORKA  EQU   96                                                         91800018
+ 00009C 2147483647                   103 MAXNUM DC    XL5'2147483647'            MAX NUM FOR CVB INSTR      2213 92700018
+                                     104        END                                                              93600018
+1DCI0                                              RELOCATION DICTIONARY                                        PAGE    5
+-POS.ID   REL.ID   FLAGS   ADDRESS                                                                ASM 0201 11.03 02/14/15
+0 0001     0002      0C     000090
+  0001     0003      0C     000098
+  0001     0004      0C     000094
+
+1DCI0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    6
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        105
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                         7
+ TOTAL RECORDS PRINTED                       135

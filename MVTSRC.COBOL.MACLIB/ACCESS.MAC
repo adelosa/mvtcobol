@@ -1,0 +1,1097 @@
+         MACRO                                                          00090020
+         ACCESS  &PHASE                                                 00180020
+.***************************************************************        00270020
+.*                                                                      00360020
+.*                                                                      00450020
+.*              ACCESS MACRO                                            00540020
+.*                                                                      00630020
+.*                                                                      00720020
+.*FUNCTION                                                              00810020
+.*   WILL  ASSEMBLE NECESSARY ACCESS ROUTINES FOR EACH PHASE.           00900020
+.*   PHASE 1 & 2 GET 'E' AND 'L' SERIES BUT NOT LOCNXT ROUTINE.         00990020
+.*   PHASE 3 GETS 'L' SERIES AND LOCNXT NOT 'E' SERIES.                 01080020
+.*                                                                      01170020
+.*CALLING SEQUENCE                                                      01260020
+.*       ACCESS  PHASE= A ONE DIGIT NUMBER EITHER 1, 2 OR 3             01350020
+.*                                                                      01440020
+.*                                                                      01530020
+.****************************************************************       01620020
+*    TAMER-ACCESS PACKAGE                                               01710020
+*    TABLE DICTIONARY AREA IN THIS PACKAGE IS 16K                       01800020
+*                                                                       01890020
+*                                                                       01980020
+*    NOTE THAT WHEN A USER STARTS TO BUILD THE DICTIONARY HE MUST FIRST 02070020
+*    CALL 'INTACC' TO INITIALIZE 'ACCESS'.  THIS INITIALIZATION IS NOT  02160020
+*    NECESSARY IF THE DICTIONARY IS ALL OR PARTIALLY BUILTA.            02250020
+*                                                                       02340020
+*                                                                       02430020
+*    ORDER OF CORE FOR ACCESS                                           02520020
+*    LOCATIONS COMMON TO ACCESS AND TAMER                               02610020
+*    LOCATIONS FOR ROUTINES COMMON TO 'ENT' AND 'L' SERIES              02700020
+*    LOCATIONS FOR 'L' SERIES                                           02790020
+*    LOCATIONS FOR 'ENT' SERIES                                         02880020
+*    ROUTINES COMMON TO 'ENT' AND 'L' SERIES                            02970020
+*    'L' SERIES                                                         03060020
+*    'ENT' SERIES                                                       03150020
+*                                                                       03240020
+*                                                                       03330020
+         EJECT                                                          03420020
+*                                                                       03510020
+*                                                                       03600020
+*  IMMEDIATE VALUES                                                     03690020
+*                                                                       03780020
+*   MASKS  DM PREFIX                                                    03870020
+DMPFT1   EQU   128       TESTS 1ST BIT OF DICT PREFIX  1000 0000        03960020
+DMPFT2   EQU   64        TESTS 2ND BIT OF DICT PREFIX  0100 0000        04050020
+DMBYT    EQU   255            TESTS WHOLE BYTE                          04140020
+DMATRB   EQU   240            TESTS FIRST 4 BITS                        04230020
+*                                                                       04320020
+*    MASKS TO TEST ROUTINE ENTERED UPON                                 04410020
+DMEPTR   EQU   16             ENTPTR TEST, TESTS 5TH BIT FROM RIGHT     04500020
+DMGPTR   EQU   8              GETPTR TEST, TESTS 4TH BIT FROM RIGHT     04590020
+DMATRP   EQU   4         LATRPT, NOTE ALSO FOR LATGRP                   04680020
+DMACP    EQU   8        TESTS FOR LATACP,LATGRP                         04770020
+DMACPP   EQU   12       TESTS FOR LATACP (ALSO WORKS FOR LATRPT)        04860020
+DMDELM   EQU   16        LDELNM                                         04950020
+DMPFXT   EQU   192           TESTS DICT PFX, 1ST 2 BITS  1100 0000      05040020
+DMGRUP   EQU   4             GROUP TEST, 3RD BIT FROM RIGHT             05130020
+*                                                                       05220020
+*      EQUATES GIVING DISPLACEMENTS OF NEEDED PARAMS FROM A(COS),WHICH  05310020
+*      IS THE START-ADDRESS OF COMPILER COMMON.                         05400020
+*                                                                       05490020
+*                                                                       05580020
+LDICOT EQU   TIB20-COS                                                  05670020
+L8DCOT EQU   TIB20-COS                                                  05760020
+*                                                                       05850020
+*                                                                       05940020
+*                                                                       06030020
+*                                                                       06120020
+*      FOLLOWING ARE REGISTER EQUATES FOR TAMER                         06210020
+*                                                                       06300020
+*                                                                       06390020
+*                                                                       06480020
+BDUMP6   EQU   *              START OF DEBUG DUMP AREA                  06570020
+       DS    0F                                                         06660020
+*    ACCESS- TAMER CONSTANTS AND WORK AREA                              06750020
+*    THESE VALUES ARE UNDER REGISTER 12                                 06840020
+*                                                                       06930020
+*      FOLLOWING IS THE TAMER CONSTANT AREA.  TIBS AND TAMMS ASSEMBLED  07020020
+*      HERE ARE ACCESSIBLE TO ACCESS, AND TO THE PHASE PROGRAMMER.      07110020
+*                                                                       07200020
+       USING *,R12             BASE REGISTER FOR ACCESS CONSTANTS.      07290020
+PBEG12   EQU   *             MUST FOLLOW 'USING' FOR REG12              07380020
+FRSTAM DS      80F                                                      07470020
+LASTAM DS    D                                                          07560020
+DUMMY1 DS    F                                                          07650020
+*                                                                       07740020
+****** PARAMETER LIST FOR STORAGE OF PARAM'S. GOT FROM COMPILER COMMON. 07830020
+*                                                                       07920020
+*                                                                       08010020
+DPARST DS    F                     STORAGE FOR A(COS)PASSED TO PHASE.   08100020
+DPARLS DS    19F                   STORAGE FOR PARAMS MOVE TO ACCESS    08190020
+DMDMDM DS    20F                   FROM COMMON.                         08280020
+LPRIME EQU   DPARLS                A(PRIME)                             08370020
+LINSRT EQU   DPARLS+4              A(INSERT)                            08460020
+DTAMM1 EQU   DPARLS+24             A(LASTAM)                            08550020
+DMVDAD DC    F'0'                  A(MOVDIC), PASSED IN COMMON,STORED   08640020
+*                                 HERE BY INTACC.                       08730020
+LDUMP6 EQU   *                     END OF DEBUG DUMP AREA               08820020
+PTMSTR DS    F                                                          08910020
+FDCNT  DC    X'00000090'                                                09000020
+PBCODE DC    X'C0DEC0DE'                                                09090020
+ADSTOR DS    CL1                                                        09180020
+*                                                                       09270020
+*                                                                       09360020
+*      THE FOLLOWING ARE TAMER ADCONS FOR THE VARIOUS ROUTINE NAMES.    09450020
+*                                                                       09540020
+*                                                                       09630020
+*                                                                       09720020
+*                                                                       09810020
+*                                                                       09900020
+*      FOLLOWING ARE THE ADCONS FOR THE LAST TAMM IN THE TAMM AREA      09990020
+*      (PRESENTLY USED AS THE TAMM FOR MAIN FREE AREA), AND THE ADDRESS 10080020
+*      OF THE LAST BYTE OF FREE AREA AVAILABLE FOR TAMER-ACCESS TABLES. 10170020
+*                                                                       10260020
+ALAST  DC    A(LASTAM)                                                  10350020
+         DS    0F                                                       10440020
+*                                                                       10530020
+*  TEMPORARY CELLS  FOR BASIC ASSEMBLER USAGE ONLY                      10620020
+*                                                                       10710020
+DLDHSH   DC    A(DHASH)       DE110                                     10800020
+DLDINC   DC    A(DINCOR)                                                10890020
+DLGCOD   DC    A(DGRPCD)      DE110                                     10980020
+DLHSCD   DC    A(DHSHCD)                                                11070020
+LDLDIC   DC    A(DLDIC)                                                 11160020
+       EJECT                                                            11250020
+       DS    0F                                                         11340020
+*                                                                       11430020
+*                                                                       11520020
+         EJECT                                                          11610020
+*    ACCESS CONSTANT AND WORK AREAS  REFER. BY REG13                    11700020
+*                                                                       11790020
+*    HOUSEKEEPING FOR THE DICTIONARY                                    11880020
+*    LASTAM IS THE TAMM FOR THE CURRENT FREE AREA                       11970020
+*                                                                       12060020
+*                                                                       12150020
+*    HOUSEKEEPING FOR THE DICOT TABLE, NEEDED BY TAMER                  12240020
+*    THE DICOT TABLE IS THE TABLE USED TO HOLD INFORMATION ON THE       12330020
+*    DICTIONARY SEGMENTS.  IT CONTAINS AN ENTRY FOR EACH SECTION AND    12420020
+*    ITS ORDER CORRESPONDS TO THE ORDER OF THE SECTIONS.                12510020
+*      EACH ENTRY IS 12 BYTES LONG---                                   12600020
+*            BYTE  0   = CODE TESTED FOR STATUS OF SECTION.             12690020
+*            BYTES 1-3 = ADDRESS OF A DICT. SECTION IN CORE.            12780020
+*            BYTES 4-11= ADDRESS, ON DISK, OF A SPILLED SECTION.        12870020
+*                                                                       12960020
+*      THE CORE ADDRESS OF A SPILLED SECTION IS OBSOLETE UNTIL THE      13050020
+*      SECTION IS READ BACK IN FOR UPDATING.  THEN BOTH ADDRESSES, DISK 13140020
+*      AND CORE, ARE TRUE.  AFTER SPILL, UNTIL UPDATE, THE TRUE         13230020
+*      ADDRESS IS THAT IN BYTES 4-11 OF THE DICOT ENTRY FOR THE SECT.   13320020
+*                                                                       13410020
+*                                                                       13500020
+*    TIB20 RESERVED FOR THE DICOT TABLE IN PHASES 1,2,3                 13590020
+*                                                                       13680020
+*    PARAMETER LOCATION NEEDED FOR CALL TO PRIME                        13770020
+*                                                                       13860020
+       DS    0F                                                         13950020
+DLDIC  DC    X'0C'                 ENTRY SIZE IS 12 BYTES.              14040020
+       DC    X'0000AC'                                                  14130020
+       DC    H'240'       PRIME SIZE OS                                 14220020
+       DC    H'120'                GROW REQUEST AMOUNT.                 14310020
+       SPACE 5                                                          14400020
+*      STORE UNDER DATA FOR DINCOR.                                     14490020
+       DS    0F                                                         14580020
+DUPDCD DC    X'FF000000'                                                14670020
+DCENLG DC    F'12'                 LENGTH OF DICOT TABLE ENTRY.         14760020
+DINSTR DC    5F'0'                                                      14850020
+DINSTB DC    2F'0'                                                      14940020
+         EJECT                                                          15030020
+*    LOCATIONS FOR BOTH 'ENT' AND 'L' SERIES                            15120020
+*      SHOULD NOT BE OVERLAID                                           15210020
+*                                                                       15300020
+*                                                                       15390020
+*                                                                       15480020
+*   REGISTER SAVE AREA                                                  15570020
+*                                                                       15660020
+*      'ENT','L' SERIES, 'ENTDEL','LOCNXT' USE SAME AREA SINCE ONLY     15750020
+*      ONE OF THESE ROUTINES IS CALLED AT A TIME                        15840020
+*      'DHASH', 'DINCOR' HAVE THEIR OWN AREA SEPARATE SINCE THEY ARE    15930020
+*      CALLED BY THE OTHER ROUTINES                                     16020020
+*                                                                       16110020
+*    'DHASH' STORAGE AREA                                               16200020
+         DS    0F                                                       16290020
+DSTORE   DS    CL4                                                      16380020
+DSTOR1   DS    CL4                                                      16470020
+D33S14   DC    2F'0'    SAVE AREA FOR R14,R15,UPON DEMORE CALL TO DICSP 16560020
+*                                                                       16650020
+DRSAVE   DS    CL56      SAVE AREA FOR 'ENT' SERIES, REG. 2-15          16740020
+DL4      EQU   DRSAVE    SAVE AREA FOR 'L' SERIES                       16830020
+*                                                                       16920020
+*                                                                       17010020
+*    SAVE AREAS FOR REG 14,15  ARE UNDER REG12                          17100020
+*                                                                       17190020
+*    FOR 'DL' SERIES                                                    17280020
+D1SV14   DS    F                                                        17370020
+DL15     DS    CL4                                                      17460020
+         DS    2F                 ADDITIONAL STORAGE, USED IN INTACC    17550020
+*                                                                       17640020
+*    FOR 'LOCNXT'                                                       17730020
+D2SV14   EQU   D1SV14                                                   17820020
+D2SV15   EQU   DL15                                                     17910020
+*                                                                       18000020
+*    FOR 'DE' SERIES                                                    18090020
+D3SV14   EQU   D1SV14                                                   18180020
+DS15     EQU   D2SV15                                                   18270020
+*                                                                       18360020
+*    FOR 'ENTDEL'                                                       18450020
+D4SV14   EQU   D1SV14                                                   18540020
+D4SV15   EQU   D2SV15                                                   18630020
+*                                                                       18720020
+*    FOR 'INTACC'                                                       18810020
+D5SV14   EQU   D1SV14                                                   18900020
+D5SV15   EQU   D2SV15                                                   18990020
+*                                                                       19080020
+*                                                                       19170020
+*    CONSTANTS, MASKS, WORK AREAS                                       19260020
+*      COMMON TO BOTH PARTS OF ACCESS                                   19350020
+*                                                                       19440020
+*   CONSTANTS                                                           19530020
+         DS    0F                                                       19620020
+DHDIV    DC    F'521'        DIVIDE CONSTANT FOR DHASH                  19710020
+DMDSPL   DC    X'000001FF'    MASKS OUT ALL BUT DISPLAC                 19800020
+DMSECT   DC    X'003FFE00'   MASKS OUT ALL BUT SECT. NO.                19890020
+D512     DC    F'512'                                                   19980020
+DSUBVL   DC    X'00000200'   USED IN DINCOR TO DECREM. SECT. NO.        20070020
+*                                                                       20160020
+*    WORK CELL                                                          20250020
+         DS    0F                                                       20340020
+DWORK    DS    CL1       DUMMY FOR REG REFER                            20430020
+DWORK1   DS    CL3                                                      20520020
+DELSAV   DC    F'0'            FOR DELIM PTR IN CASE SPILLED SECTION    20610020
+*                                                                       20700020
+         DS    0F                                                       20790020
+*    DHWORD BYTE =0  USED BY DE210                                      20880020
+DHWORD   DC    X'00'         DUMMY FOR XR PICK-UP, MUST BE ZERO (LTR)   20970020
+DHSHCD DS    CL3              DUP. HASH CODE                            21060020
+*    DGRPCD MUST START ON A FULL WORD BOUNDARY AND MUST FOLLOW DHSHCD.  21150020
+*    WHEN DUP. HASH AND GROUP CODES APPEAR TOGETHER, THEY ARE MOVED INT 21240020
+*    THE DICT. AS ONE UNIT  (SEE DMVCOD).                               21330020
+DGRPCD   DC    X'400000'     GROUP CODE, 01 IN 1ST 2 BITS               21420020
+         EJECT                                                          21510020
+*   HOUSEKEEPING FOR ACESS ROUTINES  LATRNM,LATRPT,LDELNM,LATACP,LATGRP 21600020
+*                                                                       21690020
+*    LOCATIONS FOR 'L' SERIES                                           21780020
+*      SHOULD NOT BE OVERLAID                                           21870020
+         DS    0F                                                       21960020
+DSWTCH   DC    A(DL500)       FOR LATACP SWITCH OFF                     22050020
+*                                                                       22140020
+*  MASKS   DM PREFIX                                                    22230020
+         DS    0F                                                       22320020
+*    DMSKCD BYTE0 USED TO SET DLMPTR BYTE0 NON-ZERO                     22410020
+DMSKCD DC    X'003FFFFF'           MASK OUT CODE BITS                   22500020
+DMSKDL DC    X'FF000000'           BYTE 0 MUST BE NON-ZERO              22590020
+DMBYT1   DC    X'00FFFFFF'    MASKS OUT 1ST BYTE (AND)                  22680020
+*                                                                       22770020
+*    NAME COMPARISON INSTRUCTION                                        22860020
+DCOMPR CLC   0(0,R2),0(R9)       R2=A(DICT NAME), R9=A(INPUT NAME)      22950020
+*                                                                       23040020
+*    LAST VALID ENTRY POINTER (NEEDED FOR LATACP)                       23130020
+*    BITS 0-7 MUST EQUAL ZERO                                           23220020
+         DS    0F                                                       23310020
+DSTART DC    F'0'                 MUST BE SET TO 0.NOT USED ACROSS PH5. 23400020
+*                                                                       23490020
+*    'DLMPTR'  SET IN ALL VALID CALLS TO ACCESS BY 'L' ROUTINES,        23580020
+*    TESTED BY LATACP.  VALUE = GROUP DELIMITER POINTER FOR GROUP ITEMS 23670020
+*    FOUND BY LATACP, LDELMN, ITS BYTE0 NONZERO FOR ELEM. ITEMS FOUND   23760020
+*    BY LATACP, SET ZERO BY ALL OTHER ROUTINES.                         23850020
+*                                                                       23940020
+*    'DLTEMP'  USED IN 'L' SERIES TO SAVE A(ATTRIB) OF FIRST MATCH      24030020
+*    FOUND  CHANGE THIS IF 'DLMPTR' USED IN DL300 LOOP                  24120020
+DLMPTR DC    F'0'                  SET TO 0 BY DEFINITION.  2/16/66.    24210020
+DLTEMP   EQU   DLMPTR                                                   24300020
+         EJECT                                                          24390020
+*   HOUSEKEEPING FOR ENTNAM,ENTPTR,GETPTR                               24480020
+*      OVERLAID IN PHASE 3                                              24570020
+*                                                                       24660020
+*                                                                       24750020
+*    MASKS FOR 'ENT' SERIES                                             24840020
+         DS    0F                                                       24930020
+DMPFX2   DC    X'00800000'    INSERTS PREFIX=2 IN 2ND BYTE              25020020
+DMPFX3   DC    X'00C00000'    INSERTS PREFIX=3 IN 2ND BYTE              25110020
+DMDLM    DC  X'C00000'       MASK TO CLEAR DELIM PART OF GROUP CODE     25200020
+*                                                                       25290020
+*   MOVE INSTRUCTIONS         R2=DICT ADDRESS                           25380020
+         DS    0F                                                       25470020
+DMVCOD MVC   0(0,R2),0(R8)  R8= 0GRPCD,DHSHCD                           25560020
+DMOVE  MVC   0(0,R2),0(R9)  R9= A(NAME,ATTRIB)                          25650020
+         EJECT                                                          25740020
+DTSAVE  DC  F'0'                                                        25830020
+         EJECT                                                          25920020
+       SPACE 5                                                          26010020
+******                                                           ****** 26100020
+******                                                           ****** 26190020
+*                                                                     * 26280020
+*                           ** INTACC **                              * 26370020
+*                                                                     * 26460020
+*      INTACC---ACCESS INITIALIZATION ROUTINE.                        * 26550020
+*                                                                     * 26640020
+*      CALLS----INTACC IS CALLED AS PART OF INITIALIZATION BY         * 26730020
+*               EACH PHASE USING ACCESS.                              * 26820020
+*                                                                     * 26910020
+*      FUNCTION-INTACC PRIMES THE DICOT TABLE AND MOVES ADDRESS       * 27000020
+*               OF TAMER ROUTINES CALLED BY ACCESS FROM COMMON TO       27090020
+*               ITS OWN ADDRESS STORAGE AREA.                           27180020
+*                                                                       27270020
+*****                                                                   27360020
+       DS    0F                                                         27450020
+       USING *,R15                                                      27540020
+INTACC EQU   *                                                          27630020
+       ST    R12,DINS12                                                 27720020
+       L     R12,DATADD                STORE R12.                       27810020
+       STM   R14,R1,D5SV14             STORE REST UNDER BASE 12         27900020
+****** THE LOADING OF THE FOLLOWING PARAMETERS MUST BE DONE             27990020
+****** BEFORE ANY ACCESS ROUTINE OTHER THAN INTACC IS CALLED.           28080020
+       L     R1,DPARST                 LOAD A(COS).                     28170020
+       MVC   LPRIME(8),APRIME                                           28260020
+*                                      PARAMETER LIST                   28350020
+       MVC   DTAMM1(4),ALSTAM                                           28440020
+       MVC   DMVDAD(4),AMOVDC                                           28530020
+       TM    ACCESW,1                                                   28620020
+       BC    ONES,INTCEX               NO. DICOT TABE PRIMED. EXIT      28710020
+       MVI   ACCESW,1                                                   28800020
+*   ON FIRST CALL TO INTACC, THE HASH TABLE IS ZEROED OUT, AND THE      28890020
+*   DICOT TABLE IS PRIMED. HASH TABLE=(521) (3)=(1563) BYTES LONG.      28980020
+       L     R1,ACCESW                 A(HASA TABLE)                    29070020
+       LA    R14,6                     LOAD LOOP COUNT.                 29160020
+PHTBZR XC    0(255,R1),0(R1)           CLEAR 255 BYTES.                 29250020
+       LA    R1,255(R1)                INCREMENT.                       29340020
+       BCT   R14,PHTBZR                                                 29430020
+       XC    0(33,R1),0(R1)            CLEAR TABLE.                     29520020
+*   AFTER ZERO-OUT OF HASH TABLE, PRIME DICOT TABLE.                    29610020
+       L     R1,LDLDIC                 LOAD A(DICOT TABLE PARM).        29700020
+       L     R15,LPRIME                A(PRIME).                        29790020
+       BALR  R14,R15                   CALL PRIME                       29880020
+*   EXIT AFTER INITIALIZATION FINISHED.                                 29970020
+INTCEX LM    R14,R1,D5SV14                                              30060020
+       L     R12,DINS12                                                 30150020
+       BCR   15,R14                    RETURN.                          30240020
+****** THIS AREA IS FOR STORAGE OF R12 UNDER R15,                       30330020
+****** AND DATA BASE ADDRESS.                                           30420020
+DATADD DC    A(PBEG12)                 DATA BASE ADDRESS                30510020
+DINS12 DC    F'0'                      STORAGE FOR CALLER'S REG 12.     30600020
+         EJECT                                                          30690020
+*                                                                     * 30780020
+*                           **  DINCOR  **                            * 30870020
+*                                                                     * 30960020
+*      DINCOR--- GIVEN A DICTIONARY POINTER, DINCOR CHECKS TO SEE     * 31050020
+*                IF THE SECTION FOR THAT POINTER IS IN CORE.          * 31140020
+*                IF IT IS- DINCOR RETURNS WITH THE ENTRY ADDRESS.     * 31230020
+*                IF NOT--- DINCOR CALLS THE ROUTINE WHICH READS       * 31320020
+*                          IN THE SPILLED SECTION,THE RETURNS WITH    * 31410020
+*                          THE ENTRY ADDRESS.                         * 31500020
+*      INPUT---- R2 = DICTIONARY POINTER                              * 31590020
+*      OUTPUT--- R2 = ENTRY ADDRESS .                                 * 31680020
+*                R0 = SEGMENT ADDRESS,USED IN LOCNXT.                 * 31770020
+*                                                                     * 31860020
+******                                                           ****** 31950020
+       SPACE 5                                                          32040020
+       DS    0F                                                         32130020
+       USING *,R15                                                      32220020
+DINCOR EQU   *                                                          32310020
+       STM   R3,R7,DINSTR          STORE REGISTERS.                     32400020
+       STM   R14,R15,DINSTB        STORE DINCOR BASE ADDRESS,RETURN AD. 32490020
+       LR    R5,R2                 LOAD DICT.POINTER                    32580020
+       N     R5,DMSECT             MASK OUT SECT. NUMBER.               32670020
+       S     R5,DSUBVL             SUB X'200' FOR DICOT SECT.NUMBER--   32760020
+*                                  GIVING 1 SECTION LOWER THAN SECTION  32850020
+*                                  VALUE IN POINTER.                    32940020
+       SRL   R5,9                  SHIFT DOWN TO OBTAIN SECTION NUMBER. 33030020
+*                                  0 FOR SECTION 1,                     33120020
+*                                  1 FOR SECTION 2,                     33210020
+*                                  2 FOR SECTION 3, ETC.                33300020
+       M     R4,DCENLG             MULTIPLY BY LGTH OF DICOT ENTRY.     33390020
+*                                  RESULT,IN R5, IS DISPLACEMENT.       33480020
+       L     R7,DPARST             LOAD  A(COS).                        33570020
+       LA    R7,LDICOT(R7)         OBTAIN A(TIB20)= A(DICOT TIB).       33660020
+       L     R7,0(R7)              LOAD A(DICOT TAMM).                  33750020
+       L     R7,0(R7)              LOAD A(DICOT TABLE).                 33840020
+       LA    R3,0(R5,R7)           LOAD A(ENTRY FOR POINTER).           33930020
+       SPACE 2                                                          34020020
+*      TEST HERE FOR SECTION IN CORE, OR SPILLED SECTION.               34110020
+       TM    0(R3),128             HAS SECTION BEEN SPILLED?            34200020
+       BC    ZERO,DINSCA              NO. LOAD ADDRESS OF SECTION.      34290020
+       TM    0(R3),96                 YES.HAS IT BEEN READ IN,UPDATED?  34380020
+       BC    ONES,DINSCA                 YES.THEN CORE ADDRESS IS VALID 34470020
+       SPACE 2                                                          34560020
+*      THIS CODE CALLS TAMER'S MOVDIC ROUTINE, WHICH READS IN SPILLED   34650020
+*      SECTION,AND ADJUSTS THE DICOT ENTRY FOR IT ACCORDINGLY.          34740020
+*      MOVDIC RETURNS THE SECTION ADDRESS IN R0.                        34830020
+       SPACE 2                                                          34920020
+DGTSPL L     R15,DMVDAD                  NO. LOAD A(MOVDIC).            35010020
+       O     R15,DUPDCD                      SET HIGH BYTE OF 15 =X'FF' 35100020
+       BALR  R14,R15               CALL MOVDIC.                         35190020
+*      WHEN DINCOR CALLS MOVDIC, IT PASSES A(DICOT ENTRY)FOR SECTION    35280020
+*      IN R3. MOVDIC PLACES IN-CORE ADDR. OF SECT. IN DICOT TABLE.      35370020
+       LM    R14,R15,DINSTB        RESTORE A(DINCOR),RETURN ADDRESS.    35460020
+DINSCA L     R0,0(R3)                 NO. LOAD ADDRESS OF SECTION.      35550020
+       N     R0,DMBYT1             MASK OUT TOP BYTE IN ADDRESS REG.    35640020
+       N     R2,DMDSPL             MASK OUT ALL BUT DISPLACEMENT.       35730020
+       AR    R2,R0                 OBTAIN ADDRESS OF ENTRY.             35820020
+       SPACE 2                                                          35910020
+DINCEX LM    R3,R7,DINSTR          RELOAD REGISTERS USED.               36000020
+       BCR   15,R14                RETURN TO CALL                       36090020
+       EJECT                                                            36180020
+         EJECT                                                          36270020
+*   ROUTINE 'DHASH'                                                     36360020
+*       USED BY BOTH 'ENT','L' SERIES                                   36450020
+*                                                                       36540020
+*     HASHES BCD NAME, LOCATES CORRES. HASH TABLE ENTRY                 36630020
+*    INPUT  R9=A(BCD NAME)       'ENT'  R9  'L' R9                      36720020
+*           R11= BCD NAME CNT            R11     R11                    36810020
+*    OUTPUT R8= 0,DICT PNTR             R8      R8                      36900020
+*           R10= A(HASH TABLE ENTRY)     R10     R10                    36990020
+*           R8/R9  EVEN/ODD  DIVIDEND                                   37080020
+*           R10/R11  EVEN/ODD  INCREM./COMPAR.                          37170020
+*                                                                       37260020
+*    HASHING FUNCTION                                                   37350020
+*      SEGMENT NAME (INCL. CNT) INTO 4 BYTE LENGTHS, ADD LENGTHS        37440020
+*      TOGETHER LOGICALLY, DIVIDE SUM BY SIZE OF HASH TABLE, MULT       37530020
+*      REMAIN. BY 3 TO OBTAIN DISPL. ADD IT TO A(HASH TABLE) AND        37620020
+*      PICK UP CORRES. ENTRY                                            37710020
+*      ENTRY=0 OR DICT. PNTR OF LAST BCD NAME WHICH HASHED TO THIS LOC  37800020
+*                                                                       37890020
+*     NOTE THAT INPUT NAME IS PADDED OUT WITH ZEROES SO 4 BYTES CAN BE  37980020
+*     ADDED AT A TIME                                                   38070020
+*                                                                       38160020
+*                                                                       38250020
+         DS    0F                                                       38340020
+       USING *,R15                                                      38430020
+DHASH    EQU   *                                                        38520020
+       ST    R9,DSTORE                                                  38610020
+       LA    R10,4(R0,R0)    R10=INCREMENT=4                            38700020
+       SR    R8,R8       R8= CNTR =0,4,...                              38790020
+       SR    R0,R0         R0=SUM, INITIALLY ZERO                       38880020
+DHLOOP AL    R0,0(R9,R8)    NOTE, NO OVERFLOW INTERRUPT                 38970020
+       BXLE  R8,R10,DHLOOP      R8= R10+1 =COMPARAND                    39060020
+       LR    R9,R0                                                      39150020
+       SR    R8,R8       R9= R8+1                                       39240020
+       D     R8,DHDIV     R8/R9 =DIVIDEND,  SIGN IS +                   39330020
+       LA    R10,0(R8,R8)     R8= REMAINDER, MULT BY 3                  39420020
+       AR    R10,R8                                                     39510020
+*     DISPLAC COMPUTED, OBTAIN ENTRY                                    39600020
+*                                                                       39690020
+*      TEMPORARY HASH TABLE PLACEMENT OF HASH TABLE,'PHASHT', AT END    39780020
+*      OF TAMER CODING IN PHASE 0.                                      39870020
+*                                                                       39960020
+       L     R8,DPARST           LOAD ADDRESS OF COS.                   40050020
+       L     R8,ACCESW-COS(R8)         A(PHASHT)                        40140020
+       LA    R10,0(R10,R8)       INCREMENT TO DISPLACEMENT IN HASH      40230020
+*                                 TABLE FOR CURRENT DICTIONARY ENTRY.   40320020
+       MVC   DHSHCD(3),0(R10)                                           40410020
+       L     R8,DHWORD    1ST BYTE MUST = 0                             40500020
+       L     R9,DSTORE                                                  40590020
+       BCR   UNCOND,R14                                                 40680020
+*                                                                       40770020
+*                                                                       40860020
+         EJECT                                                          40950020
+*   ACCESS ROUTINES   LATRNM,LATRPT,LDELNM,LATACP,LATGRP                41040020
+*     'L' (LOCATE) SERIES    'DL' PREFIX                                41130020
+*    NOTE  SHOULD NEVER USE LATACP FOLLOWING AN INVALID CALL TO ACCESS. 41220020
+*    LATACP TESTS 'DLMPTR', SET IN LAST VALID CALL TO ACCESS.           41310020
+*    'DLMPTR' = GROUP DELIMITER POINTER IF LAST CALL WAS TO LATACP,     41400020
+*    LDELMN AND ENTRY WAS VALID AND GROUP ITEM.  'DLMPTR' BYTE0 NONZERO 41490020
+*    IF LAST CALL WAS BY LATACP AND ELEM. ITEM WAS FOUND.  'DLMPTR'     41580020
+*    SET ZERO BY ALL OTHER ROUTINES.                                    41670020
+*                                                                       41760020
+*                                                                       41850020
+         DS    0F                                                       41940020
+DLBEG    EQU   *                                                        42030020
+LATRNM   EQU   *                                                        42120020
+LATRPT   EQU   *                                                        42210020
+LDELNM   EQU   *                                                        42300020
+LATACP   EQU   *                                                        42390020
+LATGRP   EQU   *                                                        42480020
+*                                                                       42570020
+       USING *,R15                                                      42660020
+       ST    R12,D1SV12    REG12 IS USED TO REFER. CONSTANTSETC         42750020
+       L     R12,D1RG12                                                 42840020
+       STM   R14,R15,D1SV14     REG13 IS NOT USED SO NOT SAVED          42930020
+       TM    0(R1),DMACP                                                43020020
+         BC    ZERO,DL200                                               43110020
+*                                                                       43200020
+*    LATACP, LATGRP ENTRY   COMPUTE LIMITS FOR ENTRY TO BE LOCATED      43290020
+*    DSTART WILL = LOWER LIMIT OF ENTRIES TO SCAN, IE. = HEADER GROUP   43380020
+*    POINTER.  R5 WILL = UPPER LIMIT OF ENTRIES TO SCAN, IE.= DELIMITER 43470020
+*    PONTER.  IN LATGRP, PICK UP DELIMITER POINTER FROM GROUP HEADER    43560020
+*    DICT. ENTRY.  IN LATACP, TEST 'DLMPTR'  (SEE COMMENTS).            43650020
+DL100  STM   R4,R11,DL4                                                 43740020
+       SR    R6,R6          SET LATACP SWITCH ON                        43830020
+       TM    0(R1),DMATRP                                               43920020
+         BC    NOTZER,DL150                                             44010020
+*                                                                       44100020
+*    LATACP ENTRY, CHECK 'DLMPTR'                                       44190020
+*    'DLMPTR' = GROUP DELIMITER POINTER IF LAST CALL TO ACCESS WAS BY   44280020
+*    LDELMN OR LATACP AND ENTRY WAS VALID AND GROUP ITEM.               44370020
+*                                                                       44460020
+DL110  L     R2,DSTART     DSTART= LAST VALID ENTRY POINTER             44550020
+       L     R5,DLMPTR                                                  44640020
+       LTR   R5,R5                                                      44730020
+         BC    ZERO,DL160                                               44820020
+         TM    DLMPTR,DMBYT  IF BYTE0 IS NONZERO, LAST ITEM WAS ELEM.   44910020
+         BC    ZERO,DL160                                               45000020
+*                                                                       45090020
+*    LAST CALL WAS FOR ELEM. ITEM, INPUT ITEM ELEM. ITEM  ERROR EXIT    45180020
+DL130  LA    R14,12(R0)                                                 45270020
+         BC    UNCOND,DXEXIT                                            45360020
+*                                                                       45450020
+*    LATGRP ENTRY,  LATACP ENTRY WHEN LAST CALL WAS NOT BY LATACP,      45540020
+*    LDELMN.  REFERENCE GROUP HEADER DICT. ENTRY TO OBTAIN DELIMITER    45630020
+*    POINTER                                                            45720020
+*    NOTE THAT 'DSTART' BYTE0 MUST =0  OK SINCE LATGRP INPUT CODE =0.   45810020
+DL150  L     R2,4(R1)      LATGRP                                       45900020
+       ST    R2,DSTART                                                  45990020
+*                                                                       46080020
+*   NOW OBTAIN DELIM.,IF ANY, FOR GROUP ITEM    SET R5=DELIM            46170020
+DL160  L     R15,DLDINC    R2= INPUT                                    46260020
+       BALR  R14,R15                                                    46350020
+       L     R15,DL15       OUTPUT   R2=DICT ADDRESS                    46440020
+       TM    0(R2),DMPFT1                                               46530020
+         BC    ZERO,DL170                                               46620020
+       LA    R2,3(R2)       UPDATE PAST HASH CODE                       46710020
+DL170  TM    0(R2),DMPFT2                                               46800020
+         BC    ZERO,DL130    BRANCH IF NO GROUP CODE                    46890020
+       MVC   DWORK1(3),0(R2)                                            46980020
+       L     R5,DWORK       SET R5=GROUP DELIM POINTER                  47070020
+       N     R5,DMSKCD      MASK OUT CODE BITS                          47160020
+         BC    UNCOND,DL210                                             47250020
+*                                                                       47340020
+*   INITIAL.   LATRNM,LATRPT,LDELNM     TEST IF LATRPT                  47430020
+DL200  TM    0(R1),DMATRP   SUFFIC TEST   CANNOT BE LATGRP              47520020
+         BC    ONES,DL700                                               47610020
+       STM   R4,R11,DL4                                                 47700020
+       L     R6,DSWTCH      SET LATACP SWITCH OFF                       47790020
+*                                                                       47880020
+*   PROCESSING FOR ALL ROUTINES EXCEPT LATRPT                           47970020
+*    HASH THE INPUT NAME, INVESTIGATE DICT. ENTRIES THAT HASH TO SAME   48060020
+*    VALUE.  INITIALLY AGREE CODE =0.  WHEN 1ST MATCH IS FOUND, SET     48150020
+*    AGREE CODE = ITS POINTER.                                          48240020
+DL210  SR    R3,R3     SET AGREE CODE=0                                 48330020
+       L     R9,0(R1)      SET R9= A(INPUT BCD NAME)                    48420020
+       SR    R11,R11                                                    48510020
+       IC    R11,0(R9)  SET R11=INPUT NAME CNT                          48600020
+       L     R15,DLDHSH                                                 48690020
+       BALR  R14,R15                                                    48780020
+       L     R15,DL15                                                   48870020
+       LTR   R8,R8     DHASH OUTPUT  R8= 0,DICT POINTER                 48960020
+         BC    NOTZER,DL300                                             49050020
+       LA    R14,4(R0,R0)     NO POINTER PRESENT  ERROR EXIT            49140020
+         BC    UNCOND,DXEXIT                                            49230020
+*                                                                       49320020
+*    LOOP  CHECK THRO ALL DUP. HASH NAMES UNTIL NO MORE FOUND OR 2      49410020
+*          MATCHES FOUND                                                49500020
+*          R8= CURRENT TEST POINTER       LOOP DL300-DL550              49590020
+*          INITIAL VALUE OF CURRENT POINTER = C(HASH TABLE ENTRY).      49680020
+*                                                                       49770020
+*   LATACP ENTRY   TEST IF CURRENT POINTER POINTS TO ENTRY BETWEEN      49860020
+*      GROUP HEADER AND DELIMITER                                       49950020
+*      IF NOT, CHECK NEXT DUP HASH POINTER IF ANY                       50040020
+*    TEST IF LATACP, LATGRP ENTRY  (R6=0)                               50130020
+*    IF YES, TEST IF CURRENT POINTER LESS THAN GROUP HEADER POINTER     50220020
+DL300  LTR   R6,R6                                                      50310020
+         BC    NOTZER,DL310                                             50400020
+       C     R8,DSTART                                                  50490020
+         BC    LO,DL560      CURRENT POINTER LESS, DISCONTINUE SEARCH   50580020
+DL310  LR    R2,R8                                                      50670020
+       L     R15,DLDINC                                                 50760020
+       BALR  R14,R15        LOCATE ENTRY                                50850020
+       L     R15,DL15       OUTPUT   R2=DICT ADDRESS                    50940020
+       SR    R7,R7          R7= DUP HASH INDICATOR                      51030020
+       TM    0(R2),DMPFT1                                               51120020
+         BC    ZERO,DL400                                               51210020
+       MVC   DWORK1(3),0(R2)     SET R7=DUP HASH POINTER                51300020
+       L     R7,DWORK                                                   51390020
+       N     R7,DMSKCD      MASK OUT CODE BITS                          51480020
+       LA    R2,3(R2,R0)                                                51570020
+*                                                                       51660020
+*    AGAIN, TEST IF LATACP, LATGRP ENTRY  (R6=0)                        51750020
+*      NOTE  1ST TEST (DL300) WAS TO AVOID POSSIBLE UNNECESSARY         51840020
+*      RETRIEVAL OF A SEGMENT                                           51930020
+*      IF YES, CHECK FOR MATCH ONLY IF CURRENT POINTER LESS THAN        52020020
+*      DELIMITER POINTER                                                52110020
+DL400  LTR   R6,R6                                                      52200020
+       BCR   NOTZER,R6      IF NOT, R6=DL500                            52290020
+*                                                                       52380020
+       CR    R8,R5          R5=DELIMITER                                52470020
+         BC    NOTLO,DL550                                              52560020
+*                                                                       52650020
+*   DOES DICT. NAME AGREE WITH INPUT NAME                               52740020
+*    NOTE  DL500 IS THE TRANSFER POINT IN LATACP SWITCH                 52830020
+DL500  SR    R10,R10          R10 INDICATOR FOR LDELNM                  52920020
+       TM    0(R2),DMPFT2                                               53010020
+         BC    ZERO,DL510                                               53100020
+       LR    R10,R2          SET R10=A(GROUP CODE)                      53190020
+       LA    R2,3(R2)                                                   53280020
+*    NOTE  R11= CORRECT VALUE, 1 LESS THAN NO. OF BYTES TO BE COMPARED  53370020
+DL510  EX    R11,DCOMPR     COMPARE NAMES, R11=INPUT NAME CNT           53460020
+         BC    NOTEQ,DL550                                              53550020
+       LTR   R3,R3          TEST AGREE CODE                             53640020
+         BC    ZERO,DL520                                               53730020
+*                                                                       53820020
+*   NAMES AGREE, NOT FIRST MATCH, ERROR EXIT                            53910020
+       LA    R14,8(R0)                                                  54000020
+         BC    UNCOND,DXEXIT                                            54090020
+*                                                                       54180020
+*                                                                       54270020
+*   NAMES AGREE, FIRST MATCH                                            54360020
+*    SET R3= ITS DICT POINTER                                           54450020
+*    SET R4 =A(GROUP CODE OF 1ST MATCH)                                 54540020
+DL520  LR    R3,R8                                                      54630020
+       LR    R4,R10                                                     54720020
+         MVC   DELSAV(3),0(R10)                                         54810020
+*                                                                       54900020
+*    DOES THIS ENTRY POINT TO ANOTHER DUP HASH VALUE                    54990020
+DL550  LTR   R7,R7                                                      55080020
+         BC    ZERO,DL560                                               55170020
+       LR    R8,R7          YES, SET CURRENT PNTR= DUP HASH POINTER     55260020
+         BC    UNCOND,DL300                                             55350020
+*                                                                       55440020
+*    NO MORE DUP HASH, CHECK IF MATCH WAS EVER FOUND                    55530020
+DL560  LTR   R3,R3                                                      55620020
+         BC    NOTZER,DLEXIT                                            55710020
+       LA    R14,4(R0)      NO, ERROR EXIT                              55800020
+         BC    UNCOND,DXEXIT                                            55890020
+*                                                                       55980020
+*    VALID ENTRY EXIT    OUTPUT IN REG 2,3,15   REG4 RESTORED           56070020
+*    TEST IF LDELMN, LATACP ENTRY                                       56160020
+*    IF YES, TEST IF ENTRY IS GROUP ITEM                                56250020
+*    R4 = A(GROUP CODE, IF ANY, OF MATCH)                               56340020
+DL600    EQU   *                                                        56430020
+DLEXIT LR    R2,R3                                                      56520020
+       L     R15,DLDINC                                                 56610020
+       BALR  R14,R15                                                    56700020
+       L     R15,DL15                                                   56790020
+       TM    0(R2),DMPFXT                                               56880020
+       BC    ZERO,DL602                                                 56970020
+       LA    R2,3(R2)                                                   57060020
+       BC    MIXED,DL602                                                57150020
+       LA    R2,3(R2)                                                   57240020
+DL602  EQU   *                                                          57330020
+       LA    R2,1(R2,R11)                                               57420020
+       TM    0(R1),DMDELM                                               57510020
+         BC    ZERO,DL610                                               57600020
+       LTR   R4,R4         LDELMN ENTRY                                 57690020
+         BC    NOTZER,DL620                                             57780020
+*                                                                       57870020
+*   LDELNM  INPUT NAME ELEM ITEM, ERROR EXIT  REG2,3 SET UP, REG4 UNCHG 57960020
+       LA    R14,12(R0)                                                 58050020
+         BC    UNCOND,DXEXIT  RESTORE REG4                              58140020
+*                                                                       58230020
+*    NOT LDELMN, TEST IF LATACP                                         58320020
+DL610  TM    0(R1),DMACPP  NOTE  CANNOT BE LATRPT SO TEST IS OK         58410020
+         BC    NOTMXD,DL640                                             58500020
+*    LATACP,  IF NOT GROUP ITEM, SET 'DLMPTR' BYTE0 NONZERO             58590020
+       LTR   R4,R4                                                      58680020
+         BC    NOTZER,DL620                                             58770020
+       L     R4,DMSKDL             (DMSKDL) BYTE 0 = FF                 58860020
+         BC    UNCOND,DL650                                             58950020
+*                                                                       59040020
+*    LATACP, LDELMN ENTRY AND A GROUP ITEM                              59130020
+*    SET 'DLMPTR', REG1 = GROUP DELIMITER POINTER  (BYTE0=0)            59220020
+DL620    MVC   DWORK1(3),DELSAV                                         59310020
+       L     R1,DWORK                                                   59400020
+       N     R1,DMSKCD     MASK OUT CODE                                59490020
+       ST    R1,DLMPTR                                                  59580020
+         BC    UNCOND,DL660                                             59670020
+*                                                                       59760020
+DL640  LR    R4,R4         NOT LATACP, LDELMN                           59850020
+DL650  ST    R4,DLMPTR     SET UP 'DLMPTR'                              59940020
+*    BYTE0=0  AS REQUIRED FOR DSTART                                    60030020
+DL660  ST    R3,DSTART     SET DSTART=VALID ENTRY DICT. POINTER         60120020
+       LM    R4,R11,DL4                                                 60210020
+       L     R14,D1SV14    MUST PRECECE LOAD OF REG12                   60300020
+       L     R12,D1SV12    REG15 VALUE OKAY                             60390020
+       SR    R15,R15       NOW SET REG15 =RETURN VALUE                  60480020
+       BCR   UNCOND,R14                                                 60570020
+*                                                                       60660020
+*    ERROR EXIT  SET UP REG15                                           60750020
+DXEXIT ST    R14,D1SVEM    SAVE ERROR CODE, CANNOT SET REG15 YET        60840020
+       LM    R4,R11,DL4                                                 60930020
+       L     R14,D1SV14    MUST PRECEDE LOAD OF REG12                   61020020
+       L     R12,D1SV12    REG15 VALUE OKAY                             61110020
+       L     R15,D1SVEM    LOAD REG15 WITH ERROR CODE VALUE             61200020
+       BCR   UNCOND,R14                                                 61290020
+*                                                                       61380020
+*    LATRPT ENTRY, SET REG2=A(ATTRIB)                                   61470020
+*    USES R2, R11                                                       61560020
+DL700  ST    R11,DL4                                                    61650020
+       L     R2,0(R1)                                                   61740020
+       N     R2,DMBYT1                                                  61830020
+       ST    R2,DSTART      SET DSTART= ENTRY POINTER                   61920020
+       L     R15,DLDINC                                                 62010020
+       BALR  R14,R15                                                    62100020
+       L     R15,DL15       LOCATE ENTRY, OUTPUT  R2= DICT ADDRESS      62190020
+       TM    0(R2),DMPFXT                                               62280020
+         BC    ZERO,DL720                                               62370020
+       LA    R2,3(R2)                                                   62460020
+         BC    MIXED,DL720                                              62550020
+       LA    R2,3(R2)                                                   62640020
+DL720  SR    R11,R11                                                    62730020
+       ST    R11,DLMPTR     SET DLMPTR =0                               62820020
+       IC    R11,0(R2)       SET R11= NAME CNT                          62910020
+       LA    R2,1(R2,R11)                                               63000020
+*   DUMP OF REGISTERS ONLY  CODE =2                                     63090020
+       L     R11,DL4                                                    63180020
+       L     R14,D1SV14    MUST PRECEDE LOAD OF REG12                   63270020
+       L     R12,D1SV12    REG15 VALUE OKAY                             63360020
+       BCR   UNCOND,R14                                                 63450020
+*                                                                       63540020
+*                                                                       63630020
+D1RG12   DC    A(PBEG12)                                                63720020
+*    D1SVEM  UNDER REG15  USED TO HOLD ERROR CODES  REG15 IS BOTH       63810020
+*    BASE REG. AND ERROR CODE REG.  CANNOT LOAD IT UNTIL EXIT           63900020
+D1SVEM   DS    F                                                        63990020
+D1SV12   DS    F                                                        64080020
+         EJECT                                                          64170020
+         AIF   ('&PHASE' EQ '3').PH3                                    64260020
+*  ACCESS ROUTINES   ENTNAM,ENTPTR,GETPTR    R2 PREFIX                  64350020
+*                                                                       64440020
+*                                                                       64530020
+         DS    0F                                                       64620020
+       USING *,R15                                                      64710020
+DEBEG    EQU   *                                                        64800020
+ENTNAM   EQU   DEBEG                                                    64890020
+ENTPTR   EQU   DEBEG                                                    64980020
+GETPTR   EQU   DEBEG                                                    65070020
+*    REG. 0,1  WILL NOT BE SAVED                                        65160020
+*    MODIFY LATER  REG. 2,12 DO NOT HAVE TO BE SAVED                    65250020
+*                                                                       65340020
+       ST    R12,D3SV12                                                 65430020
+       L     R12,D3RG12                                                 65520020
+       STM   R14,R15,D3SV14                                             65610020
+       STM   R2,R11,DRSAVE                                              65700020
+       SR    R11,R11                                                    65790020
+       SR    R7,R7                                                      65880020
+       TM    0(R1),DMEPTR                                               65970020
+         BC    ONES,DE500     BRANCH IF ENTPTR ENTRY                    66060020
+*                                                                       66150020
+*  SET UP GROUP CODE, HASH CODE                                         66240020
+DE100  L     R9,0(R1)       R9=A(BCD NAME)  SET UP FOR DHASH            66330020
+       IC    R11,0(R9)     R11=NAME CNT                                 66420020
+       L     R15,DLDHSH    *HASH NAME                                   66510020
+       BALR  R14,R15                                                    66600020
+       L     R15,DS15      OUTPUT  R8= (0, DUP. POINTER)                66690020
+       LR    R3,R8                                                      66780020
+       SR    R4,R4                                                      66870020
+       TM    0(R1),DMGRUP                                               66960020
+         BC    ZERO,DE110                                               67050020
+       L     R8,DLGCOD     *GROUP ITEM                                  67140020
+       LA    R4,3(R0,R0)     SET CNT=3                                  67230020
+DE110  LTR   R3,R3         TEST IF DUP HASH POINTER                     67320020
+         BC    ZERO,DE200                                               67410020
+       L     R8,DLHSCD     *LOAD ADDR OF HASH CODE                      67500020
+       LA    R7,3(R0,R0)     SET CNT=3                                  67590020
+       O     R3,DMPFX2      INSERT PREFIX 2                             67680020
+       LTR   R4,R4                                                      67770020
+         BC    ZERO,DE120                                               67860020
+       O     R3,DMPFX3      GROUP CODE, INSERT PREFIX 3                 67950020
+DE120  ST    R3,DHWORD                                                  68040020
+*                                                                       68130020
+*  COMPUTE TOTAL ENTRY SIZE, TEST IF SUFFIC. SPACE IN CURRENT SECTION   68220020
+DE200  AR    R4,R7          R4= CODE CNT                                68310020
+       IC    R7,4(R1)       SET R7= ATTRIB CNT                          68400020
+       LA    R6,1(R11,R7)                                               68490020
+       AR    R6,R4         R6= ENTRY SIZE                               68580020
+       L     R2,DPARST              LOAD A(COS)                         68670020
+       L     R2,DICADR-COS(R2)                                          68760020
+*****                                                                   68850020
+       ST    R4,DSTOR1       2/18/66                                    68940020
+       L     R4,DPARST                                                  69030020
+       L     R3,ACCESW-COS(R4)         HOLD DISP                        69120020
+       LA    R3,0(R3)                INTO HASH TABLE                    69210020
+       SR    R10,R3                    IN REG. 10                       69300020
+*****                                                                   69390020
+*****                                                                   69480020
+       LR    R3,R2                                                      69570020
+       AR    R3,R6                                                      69660020
+       SR    R5,R5          R5=0 THROUGHOUT PROGRAM                     69750020
+       C     R3,DLSVAL-COS(R4)                                          69840020
+         BC    LO,DE205                                                 69930020
+       BC    HI,DEMORG             RESTORE R4 BEFORE GO TO DEMORE       70020020
+*DEL                                                                    70110020
+DEMORG L     R4,DSTOR1       2/18/66                                    70200020
+       BC    15,DEMORE             GO TO DEMORE.                        70290020
+*     WHEN ENTRY DOES NOT FILL SEGMENT, STORE ZERO IN 1ST BYTE AFTER    70380020
+*     ENTRY.   IF THIS TURNS OUT TO BE LAST ENTRY IN SEGMENT, BYTE=O    70470020
+*     IN NEXT BYTE INDICATES THIS TO LOCNXT.                            70560020
+DE205  STC   R5,0(R3)                                                   70650020
+DE210  L     R4,DPARST                                                  70740020
+       ST    R3,DICADR-COS(R4)                                          70830020
+       L     R3,ACCESW-COS(R4)         GET ADDRESS OF ENTRY             70920020
+       LA    R3,0(R3)                IN THE HASH TABLE                  71010020
+       AR    R10,R3                    INTO REG. 10                     71100020
+*   UPDATED DICADR AT RETURN FROM DEMORE                                71190020
+*  STORE HASH TABLE POINTER,CODE,IF ANY,IN DICT.                        71280020
+       MVC   0(3,R10),DCPTR-COS(R4)                                     71370020
+       L     R4,DSTOR1       2/18/66                                    71460020
+*     SET PREFIX =0.  INDICATOR FOR ENTPTR IN CASE NO CODE IN ENTRY     71550020
+*     AND BCD NAME CAN BE STORED IMMEDIATELY.                           71640020
+       STC   R5,0(R2)                                                   71730020
+       LTR   R4,R4                                                      71820020
+         BC    ZERO,DE250                                               71910020
+       BCTR  R4,R0           CODE, SUBT 1                               72000020
+       EX    R4,DMVCOD      STORE CODE IN DICT                          72090020
+       LA    R2,1(R4,R2)    UPDATE DICT REF                             72180020
+DE250  TM    0(R1),DMGPTR                                               72270020
+         BC    ONES,DE400     BRANCH IF GETPTR ENTRY                    72360020
+*                                                                       72450020
+*  STORE ENTRY IN DICTIONARY                                            72540020
+DE300  EX    R11,DMOVE     STORE NAME                                   72630020
+       LA    R2,1(R2,R11)  UPDATE DICT REFERENCE                        72720020
+       BCTR  R7,R0           SUBT 1                                     72810020
+       L     R9,4(R1)       R9=A(ATTRIB)                                72900020
+       EX    R7,DMOVE       STORE ATTRIB                                72990020
+*                                                                       73080020
+*  ENTNAM, GETPTR   UPDATE DICPTR                                       73170020
+DE400  L     R1,DPARST      LOAD  A(COS)                                73260020
+       L     R1,DICPTR                 OUTPUT FOR GETPTR                73350020
+*****                                                                   73440020
+*****                                                                   73530020
+       LR    R4,R1                                                      73620020
+       LR    R11,R1                                                     73710020
+       N     R4,DMDSPL      R4=DISPLAC.                                 73800020
+       AR    R4,R6                                                      73890020
+       N     R4,DMDSPL     MASK OUT POSSIBLE OFLO FOR 512 DISPL  1/66   73980020
+       N     R11,DMSECT    R11=SECT NO                                  74070020
+       ALR   R4,R11                                                     74160020
+       L     R2,DPARST             LOAD A(COS)                          74250020
+       ST    R4,DICPTR-COS(R2)                                          74340020
+*    REG 1 IS NOT SAVED, OUTPUT FOR GETPTR                              74430020
+DEXIT  LM    R2,R11,DRSAVE                                              74520020
+*                                                                       74610020
+       L     R14,D3SV14    MUST PRECEDE LOAD OF REG12                   74700020
+       L     R12,D3SV12                                                 74790020
+       BCR   UNCOND,R14                                                 74880020
+*                                                                       74970020
+*                                                                       75060020
+*  ENTPTR ENTRY                                                         75150020
+DE500  L     R2,8(R1)      LOAD INPUT DICT POINTER                      75240020
+       L     R15,DLDINC     MAKE SURE ENTRY IS IN CORE                  75330020
+       BALR  R14,R15        SETS R2= DICT. ADDR.                        75420020
+       L     R15,DS15      *                                            75510020
+*  TEST IF CODE FOR ENTRY IN DICT.                                      75600020
+       TM    0(R2),DMPFXT   TEST ENTRY PREFIX                           75690020
+         BC    ZERO,DE520     ZERO IF NO CODE                           75780020
+         BC    MIXED,DE510                                              75870020
+       LA    R2,3(R2)      DOUBLE CODE, ADD 3 TO DICT REFER.            75960020
+DE510  LA    R2,3(R2)      SINGLE CODE                                  76050020
+DE520  IC    R7,4(R1)       ATTRIB. CNT                                 76140020
+       L     R9,0(R1)       A(BCD NAME)                                 76230020
+       IC    R11,0(R9)     NAME CNT                                     76320020
+*  STORE ENTRY IN DICT.                                                 76410020
+       EX    R11,DMOVE     STORE NAME                                   76500020
+       LA    R2,1(R2,R11)   UPDATE DICT REF                             76590020
+       BCTR  R7,R0                                                      76680020
+       L     R9,4(R1)       A(ATTRIB)                                   76770020
+       EX    R7,DMOVE       STORE ATTRIB                                76860020
+*    REG 1 IS NOT RESTORED                                              76950020
+       LM    R2,R11,DRSAVE                                              77040020
+       L     R14,D3SV14    MUST PRECEDE LOAD OF REG12                   77130020
+       L     R12,D3SV12                                                 77220020
+       BR    R14                                                        77310020
+*                                                                       77400020
+*                                                                       77490020
+D3RG12   DC    A(PBEG12)                                                77580020
+D3SV12   DS    F                                                        77670020
+*                                                                       77760020
+         EJECT                                                          77850020
+       SPACE 5                                                          77940020
+******                                                           ****** 78030020
+*                                                                     * 78120020
+*                           ** DEMORE **                              * 78210020
+*                                                                     * 78300020
+*                                                                     * 78390020
+*      DEMORE--- AN INTERNAL ACCESS SUBROUTINE TO OBTAIN 512          * 78480020
+*                BYTES OF CORE FOR A DICTIONARY SECTION.              * 78570020
+*                DEMORE CALLS DICSPC IN TAMER TO OBTAIN A             * 78660020
+*                NEW SECTION.                                         * 78750020
+*                                                                     * 78840020
+*      ENTRY REGISTERS--- R6 = ENTRY SIZE.                            * 78930020
+*      EXIT  REGISTERS--- R2 = ADDRESS OF NEW SECTION.                * 79020020
+*                         R3 = UPDATED DICADR,                        * 79110020
+*                            = A(NEW SECTION) + ENTRY SIZE.           * 79200020
+*                                                                     * 79290020
+*      DEMORE--- UPDATES DICPTR,DLSVAL,AND DICOT TABLE.               * 79380020
+*            --- ENTERS A(NEW SECTION) IN DICOT TABLE.                * 79470020
+*                                                                     * 79560020
+******                                                           ****** 79650020
+       SPACE 5                                                          79740020
+       DS    0F                                                         79830020
+DEMORE EQU   *                                                          79920020
+       ST    R1,DSTORE                                                  80010020
+       ST    R4,DSTOR1             STORE REGISTERS USED.                80100020
+       SPACE 2                                                          80190020
+*      DEMORE CALLS DICSPC IN TAMER TO OBTAIN A NEW DICTIONARY SECTION. 80280020
+       STM   R14,R15,D33S14        STORE 14,15.                         80370020
+       LA    R14,DEMRTA                                                 80460020
+       L     R15,DTAMM1            LOAD A(DICSPC),STORED BY INTACC.     80550020
+       BALR  R14,R15               CALL DICSPC.                         80640020
+DEMRTA LM    R14,R15,D33S14                                             80730020
+       SPACE 2                                                          80820020
+***                                                                 *** 80910020
+*                                                                     * 81000020
+*      REG1 =START ADDRESS OF NEW DICTIONARY SECTION.                 * 81090020
+*      REG2 =HIGH ADDRESS =(START+512) OF NEW DICTIONARY SECTION.     * 81180020
+*                                                                     * 81270020
+***                                                                 *** 81360020
+       SPACE 2                                                          81450020
+       L     R4,DPARST             LOAD A(COS).                         81540020
+       ST    R2,DLSVAL-COS(R4)         TOP ADDRESS OF SECTION           81630020
+       ST    R1,DICADR-COS(R4)                                          81720020
+       SPACE 2                                                          81810020
+       L     R1,DPARST             LOAD A(COS).                         81900020
+       LA    R1,LDICOT(R1)         LOAD A(DICOT TIB)= A(TIB20).         81990020
+       L     R15,LINSRT            LOAD A(INSERT)                       82080020
+       BALR  R14,R15               CALL INSERT.                         82170020
+       L     R15,DS15              RESTORE BASE.                        82260020
+*                                  INSERT OUTPUT--REG2 = A(INSERT ENT). 82350020
+*                                                 REG3 = TABLE DISPL.   82440020
+       L     R4,DPARST                                                  82530020
+       L     R4,DICADR-COS(R4)                                          82620020
+       ST    R4,0(R2)              STORE SECTION ADDRESS IN DICOT TABLE 82710020
+       NI    0(R2),0               CLEAR TOP BYTE OF DICOT ENTRY.       82800020
+       OI    0(R2),64              SET ON IN-CORE BIT.                  82890020
+       LR    R2,R4                 LOAD SECT. ADD. INTO R2.             82980020
+       SPACE 2                                                          83070020
+****** ACCESS TEMPORARY STORAGE OF NEW SECTION NUMBER IN DICPTR.        83160020
+****** SEE DE200. STORE NEWLY ASSIGNED SEC.NO. BEFORE RETURN TO DE210.  83250020
+       SPACE 2                                                          83340020
+       ST    R4,DTSAVE                                                  83430020
+       L     R4,DPARST             LOAD A(COS).                         83520020
+       L     R3,DICPTR-COS(R4)                                          83610020
+*                                                                       83700020
+*      NOTE- FIRST SECTION NUMBER ASSIGNED IS 1.                        83790020
+*            DINCOR SUBTRACTS 1 TO OBTAIN CORRECT DICOT TABLE DISPL.    83880020
+*                                                                       83970020
+       N     R3,DMSECT             MASK OUT ALL BUT SECT.NUMBER.        84060020
+       LA    R3,512(R3)            INCREMENT SECTION NUMBER.            84150020
+       ST    R3,DICPTR-COS(R4)                                          84240020
+******                                                                  84330020
+****** END OF DICPTR STORAGE CODING. NEW SECTION DISPLACEMENT IS ZERO.  84420020
+       SPACE 2                                                          84510020
+       L     R4,DTSAVE             RESTORE R4.                          84600020
+       LA    R3,0(R2,R6)           LOAD UPDATED DICT.ADDR. INTO R3.     84690020
+*                                  R2 = ADDRESS OF NEW SECTION.         84780020
+*                                  R6 =  ENTRY SIZE,FROM DE200 SEQUENCE 84870020
+       L     R4,DSTOR1                                                  84960020
+       L     R1,DSTORE                                                  85050020
+       BC    15,DE210              RETURN TO DE210 WITH NEW DICADR.     85140020
+       SPACE 2                                                          85230020
+**     NOTE- DEMORE IS NOT CALLED BY A BALR 14,15  SEQUENCE.            85320020
+**           IT IS CALLED BY A DIRECT BRANCH FROM DEMORG+4.             85410020
+**           ITS BASE REGISTER IS THUS THE BASE OF THE CALLING          85500020
+**           ROUTINE. ITS DATA BASE REGISTER IS THAT OF CALLING ROUTINE 85590020
+**           DEMORE USES ONLY REGISTERS 2 AND 4 INTERNALLY.             85680020
+**           IT SAVES AND RESTORES THESE.                               85770020
+       EJECT                                                            85860020
+         EJECT                                                          85950020
+*    ACCESS ROUTINE 'ENTDEL'                                            86040020
+*       SEPARATE ENTRY POINT                                            86130020
+*       STORES DELIMITER IN DICT ENTRY FOR INPUT GROUP NAME             86220020
+*       INPUT   REG1=A(INPUT DATA)                                      86310020
+*                                                                       86400020
+         DS    0F                                                       86490020
+ENTDEL   EQU   *                                                        86580020
+       USING *,R15                                                      86670020
+       ST    R12,D4SV12                                                 86760020
+       L     R12,D4RG12    REG12 IS USED TO REFER. CONSTANTS ETC        86850020
+       STM   R14,R15,D4SV14                                             86940020
+       ST    R2,DWORK                                                   87030020
+       L     R2,0(R1)                                                   87120020
+       L     R15,DLDINC                                                 87210020
+       BALR  R14,R15                                                    87300020
+       L     R15,D4SV15                                                 87390020
+       TM    0(R2),DMPFT1                                               87480020
+         BC    ZERO,DENT1                                               87570020
+       LA    R2,3(R2)       UPDATE PAST HASH CODE                       87660020
+*     DEBUG CODING  MAKE SURE GROUP CODE IS PRESENT                     87750020
+DENT1    EQU   *                                                        87840020
+       NC    0(3,R2),DMDLM ZERO OUT DELIM PART OF GRP CODE.  11/23      87930020
+*        THIS CLEARS DELIM PART IN CASE OF PREVIOUS DUMMY DELIM NTRY.   88020020
+       OC    0(3,R2),5(R1)  INSERT DELIMITER INTO ENTRY                 88110020
+       L     R2,DWORK                                                   88200020
+       L     R14,D4SV14     PRECEDES LOAD OF REG13                      88290020
+       L     R12,D4SV12                                                 88380020
+       BCR   UNCOND,R14                                                 88470020
+*                                                                       88560020
+D4RG12   DC    A(PBEG12)                                                88650020
+D4SV12   DS    F                                                        88740020
+*                                                                       88830020
+       EJECT                                                            88920020
+       SPACE 5                                                          89010020
+         AGO   .EXIT                                                    89100020
+.PH3     ANOP                                                           89190020
+*     SUBROUTINE  'LOCNXT'                                              89280020
+*       GIVEN A DICT POINTER, RETURNS DICT POINTER OF NEXT ENTRY        89370020
+*       INPUT  REG1= INPUT DICT POINTER                                 89460020
+*       OUTPUT  REG1= DICT POINTER OF NEXT ENTRY                        89550020
+*               REG2= STARTING ADDR OF ITS ATTRIB                       89640020
+*               REG3= STARTING ADDR OF ITS NAME CNT                     89730020
+*               R0=A(SEGMENT START)  OUTPUT FROM DINCOR                 89820020
+*    IF THE BYTE FOLLOWING THE CURRENT ENTRY =0, THEN THE NEXT ENTRY    89910020
+*    IS IN THE NEXT SEGMENT  (SEE DE200)                                90000020
+*                                                                       90090020
+*                                                                       90180020
+         DS    0F                                                       90270020
+       USING LOCNXT,R15                                                 90360020
+LOCNXT   EQU   *                                                        90450020
+       ST    R12,D2SV12                                                 90540020
+       L     R12,D2RG12                                                 90630020
+       STM   R14,R15,D2SV14                                             90720020
+       ST    R4,DL4                                                     90810020
+*     LOCATE ENTRY IN DICT                                              90900020
+       LR    R2,R1                                                      90990020
+       L     R15,DLDINC                                                 91080020
+       BALR  R14,R15                                                    91170020
+       L     R15,D2SV15                                                 91260020
+       ST    R2,DWORK      SAVE A(ENTRY START)                          91350020
+***                                                                     91440020
+***    CAREFUL  DO NOT USE R0 AS A WORK REGISTER UNTIL AFTER DT210      91530020
+***                                                                     91620020
+       A     R0,D512     SET R0 TO SEGMENT START + 512                  91710020
+*     COMPUTE LOC OF END OF ENTRY                                       91800020
+       TM    0(R2),DMPFXT                                               91890020
+         BC    ZERO,DT100     UPDATE PAST ANY CODE                      91980020
+       LA    R2,3(R2)                                                   92070020
+         BC    MIXED,DT100                                              92160020
+       LA    R2,3(R2)                                                   92250020
+DT100  SR    R4,R4                                                      92340020
+       IC    R4,0(R2)     SET R4=NAME CNT                               92430020
+       LA    R2,1(R4,R2)   SET R2=A(ATTRIB)                             92520020
+*                                                                       92610020
+*     ATTRIB CNT IN 1ST 4 BITS OF 1ST BYTE UNLESS REPORT OR CONDITION   92700020
+*    NAME ATTRIBUTES                                                    92790020
+*    THEN 1ST 4 BITS=0 AND BYTE NO. 6= CNT OF VARIABLE PART OF          92880020
+*    ATTRIBUTES AND DOES NOT INCLUDE ITSELF                             92970020
+*    (IE TOTAL NO OF ATTRIB. BYTES = N+7)                               93060020
+       IC    R4,0(R2)                                                   93150020
+       TM    0(R2),DMATRB                                               93240020
+         BC    NOTZER,DT200                                             93330020
+         TM    0(R2),CNDNM             IS IT CONDITION NAME             93420020
+         BO    ENTCND                  YES                              93510020
+         LA    R2,1(R2)                ADD 1 FOR REPORT                 93600020
+ENTCND   LA    R2,6(R2)                                                 93690020
+       IC    R4,0(R2)                                                   93780020
+       LA    R2,1(R2,R4) ADD 1, CNT DOES NOT INCL ITSELF                93870020
+         BC    UNCOND,DT210                                             93960020
+DT200    CLI   0(R2),X'9A'                                              94050020
+         BE    DT250                   YES                              94140020
+         CLI   0(R2),X'98'             RANDOM PROCESSING                94230020
+         BNE   DT260                   NO                               94320020
+DT250    SR    R4,R4                   YES GET COUNT                    94410020
+         IC    R4,8(R2)                                                 94500020
+       A     R4,FDCNT                  ADD FIXED COUNT                  94590020
+DT260    SRL   R4,4                                                     94680020
+       LA    R2,0(R2,R4)      CNT DOES NOT INCL ITSELF                  94770020
+*                                                                       94860020
+*     NOW REG2= A(1ST BYTE AFTER ENTRY)                                 94950020
+DT210  CR    R2,R0         R0= END OF SEGMENT + 1                       95040020
+         BC    EQ,DT300      BRANCH IF NO SPACE LEFT IN CURRENT SECTION 95130020
+       TM    0(R2),DMBYT   NEXT BYTE=O MEANS NO ENTRY FOLLOWS           95220020
+         BC    NOTZER,DT400                                             95310020
+*                                                                       95400020
+*     NEXT ENTRY IN NEXT SEGMENT, COMPUTE DICT POINTER                  95490020
+DT300  N     R1,DMSECT     MASK OUT ALL BUT SECT NO                     95580020
+       LA    R1,512(R1)   INCR. SECT. NO.                               95670020
+       LR    R2,R1                                                      95760020
+       L     R15,DLDINC     COMPUTE CORRES. DICT ADDR= R2               95850020
+       BALR  R14,R15                                                    95940020
+       L     R15,D2SV15                                                 96030020
+         BC    UNCOND,DT500                                             96120020
+*                                                                       96210020
+*     NEXT ENTRY IN SAME SEGMENT, COMPUTE DICT POINTER                  96300020
+DT400  LR    R3,R2        COMPUTE R3= INPUT ENTRY SIZE                  96390020
+       S     R3,DWORK      DWORK=A(ENTRY START)                         96480020
+       AR    R1,R3                                                      96570020
+*                                                                       96660020
+*     COMPUTE A(BCD NAME), A(ATTRIB) OF NEXT ENTRY                      96750020
+DT500  TM    0(R2),DMPFXT                                               96840020
+         BC    ZERO,DT550                                               96930020
+       LA    R2,3(R2)                                                   97020020
+         BC    MIXED,DT550                                              97110020
+       LA    R2,3(R2)                                                   97200020
+DT550  LR    R3,R2        SET R3= A(NAME)                               97290020
+       IC    R4,0(R2)                                                   97380020
+       LA    R2,1(R2,R4)      SET R2=A(ATTRIB)                          97470020
+*                                                                       97560020
+       L     R4,DL4                                                     97650020
+*    REG13 IS NEVER USED, NO NEED TO SAVE IT                            97740020
+       L     R14,D2SV14    PRECEDE LOAD OF REG12                        97830020
+       L     R12,D2SV12                                                 97920020
+       BCR   UNCOND,R14                                                 98010020
+*                                                                       98100020
+D2RG12   DC    A(PBEG12)                                                98190020
+D2SV12   DS    F                                                        98280020
+CNDNM    EQU   X'08'                                                    98370020
+*                                                                       98460020
+       EJECT                                                            98550020
+.EXIT    ANOP                                                           98640020
+         MEND                                                           98730020

@@ -1,0 +1,29 @@
+*//    ILBOETB0                                                         03000018
+ETB0     TITLE     'ILBOETB0'                                           06000018
+*        ILBOETB0   CALLING SEQ... L    15,V(ILBOETB0)                  09000018
+*                                                                       12000018
+*        LEVEL  180     09/14/66                                        15000018
+*                                                                       18000018
+*FUNCTION 0 EXTERNAL DECIMAL TABLE FOR CLASS TEST.                      21000018
+*INPUT 0 N/A                                                            24000018
+*OUTPUT0 N/A                                                            27000018
+*EXTERNAL ROUTINES 0 N/A                                                30000018
+*EXITS 0 N/A                                                            33000018
+*ATTRIBUTES 0 N/A                                                       36000018
+ILBOETB0 START 0                                                        39000018
+ETBL   DC    16X'01010101010101010101010101010101'                      42000018
+*                                                                       45000018
+*      OVERLAY AREA OF TABLE CORRESPONDING TO EBCDIC NUMBERS WITH 00    48000018
+*                                                                       51000018
+       ORG   ETBL+240                                                   54000018
+       DC    10X'00'     0 THRU 9                                       57000018
+*                                                                       60000018
+*      OVERLAY AREAS OF TABLE CORRESPONDING  TO EBCDIC NUMBERS WITH     63000018
+*            SIGN OVERPUNCH WITH 80.                                    66000018
+*                                                                       69000018
+       ORG   ETBL+192                                                   72000018
+       DC    10X'80'     +0 THRU +9                                     75000018
+       ORG   ETBL+208                                                   78000018
+       DC    10X'80'     -0 THRU -9                                     81000018
+         END                                                            84000018
+         EJECT                                                          87000018

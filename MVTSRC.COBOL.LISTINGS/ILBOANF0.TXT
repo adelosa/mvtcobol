@@ -1,0 +1,92 @@
+1                                               EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOANF0  SD  0001 000000 000060
+1                                                                                                               PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOANF0                                                         01000018
+                                       2 *        ILBOANF0   CALLING SEQ... L    15,V(ILBOANF0)                  02000018
+ 000000                                3 ILBOANF0 START 0                                                        03000018
+                                       4 *                                                                       04000018
+                                       5 *  ILBOANF0  -   MOVE FIGCON ALL TO  ALPHANUM.                          05000018
+                                       6 *                CALLING SEQUENCE.                                      06000018
+                                       7 *                                                                       07000018
+                                       8 *                               L    0,REC-LENGTH                       08000018
+                                       9 *                               LA   1,REC                              09000018
+                                      10 *                               LA   2,FIGCON                           10000018
+                                      11 *                               L    15,V(ILBOANF0)                     11000018
+                                      12 *                               BALR 14,15                              12000018
+                                      13 *                               DC   X'00'  FLAG-BYTE                   13000018
+                                      14 *                               DC   X'00'  FIGCON-LENGTH               14000018
+                                      15 *                                                                       15000018
+                                      16 *                FLAG BYTE      BIT0    RIGTH ADJUSTED RECEIVING.       16000018
+                                      17 *                                                                       17000018
+-
+0
+                             00000    19 RW0      EQU   0                                                        19000018
+                             00001    20 RW1      EQU   1                                                        20000018
+                             00002    21 RW2      EQU   2                                                        21000018
+                             00003    22 RW3      EQU   3                                                        22000018
+                             00004    23 RW4      EQU   4                                                        23000018
+                             00005    24 RW5      EQU   5                                                        24000018
+                             00006    25 RW6      EQU   6                                                        25000018
+                             00007    26 RW7      EQU   7                                                        26000018
+                             00008    27 RW8      EQU   8                                                        27000018
+                             00009    28 RW9      EQU   9                                                        28000018
+                             0000A    29 RW10     EQU   10                                                       29000018
+                             0000B    30 RW11     EQU   11                                                       30000018
+                             0000C    31 RW12     EQU   12                                                       31000018
+                             0000C    32 R12      EQU   12                                                       32000018
+                             0000D    33 R13      EQU   13                                                       33000018
+                             0000E    34 R14      EQU   14                                                       34000018
+                             0000F    35 R15      EQU   15                                                       35000018
+                             00060    36 WORKA    EQU   96                                                       36000018
+                             00080    37 RIGTH    EQU   X'80'                                                    37000018
+                             00000    38          USING *,R15                                                    38000018
+ 000000 90EC D060      00060          39          STM   R14,R12,WORKA(R13)                                       39000018
+ 000004 1B66                          40          SR    RW6,RW6                  GET FIGCON-LENGTH.              40000018
+ 000006 436E 0001      00001          41          IC    RW6,1(R14)                                               41000018
+ 00000A 9180 E000      00000          42          TM    0(R14),RIGTH                                             42000018
+ 00000E 4780 F014      00014          43          BZ    ANF000                                                   43000018
+ 000012 1A10                          44          AR    RW1,RW0                  PTR AT END OF REC.              44000018
+ 000014 1870                          45 ANF000   LR    RW7,RW0                                                  45000018
+ 000016 1896                          46          LR    RW9,RW6                  SAVE FIGCON LENGTH.             46000018
+ 000018 1967                          47 ANF002   CR    RW6,RW7                  TOO MUCH FOR RECEIVING.         47000018
+ 00001A 4720 F04E      0004E          48          BH    ANF001                                                   48000018
+ 00001E 18C6                          49 ANF004   LR    RW12,RW6                                                 49000018
+ 000020 06C0                          50          BCTR  RW12,0                                                   50000018
+ 000022 9180 E000      00000          51          TM    0(R14),RIGTH                                             51000018
+1                                                                                                               PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000026 4710 F044      00044          52          BO    ANF005                                                   52000018
+ 00002A 44C0 F03E      0003E          53          EX    RW12,ANFMOV1             MOVE                            53000018
+ 00002E 1A16                          54          AR    RW1,RW6                  UPDATE PTR TO SEND.             54000018
+ 000030 1B76                          55 ANF003   SR    RW7,RW6                  UPDATE COUNT                    55000018
+ 000032 4720 F018      00018          56          BH    ANF002                                                   56000018
+ 000036 98EC D060      00060          57 ANFOUT   LM    R14,R12,WORKA(R13)       REC. EXHAUSTED - EXIT.          57000018
+ 00003A 47FE 0002      00002          58          B     2(R14)                   EXIT.                           58000018
+-
+ 00003E D200 1000 2000 00000 00000    60 ANFMOV1  MVC   0(0,RW1),0(RW2)                                          60000018
+ 000044 1B16                          61 ANF005   SR    RW1,RW6                                                  61000018
+ 000046 44C0 F03E      0003E          62          EX    RW12,ANFMOV1                                             62000018
+ 00004A 47F0 F030      00030          63          B     ANF003                                                   63000018
+0
+ 00004E 1867                          65 ANF001   LR    RW6,RW7                  MOVE ONLY ENOUGH TO FILL-UP     65000018
+ 000050 9180 E000      00000          66          TM    0(R14),RIGTH             RECEIVING                       66000018
+ 000054 4780 F01E      0001E          67          BZ    ANF004                                                   67000018
+ 000058 1A29                          68          AR    RW2,RW9                  FOR RIGTH ADJUSTED MOVE ONLY    68000018
+ 00005A 1B26                          69          SR    RW2,RW6                  RIGTH PART OF FIGCON.           69000018
+ 00005C 47F0 F01E      0001E          70          B     ANF004                                                   70000018
+                                      71          END                                                            71000018
+1                                                  ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    4
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT         71
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                         4
+ TOTAL RECORDS PRINTED                        92

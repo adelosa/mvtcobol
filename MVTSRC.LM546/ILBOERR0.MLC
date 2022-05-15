@@ -1,0 +1,281 @@
+*$MODULE       ILBOERR0                                                 00300021
+ILBOERR0 START                                                          00600021
+********************************************************************    00900021
+*                                                                       01200021
+*TITLE:  ILBOERR0                                                       01500021
+*                                                                       01800021
+*STATUS:  CHANGE LEVEL 0                                                02100021
+*                                                                       02400021
+*FUNCTION/OPERATION: CHECKS APPRORIATE BITS TO DETERMINE TYPE           02700021
+*                  OF I/O ERROR. IF USE AFTER ERROR RTN PRESENT,        03000021
+*                  GENERATES EQUIVALENT OF SYNADAF CODE WHICH SETS      03300021
+*                  UP EBCDIC MESSAGE EXPLAINING I/O ERROR WHICH         03600021
+*                  OCCURRED, EXITS TO USE AFTER ERROR RTN WITH          03900021
+*                   REGISTER 1 POINTING TO MESSAGE BUFFER.  IF          04200021
+*                  IF INVALID KEY ERROR OCCURRED AND THERE IS AN        04500021
+*                  INVALID KEY ROUTINE, EXITS IMMEDIATELY TO INVALID    04800021
+*                  KEY ROUTINE                                          05100021
+*                                                                       05400021
+*ENTRYPOINTS:      ILBOERR1- IF QSAM I/O ERROR                          05700021
+*                  ILBOERR2- IF BSAM I/O ERROR                          06000021
+*                  ILBOERR3- IF QISAM I/O ERROR                         06300021
+*                  ILBOERR4- IF BDAM I/O ERROR                          06600021
+*                  ILBOERR5  - IF BISAM I/O ERROR                       06900021
+*                                                                       07200021
+*   APPROPRIATE ENTRYPOINT IS PLACED IN SYNAD FIELD OF DCB              07500021
+*  BY PHASE 5-   REGISTER 2 POINTS TO DCB FOR QSAM, BDAM, QISAM,        07800021
+*   BSAM- REGISTER 3 POINTS TO DECB FOR BDAM, BISAM                     08100021
+*  ON ENTRANCE TO ILBOERR0.                                             08400021
+*                                                                       08700021
+* INPUT:    NONE                                                        09000021
+*                                                                       09300021
+* OUTPUT: NONE                                                          09600021
+*                                                                       09900021
+*                                                                       10200021
+*EXTERNAL ROUTINES: NONE                                                10500021
+*                                                                       10800021
+*                                                                       11100021
+*EXITS:   EXIT TO INVALID KEY ROUTINE IF PRESENT WHEN                   11400021
+*       INVALID KEY CONDITION EXISTS                                    11700021
+*      L 14,A(INVALID KEY RTN)                                          12000021
+*      BR  14                                                           12300021
+*                                                                       12600021
+*   EXITS TO USE AFTER ERROR RTN IF PRESENTFOR NON-INVALID KEY          12900021
+*        ERRORS AND FOR INVALID KEY ERRORS IF NO INVALID KEY ROUTINE    13200021
+*        L    15,A(USE ERROR)                                           13500021
+*    BR  15                                                             13800021
+*                                                                       14100021
+*    IF NEITHER INVALID KEY ROUTINE NOR USE ERROR RTN ARE               14400021
+*        PRESENT, JOB IS TERMINATED UNLESS A QSAM I/O ERROR OR          14700021
+*       AN INVALID KEY CONDITION WAS ENCOUNTERED IN WHICH               15000021
+*        CASE CONTROL IS RETURNED TO CALLING ROUTINE.                   15300021
+*                                                                       15600021
+*TABLES/WORK AREAS: NONE                                                15900021
+*                                                                       16200021
+*ATTRIBUTES: REENTRANT                                                  16500021
+*                                                                       16800021
+*NOTES:         SAVE AREA IN TGT USED                                   17100021
+*                                                                       17400021
+********************************************************************    17700021
+         ENTRY ILBOERR1            QSAM                                 18000021
+         ENTRY ILBOERR2            BSAM                                 18300021
+         ENTRY ILBOERR3                BDAM                             18600021
+         ENTRY ILBOERR4                QISAM                            18900021
+         ENTRY ILBOERR5            BISAM                                19200021
+         ENTRY ILBOERR6                 QSAM-2                    48401 19500021
+* EQUATES                                                               19800021
+R12      EQU   12                                                       20100021
+R9       EQU   9                                                        20400021
+R10      EQU   10                                                       20700021
+R0       EQU   0                                                        21000021
+R1       EQU   1                                                        21300021
+R2       EQU   2                                                        21600021
+R3       EQU   3                                                        21900021
+R4       EQU   4                                                        22200021
+R5       EQU   5                                                        22500021
+R6     EQU   6                                                          22800021
+R8       EQU   8                                                        23100021
+R13      EQU   13                                                       23400021
+R14      EQU   14                                                       23700021
+R15      EQU   15                                                       24000021
+R7       EQU   7                                                        24300021
+NOTONE   EQU   14                                                       24600021
+NOTZER   EQU   7                                                        24900021
+         USING TGTSAVE,R13                                              25200021
+ILBOERR1 EQU   *                       QSAM                             25500021
+         USING *,R15                                                    25800021
+         STM   R14,R12,SAVEAREA                                         26100021
+         L     R10,ADCON               ADDRESS OF ILBOERR0              26400021
+         DROP  R15                                                      26700021
+         USING ILBOERR0,R10                                             27000021
+       LA    R12,3               LOAD R12 WITH ACCESS METHOD CODE       27300021
+TSTKEY   DS    0H                                                       27600021
+         NI    KEYSW,MSWOFF                                             27900021
+         CLI   R1SAV,INVALKEY          INV KEY COND FOR BSAM/QSAM?      28200021
+         BNE   KILKEY                  NO                               28500021
+SETKEY   DS    0H                                                       28800021
+         OI    KEYSW,MSWON             TURN ON KEYSW                    29100021
+         L     R4,36(R2)               EXLIST ADDRESS FROM DCB          29400021
+         TM    27(R4),1                INVALID KEY ADDRESS?             29700021
+         BO    ACTION              COMMON CODING                        30000021
+         MVC   SAVEAREA(4),24(R4)      MOVE INV KEY ADDR TO SA          30300021
+         B     INVKY                                                    30600021
+KILKEY   DS    0H                                                       30900021
+         NI    KEYSW,MSWOFF            TURN OFF KEYSW                   31200021
+         L     R4,36(R2)               EXITLIST ADDRESS FROM DCB        31500021
+         OI    27(R4),1                INVALIDATE INVALID KEY ADDRESS   31800021
+         B     ACTION                                                   32100021
+ILBOERR2 EQU   *                       BSAM                             32400021
+         USING *,R15                                                    32700021
+         STM   R14,R12,SAVEAREA                                         33000021
+         L     R10,ADCON               ADDRESS OF ILBOERR0              33300021
+         DROP  R15                                                      33600021
+         USING ILBOERR0,R10                                             33900021
+         LA    R12,2         FOR SYNADAF, 2 IS ACMETH- BSAM             34200021
+         B     TSTKEY             SEE IF INVALID KEY COND               34500021
+INVKY    DS    0H                      GET DDNAME FOR MESSAGE           34800021
+         OI    27(R4),MSWON            INVALIDATE INV KEY ADDR          35100021
+         LA    R9,2                                                     35400021
+         CR    R12,R9             BSAM?                                 35700021
+         BE    BSINV                                                    36000021
+         LM    R14,R12,SAVEAREA                                         36300021
+         BR    R14                                                      36600021
+BSINV    DS    0H                                                       36900021
+         LM    R2,R12,SUBRTNSV+16                                       37200021
+         L     R14,SAVEAREA                                             37500021
+         BR    R14                                                      37800021
+ILBOERR4 EQU   *                       QISAM                            38100021
+         USING *,R15                                                    38400021
+         STM   R14,R12,SAVEAREA                                         38700021
+         L     R10,ADCON               ADDRESS OF ILBOERR0              39000021
+         DROP  R15                                                      39300021
+         USING ILBOERR0,R10                                             39600021
+         LA    R12,6              SYNADAF ACMETH CODE                   39900021
+         LR    R1,R2               A(DCB) IN R1 FOR SYNADAF             40200021
+         NI    KEYSW,MSWOFF                                             40500021
+         TM    80(R2),X'80'        CHECK FOR INV KEY COND               40800021
+         BO    SETKEY              FOUND                                41100021
+         TM    81(R2),X'C0'                                             41400021
+         BC    NOTZER,SETKEY       FOUND                                41700021
+         B     KILKEY              NOT FOUND                            42000021
+ILBOERR3 EQU   *                       BDAM                             42300021
+         USING *,R15                                                    42600021
+         STM   R14,R12,SAVEAREA                                         42900021
+         L     R10,ADCON               ADDRESS OF ILBOERR0              43200021
+         DROP  R15                                                      43500021
+         USING ILBOERR0,R10                                             43800021
+         LA    R12,4               SET R12 WITH ACMETH CODE             44100021
+         L     R2,8(R3)            PT R2 TO DCB                         44400021
+         NI    KEYSW,MSWOFF                                             44700021
+         TM    1(R3),X'84'         TEST FOR INV KEY COND          36589 45000021
+         BNZ   BDBIKEY             FOUND                          36589 45300021
+         TM    1(R3),X'10'                                              45600021
+         BO    CKMR                CHECK FURTHER  --  INVALID REQUEST   45900021
+         B     KILBDBI            NOT FOUND                             46200021
+* INVALID KEY CONDITION EXISTS-SEE IF INV KEY RTN                       46500021
+BDBIKEY  DS    0H                                                       46800021
+         OI    KEYSW,MSWON             TURN ON KEYSW                    47100021
+         L     R5,36(R2)               EXITLIST ADDRESS IN DCB          47400021
+         TM    27(R5),1                INVALID KEY ADDRESS?             47700021
+         BO    ACTION                                                   48000021
+         MVC   SAVEAREA(4),24(R5)                                       48300021
+         B     BDBINV                                                   48600021
+KILBDBI  EQU   *                   PUT 01 IN INVKEY ADDR                48900021
+         NI    KEYSW,MSWOFF                                             49200021
+         L     R5,36(R2)               EXITLIST ADDRESS IN DCB          49500021
+         OI    27(R5),1                INVALIDATE INVALID KEY ADDRESS   49800021
+         B     ACTION                                                   50100021
+CKMR     TM    2(R3),X'11'         BDAM-INV KEY COND                    50400021
+         BC    NOTZER,BDBIKEY      YES                                  50700021
+         B    KILBDBI              NO                                   51000021
+BDBINV   OI    27(R5),1                INVALIDATE INVALID KEYADDRESS    51300021
+         LM    R14,R12,SAVEAREA                                         51600021
+         BR    14                                                       51900021
+ILBOERR5 EQU   *                       BISAM                            52200021
+         USING *,R15                                                    52500021
+         STM   R14,R12,SAVEAREA                                         52800021
+         L     R10,ADCON               ADDRESS OF ILBOERR0              53100021
+         DROP  R15                                                      53400021
+         USING ILBOERR0,R10                                             53700021
+         LA    R12,5               SET R12                              54000021
+         LR    R1,R2                   SET UP PARAMS FOR SYNADAF        54300021
+         LR    R0,R3                                                    54600021
+         NI    KEYSW,MSWOFF                                             54900021
+         CLI   5(3),4              WRITE KN...                    01372 55200021
+         BNE   NOWRITE             NO                             01372 55500021
+         ST    5,12(3)             RESTORE BUFFER POINTER         01372 55800021
+NOWRITE  DS    0H                                                 01372 56100021
+         TM    24(R3),X'81'        INVALID KEY COND                     56400021
+         BC    NOTZER,BDBIKEY      YES                                  56700021
+         B     KILBDBI             NO                                   57000021
+ILBOERR6 DS    0H                       QSAM-2                    48401 57300021
+         USING *,R15                                              48401 57600021
+         STM   R14,R12,SAVEAREA                                   48401 57900021
+         L     R10,ADCON           ADDR ILBOERR0                  48401 58200021
+         DROP  R15                                                48401 58500021
+         USING ILBOERR0,R10                                       48401 58800021
+         LA    R12,3               INDICATE QSAM                  48401 59100021
+         MVC   STATBYTE(1,R2),R1SAV     SAVE STATUS INFO AFTER DCB48401 59400021
+         B     TSTKEY              COMMON PROCESSING              48401 59700021
+ACTION   EQU   *                                                        60000021
+         L     R5,36(R2)               EXITLIST ADDRESS IN DCB          60300021
+         TM    31(R5),1                IS THERE 1 IN LOW ORDER OF ADDR? 60600021
+         BZ    CALUSE              NO-THERE IS ONE                      60900021
+         TM    KEYSW,MSWON             INV KEY COND?                    61200021
+         BO    ERCON               YES-CONTINUE AFTER MSG               61500021
+         LA    R9,3                SEE IF QSAM ERROR                    61800021
+         CR    R9,R12                                                   62100021
+         BE    ERCON              YES- FOR QSAM I/O ERRORS- CONTINUE    62400021
+         LH    R3,40(R2)               TIOT OFFSET IN DCB               62700021
+         L     R4,44(R2)               @DEB                             63000021
+         L     R4,0(R4)                @TCB                             63300021
+         L     R4,12(R4)               @TIOT                            63600021
+         LA    R4,4(R4,R3)             @TIOT+TIOT OFFSET+4=@DDNAME      63900021
+         MVC   MESSAGE,MSGLIST         MOVE MESSAGE TO TGTSAVEAREA      64200021
+         MVC   DDNAME,0(R4)            MOVE DDNAME INTO MESSAGE         64500021
+         WTO   MF=(E,MESSAGE)          WRITE MESSAGE ON CONSOLE         64800021
+         L     R13,4(R13)              RETURN TO HIGHER LEVEL PGM       65100021
+         LM    R14,R12,12(R13)                                          65400021
+         LA    R15,12                                                   65700021
+         BR    R14                     RETURN TO NEXT HIGHER LEVEL PGM  66000021
+ERCON    DS    0H                                                       66300021
+         NI    KEYSW,MSWOFF            TURN OFF KEYSW                   66600021
+         LM    R14,R12,SAVEAREA                                         66900021
+         BR    R14                     RETURN                           67200021
+CALUSE   DS    0H                                                       67500021
+         LR    R15,R12                 ISSUE SYNADAF MACRO              67800021
+       SLL   R15,24               MOVE UP TO HIGH ORDER FOR SYNADAF     68100021
+         LR    R7,R13                                                   68400021
+         SVC   68                                                       68700021
+         LR    R0,R13             R0=A(SYNADAF SAVE AREA)               69000021
+         LR    R13,R7             R13=A(TGT SAVE AREA)                  69300021
+EXUSE    DS    0H                                                       69600021
+         L     R15,28(R5)              LOAD ADDRESS OF USE...STD ERROR  69900021
+         LA    R9,3               FINAL QSAM, BSAM CHECKS               70200021
+         CR    R9,R12                                                   70500021
+       BE    QSYNC                                                      70800021
+         BCTR  R9,0                    R9=2                             71100021
+         CR    R9,R12                                                   71400021
+         BE    BSYNC                                                    71700021
+         B EXUSEND                 RESTORE REGS-GO USE ERROR            72000021
+QSYNC    DS    0H                                                       72300021
+         TM    R2SAV,HIBITON           WAS ERROR IN ILBOSPA0            72600021
+         BC    NOTONE,EXUSEND       NO                                  72900021
+QSYNC1   DS    0H                                                       73200021
+         LM    R2,R12,SUBRTNSV+16      YES                              73500021
+         BR    R15                     GO TO ERROR DECLAR               73800021
+BSYNC    TM    48(R2),X'80'        BSAM WRITE-ONLY                      74100021
+         BO    QSYNC1                  YES                              74400021
+EXUSEND  DS    0H                                                       74700021
+         LM    R2,R12,SAVEAREA+16                                       75000021
+         L     R14,SAVEAREA                                             75300021
+         BR    R15                                                      75600021
+ADCON    DC    A(ILBOERR0)                                              75900021
+MSGLIST  DS    0H                                                       76200021
+         DC    AL2(MSGLST1-MSGLIST)                                     76500021
+         DC    X'8000'                                                  76800021
+MSGCON   DC    C'IKF111I EXCEPTIONAL I/O CONDITION SENSED PROCESSING DDX77100021
+               NAMEXX'                                                  77400021
+MSGLST1  DS    0H                                                       77700021
+         DC    X'04004020'         DESCRIPTOR AND ROUTING CODES         78000021
+TGTSAVE  DSECT                                                          78300021
+         ORG   TGTSAVE+96                                               78600021
+SUBRTNSV DS    15F                                                      78900021
+         ORG   TGTSAVE+X'128'                                           79200021
+SAVEAREA DS    15F                                                      79500021
+         ORG   SAVEAREA                THIS CORE NOT USED IF WE'RE      79800021
+*                                      ISSUING MESSAGE                  80100021
+MESSAGE  DS    CL(L'MSGCON+8)                                           80400021
+         ORG   *-12                                                     80700021
+DDNAME   DS    CL8                                                      81000021
+         DS    CL4                                                      81300021
+KEYSW    DS    C                                                        81600021
+R1SAV    EQU   SAVEAREA+12                                              81900021
+R2SAV    EQU   SAVEAREA+16                                              82200021
+MSWON    EQU   X'01'                                                    82500021
+MSWOFF   EQU   X'FE'                                                    82800021
+HIBITON  EQU   X'80'                                                    83100021
+INVALKEY EQU   X'42'                                                    83400021
+STATBYTE EQU   121            OFFSET OF STATUS BYTE IN DCB        48401 83700021
+*                  EXTENSION IN OBJECT PROGRAM                    48401 84000021
+         END                                                            84300021

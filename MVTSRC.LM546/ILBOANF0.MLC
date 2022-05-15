@@ -1,0 +1,71 @@
+*//    ILBOANF0                                                         01000018
+*        ILBOANF0   CALLING SEQ... L    15,V(ILBOANF0)                  02000018
+ILBOANF0 START 0                                                        03000018
+*                                                                       04000018
+*  ILBOANF0  -   MOVE FIGCON ALL TO  ALPHANUM.                          05000018
+*                CALLING SEQUENCE.                                      06000018
+*                                                                       07000018
+*                               L    0,REC-LENGTH                       08000018
+*                               LA   1,REC                              09000018
+*                               LA   2,FIGCON                           10000018
+*                               L    15,V(ILBOANF0)                     11000018
+*                               BALR 14,15                              12000018
+*                               DC   X'00'  FLAG-BYTE                   13000018
+*                               DC   X'00'  FIGCON-LENGTH               14000018
+*                                                                       15000018
+*                FLAG BYTE      BIT0    RIGTH ADJUSTED RECEIVING.       16000018
+*                                                                       17000018
+         SPACE 5                                                        18000018
+RW0      EQU   0                                                        19000018
+RW1      EQU   1                                                        20000018
+RW2      EQU   2                                                        21000018
+RW3      EQU   3                                                        22000018
+RW4      EQU   4                                                        23000018
+RW5      EQU   5                                                        24000018
+RW6      EQU   6                                                        25000018
+RW7      EQU   7                                                        26000018
+RW8      EQU   8                                                        27000018
+RW9      EQU   9                                                        28000018
+RW10     EQU   10                                                       29000018
+RW11     EQU   11                                                       30000018
+RW12     EQU   12                                                       31000018
+R12      EQU   12                                                       32000018
+R13      EQU   13                                                       33000018
+R14      EQU   14                                                       34000018
+R15      EQU   15                                                       35000018
+WORKA    EQU   96                                                       36000018
+RIGTH    EQU   X'80'                                                    37000018
+         USING *,R15                                                    38000018
+         STM   R14,R12,WORKA(R13)                                       39000018
+         SR    RW6,RW6                  GET FIGCON-LENGTH.              40000018
+         IC    RW6,1(R14)                                               41000018
+         TM    0(R14),RIGTH                                             42000018
+         BZ    ANF000                                                   43000018
+         AR    RW1,RW0                  PTR AT END OF REC.              44000018
+ANF000   LR    RW7,RW0                                                  45000018
+         LR    RW9,RW6                  SAVE FIGCON LENGTH.             46000018
+ANF002   CR    RW6,RW7                  TOO MUCH FOR RECEIVING.         47000018
+         BH    ANF001                                                   48000018
+ANF004   LR    RW12,RW6                                                 49000018
+         BCTR  RW12,0                                                   50000018
+         TM    0(R14),RIGTH                                             51000018
+         BO    ANF005                                                   52000018
+         EX    RW12,ANFMOV1             MOVE                            53000018
+         AR    RW1,RW6                  UPDATE PTR TO SEND.             54000018
+ANF003   SR    RW7,RW6                  UPDATE COUNT                    55000018
+         BH    ANF002                                                   56000018
+ANFOUT   LM    R14,R12,WORKA(R13)       REC. EXHAUSTED - EXIT.          57000018
+         B     2(R14)                   EXIT.                           58000018
+         SPACE 3                                                        59000018
+ANFMOV1  MVC   0(0,RW1),0(RW2)                                          60000018
+ANF005   SR    RW1,RW6                                                  61000018
+         EX    RW12,ANFMOV1                                             62000018
+         B     ANF003                                                   63000018
+         SPACE 2                                                        64000018
+ANF001   LR    RW6,RW7                  MOVE ONLY ENOUGH TO FILL-UP     65000018
+         TM    0(R14),RIGTH             RECEIVING                       66000018
+         BZ    ANF004                                                   67000018
+         AR    RW2,RW9                  FOR RIGTH ADJUSTED MOVE ONLY    68000018
+         SR    RW2,RW6                  RIGTH PART OF FIGCON.           69000018
+         B     ANF004                                                   70000018
+         END                                                            71000018

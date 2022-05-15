@@ -1,0 +1,665 @@
+*$MODULE       ILBODSP0                                                 00100021
+*//    ILBODSP0                                                         00200021
+DSP0     TITLE     'ILBODSP0'                                           00300021
+*        ILBODSP0   CALLING SEQ... L    15,V(ILBODSP0)                  00400021
+*STATUS0CHANGE LEVEL 000                                                00500021
+*10570505,0507,0520,0521,0527,0536,0573,0574,0576,0779,0917,0918,  7237 00600021
+*10570921,0922,0924,0943,0980,0984,0985,0989                       7237 00700021
+*FUNCTION/OPERATION0 FORMATS ONE OR MORE OPERANDS INTO PRINT LINES      00800021
+*                                                                       00900021
+*            PERFORMS CONVERSIONS TO BCD AS NEEDED(IFP PRE-CONVERTED).  01000021
+*            (OR CARD IMAGES) TO SERVICE DISPLAY, EXHIBIT, TRACE.       01100021
+*ENTRY POINTS0                                                          01200021
+*                                  BALR 1,15                            01300021
+*                                  DC   XL2'DEVICE-CODE'                01400021
+*            XL10 FOR EACH OPERAND DC   XL10'AS EXPLAINED BELOW'        01500021
+*                                  DC   0                               01600021
+*                                  DC   0                               01700021
+*                                  DC   0                               01800021
+*                                  DC   XL2'FFFF'                       01900021
+*                                                                       02000021
+*         CALLING SEQ PRECEEDED BY...                                   02100021
+*                                 *LA   2,LIT=C'PROG-ID ' *FOR PUNCH    02200021
+*                                                                       02300021
+*                             *    ...TEST CODING...   * FOR EXHIBIT    02400021
+*                             *    LA   1,PARAM=K+1    *  (K=0 NORMAL)  02500021
+*                                                                       02600021
+*                              *...CALLS UPON IFEF...     * FOR ANY IFP 02700021
+*                              *   MVC  PARAM=1(K),RESULT * OPERANDS    02800021
+*                                                                       02900021
+*         SPECIAL CALLING SEQ FOR TRACE...                              03000021
+*                                  BALR 1,15                            03100021
+*                                  DC   XL2'DEVICE-CODE'                03200021
+*                                  DC   CLN'LENGTH,TEXT-OF-PROG-NAME'   03300021
+*                                                                       03400021
+*INPUT0 CONTENTS OF DATA ITEMS SPECIFIED BY CALLING SEQ. ALSO, TRACE    03500021
+*        SWITCH IN TGT IS TESTED.                                       03600021
+*OUTPUT0 LINES OF PRINT VIA A PUT ON PRINTER OR PUNCH, OR A WTO TO      03700021
+*        CONSOLE.                                                       03800021
+*EXTERNAL ROUTINES0 N/A                                                 03900021
+*EXITS-NORMAL0 RETURN POINT IS CALCULATED BASED ON REG 1 AND LENGTH     04000021
+*              OF IN-LINE CALLING SEQUENCE.                             04100021
+*EXITS-ERRORS0 N/A.                                                     04200021
+*TABLES/WORK AREAS0 LOCATED IN COBOL OBJECT TGT, SOME UNDER DSECTS,     04300021
+*            OTHERS NOT. DCB'S FOR SYSOUT, SYSPUNCH ARE IN SR. SYSOUT   04400021
+*            LRECL AND BLKSIZE ARE DEFAULT-FILLED-IN BY AN OPEN EXIT.   04500021
+*ATTRIBUTES0 SERIALLY REUSABLE.                                         04600021
+*NOTES0 THE XL10 FOR EACH OPERAND CONSISTS OF                           04700021
+*            DC    XL1'TYPE'  WHOSE BITS HAVE THE MEANINGS...           04800021
+*                                  00 EXHIBIT                           04900021
+*                                  10 TRACE                             05000021
+*                                  20 VARIABLE LENGTH                   05100021
+*                                  30 POINTER ADCON IS DIRECT           05200021
+*                                  40 (NOT USED)  **4-7 ALL ON0         05300021
+*                                  50 SIGNED       ** NUMERIC, NO CONV  05400021
+*                                  60 INT. DECIMAL **4-7 ALL OFF0       05500021
+*                                  70 BINARY       ** NON-NUM. NO CONV  05600021
+*            DC     XL3'MNN'      IF BIN OR INT DEC, M IS NUMBER        05700021
+*                                          OF BYTES IN CORE, NN IS      05800021
+*                                          LENGTH OF CONVERTED RESULT,  05900021
+*                                 IF VARIABLE LENGTH, 3 BYTES ARE AN    06000021
+*                                          ADCON POINTING TO VLC-CELL,  06100021
+*                                 OTHERWISE, 3 BYTES ARE LENGTH.        06200021
+*            DC     AL4(BASE-LOCATOR)...OR... AL4(OPERAND-TEXT) IF      06300021
+*                                               BIT 3 OF TYPE SET.      06400021
+*            DC     XL2'DISPLACEMENT-OF-TEXT-FROM-BASE'                 06500021
+*      NOTE... FIGCONS BECOME LIT'S OF LENGTH=1                         06600021
+*              TALLY (& OTHER SPECIAL DATA ITEMS) ARE ASSUMED TO BE     06700021
+*                   1-WORD BIN ITEMS WITH A DIRECT POINTER, CONVERTED   06800021
+*                   TO 5-CHAR SIGNED PRINT-FORMAT.                      06900021
+*              LITERALS-TEXT IS POINTED-TO DIRECTLY.                    07000021
+*                                                                       07100021
+*       LINE FORMATTING WILL CAUSE CONTINUATION OF LONG OPERAND STRINGS 07200021
+*              ON SUBSEQUENT LINES(OR CARDS) WITH SPLITTING OF          07300021
+*              NON-NUMERIC ITEMS AS REQUIRED. EXHIBIT FORMATTING        07400021
+*              INCLUDES SPACING BETWEEN OPERANDS AND INSERTIONS         07500021
+*              OF '='SIGNS FOR NAMED CASES.                             07600021
+*                                                                       07700021
+* REGISTERS ARE USED AS FOLLOWS.                                        07800021
+*      R0 - BINARY NUMBERS TO BE CONVERTED TO EXTERNAL DECIMAL          07900021
+*      R1 - SAME AS R0 WHEN DBL PREC. POINTER TO COS AND PARAMETER LIST 08000021
+*      R2 - POINTER TO BUFFER WHEN CALLING COS, EXHIBIT PARAM POINTER   08100021
+*      R3 - LENGTH OF BUFFER TO BE TYPED (WHEN CALLING COS)             08200021
+*      R4 - POINTER TO DISPLAY ITEM                                     08300021
+*      R5 - LENGTH OF DISPLAY ITEM                                      08400021
+*      R6 - POINTER TO BUFFER                                           08500021
+*      R7 - BUFFER SIZE AVAILABLE                                       08600021
+*      R8 - WORK REGISTER                                               08700021
+*      R9 - COUNT OF QUARTER BYTE PARAMETERS TESTED                  CS 08800021
+*      R10 - WORK AREA FOR EXHIBIT QUARTER BYTE PARAMETERS              08900021
+*      R11 - COUNT OF QUARTER BYTE PARAMS TESTED                        09000021
+ILBODSP0 START 0                                                        09100021
+*                                                                       09200021
+R0     EQU   0                                                          09300021
+R1     EQU   1                                                          09400021
+R2     EQU   2                                                          09500021
+R3     EQU   3                                                          09600021
+R4     EQU   4                                                          09700021
+R5     EQU   5                                                          09800021
+R6     EQU   6                                                          09900021
+R7     EQU   7                                                          10000021
+R8     EQU   8                                                          10100021
+R9     EQU   9                                                          10200021
+R10    EQU   10                                                         10300021
+R11    EQU   11                                                         10400021
+R12    EQU   12                                                         10500021
+R13    EQU   13                                                         10600021
+R14    EQU   14                                                         10700021
+R15    EQU   15                                                         10800021
+WRKREG EQU   8                                                       CS 10900021
+         USING *,R15              BASE REGS                             11000021
+         STM   R14,R12,SVGPRG(R13)                                      11100021
+         MVC   SVDEV(2,R13),0(R1)      SAVE DEVICE CODE FOR LATER REFER 11200021
+         BAL   R8,UNITCK              OPEN UNITS AND SET LENGTHS & PNTR 11300021
+       BC    0,4                   ID, FIRST CALL                       11400021
+       BC    15,DISP01             NON-CONSOLE RETURN                   11500021
+*                                  CONSOLE RETURN                       11600021
+         LA    R6,BUFFER(R13)     INIT BUFFER POINTER                   11700021
+         L     R7,BUFCNT         INIT BUFFER COUNT                      11800021
+DISP01 EQU   *                                                          11900021
+         NI    LASTSW(R13),0     RESET EXIT SWITCH                      12000021
+         TM    0(R1),X'80'       TEST EXHIBIT - HI BIT OF DEVICE CODE   12100021
+         LA    R1,2(R1)           PASS DEVICE CODE                      12200021
+       BC    1,EXHIB           YES - EXHIBIT                            12300021
+         NI    EXHBSW(R13),0      NO - TURN SW OFF                      12400021
+         CLI   0(R1),X'40'       TEST SPECIAL CASE                      12500021
+       BC    7,TSTPRM          NO                                       12600021
+         SR    R14,R14             YES- PREPARE                         12700021
+         IC    R14,1(R1)            TRACE                               12800021
+         AR    R14,R1                EXIT IN                            12900021
+         LA    R14,3(R14)             R14                               13000021
+         TM    1(R1),1           TEST LOW BIT OF N-1                    13100021
+       BC    1,*+8            IF ON, NO SLACK BYTE REQUIRED             13200021
+         LA    R14,1(R14)          ELSE ADD 1 FOR SLACK BYTE            13300021
+         ST    R14,SVGPRG+12(R13) STORE IN R1 - R1 IS EXIT REG, NOT 14  13400021
+         TM    TRACSW(R13),X'40' TEST SECOND TRACE SW IN TGT            13500021
+       BC    8,DIEXIT          NO - EXIT                                13600021
+*  SPECIAL CASE WHERE A SINGLE BCD DISPLAY ITEM IS IN LINE - TRACE      13700021
+         SR    R5,R5              CLEAR REG                             13800021
+         IC    R5,1(R1)           INSERT ITEM LENGTH                    13900021
+         LA    R4,2(R1)           LOAD ADDR OF IN-LINE DATA             14000021
+         SR    R7,R5               UNUSED BUFFER                        14100021
+         BCTR  R7,R0                LENGTH                              14200021
+         LTR   R6,R6               DD SYSOUT=DUMMY                36573 14300021
+         BNH   DISP02              DO NOT SET UP DATA             36573 14400021
+         EX    R5,MVDATA         MV                                     14500021
+DISP02   DS    0H                                                 36573 14600021
+         OI    LASTSW(R13),1     TURN ON LAST SW                        14700021
+       BC    15,DMPBUF        GO DUMP BUFFER                            14800021
+*                                                                       14900021
+*                                                                       15000021
+*                                                                       15100021
+* SET POINTER TO DISPLAY ITEM                                           15200021
+*                                                                       15300021
+TSTPRM MVC   WORKA1(1,R13),4(R1)   MOVE REG CODE TO WORK             CS 15400021
+       OI    WORKA1(R13),X'40'     SET UP TO PUT TGT PNTR IN REG4    CS 15500021
+       IC    WRKREG,WORKA1(R13)    REG CODE TO WORK REG              CS 15600021
+       EX    WRKREG,LDREG          LOAD BASE TO REG4                 CS 15700021
+       AH    R4,6(R1)              ADD DISP                          CS 15800021
+         TM    0(R1),X'10'       TEST DIRECT POINTER                    15900021
+       BC    1,*+8             YES - GO ADD DISPLACEMENT                16000021
+         L     R4,0(R4)            NO - LOAD ADDR O DATA AREA           16100021
+         AH    R4,8(R1)           ADD DISP - R4 POINTS TO DATA ITEM     16200021
+*                                                                       16300021
+* TEST TYPE OF DATA - SET UP LENGTH                                     16400021
+*                                                                       16500021
+         TM    0(R1),X'0F'       TEST IF CONV REQUIRED                  16600021
+       BC    4,CONVRT          YES                                      16700021
+         TM    0(R1),X'20'       TEST IF VARIABLE LENGTH                16800021
+       BC    1,VARLEN          YES                                      16900021
+         MVC   WORKA1(4,R13),0(R1)    ALLIGN BOUNDARY                   17000021
+         L     R5,WORKA1(R13)     LOAD FIXED LENGTH                     17100021
+         SLL   R5,8              CLEAR OUT TYPE CODE                    17200021
+         SRL   R5,8               IN HI 8 BITS                          17300021
+       BC    15,DILOOP        GO PROCESS THIS ITEM                      17400021
+VARLEN MVC   WORKA1(1,R13),4(R1)   MOVE REG CODE TO WORK             CS 17500021
+       OI    WORKA1(R13),X'50'     SET UP TO PUT VAR LNGTH IN REG5   CS 17600021
+       IC    WRKREG,WORKA1(R13)    REG CODE TO WORK REG              CS 17700021
+       EX    WRKREG,LDREG          LOAD BASE TO REG5                 CS 17800021
+       AH    R5,2(R1)              ADD DISP - POINT TO VLC           CS 17900021
+       LH    R5,0(R5)              LOAD VLC TO R5                    CS 18000021
+*                                                                       18100021
+*  LOOP TO TEST IF DATA WILL FIR IN BUFFER                              18200021
+*                                                                       18300021
+DILOOP   TM    EXHBSW(R13),2     TEST CASE NOT NAMED - NOT CHANGED      18400021
+         BCR   1,R14              YES                                   18500021
+         CR    R5,R7              COMP DATA LENGTH TO REMAINING BUF LEN 18600021
+       BC    12,MVTOBF         DATA WILL FIT - GO MOVE IT               18700021
+* IF DATA IS NUMERIC, PRINT ON A NEW LINE - IN NOT, FILL BUFFER, DUMP   18800021
+TSTZR7   LTR   R7,R7              TEST SIZE LEFT IN BUFFER              18900021
+       BC    8,DMPBUF          IF ZERO GO DUMP BUFFER                   19000021
+       BC    15,NONNUM         ELSE GO MOVE WHAT WILL FIT               19100021
+* ROUTINE TO TYPE OUT BUFFER USING OPERATING SYSTEM                     19200021
+*                                                                       19300021
+DMPBUF   STM   R1,R2,SVREG1(R13)   SAVE PARAM REGS                      19400021
+         BAL   R8,UNITCK              OPEN UNITS AND SET LENGTHS & PNTR 19500021
+       BC    0,2                   ID SECOND CALL                       19600021
+       BC    15,DMPB01             NON-CONSOLE RETURN                   19700021
+*                                  CONSOLE RETURN                       19800021
+         LA    R1,BUFSIZ(R13)     POINT TO BUFFER                       19900021
+         L     R3,BUFCNT         LOAD BUFFER SIZE                       20000021
+         SR    R3,R7              SUBTR UNUSED LEN GIVING MESS LENGTH   20100021
+* TEST FOR BLANKS AT END OF BUFFER - ELIMINATE TO SPEED TYPING          20200021
+         LA    R8,BUFSIZ+3(R13)   POINT TO LAST BYTE                    20300021
+         AR    R8,R3               IN BUFFER                            20400021
+       ST    R9,SAVREG(R13)        SAVE REG9 - NEEDED FOR WORK REG   CS 20500021
+         LA    R9,BUFSIZ+4(R13)   POINT TO FIRST BYTE IN BUFFER         20600021
+TSTBLK   CR    R8,R9              ARE WE AT FIRST BYTE                  20700021
+       BC    8,LDMSLN          YES - EXIT                               20800021
+         CLI   0(R8),X'40'       TEST BLANK                             20900021
+       BC    7,LDMSLN          NO - EXIT                                21000021
+         BCTR  R8,R0               YES - MOVE POINTER BAC  ONE          21100021
+         BCT   R3,TSTBLK         DECREMENT COUNT BY 1 - REPEAT LOOP     21200021
+LDMSLN L     R9,SAVREG(R13)        RESTORE REG9                      CS 21300021
+       LA    R3,4(R3)              WTO REQUIRES LNGTH + 4            CS 21400021
+         SLL   R3,16             PUT LENGTH IN HI 16, ZEROS IN LO 16 BI 21500021
+         ST    R3,BUFSIZ(R13)     STORE MESS LENGTH                     21600021
+*                                                                       21700021
+*                                   CODING FOR MULTI CONSOLE SUPPORT    21800021
+*                                                                       21900021
+       MVC   1(4,R8),MSGE         R8 POINTS END OF STRING - ROUT CODE   22000021
+       OI    BUFSIZ+2(R13),X'80'       TO INDICATE ROUT CODE            22100021
+*                                                                       22200021
+        WTO    MF=(E,(1))              TYPE OUT MESSAGE                 22300021
+         L     R15,SVGPRG+4(R13)  RESTORE BASE REG THAT EOS CLOBBERS    22400021
+*                                                                       22500021
+         LA    R6,BUFFER(R13)                                           22600021
+         L     R7,BUFCNT                                                22700021
+DMPB01 EQU   *                     NON-CONSOLE JOINS HERE               22800021
+         TM    LASTSW(R13),1     TEST IF LAST ITEM DISPLAYED            22900021
+       BC    1,DIEXIT          YES - GO EXIT                            23000021
+         LM    R1,R2,SVREG1(R13)   RESTORE PARAM REGS                   23100021
+       BC    15,DILOOP        RETURN TO DISPLAY LOOP                    23200021
+*                                                                       23300021
+*    MOVE DATA TO B1FFER                                                23400021
+*                                                                       23500021
+NONNUM   LR    R8,R7              LOAD AVAILAB BUF LENGTH TO EX MOVE    23600021
+       BC    15,*+6                                                     23700021
+MVTOBF   LR    R8,R5              LOAD LENGTH OF DATA TO EX MOVE        23800021
+         LTR   R8,R8                   AVOID MOVE IF LENGTH = 0         23900021
+       BC    12,MVRTRN+4                                                24000021
+         BCTR  R8,R0              SUBTR 1 TO EX                         24100021
+         LTR   R6,R6               DUMMY SYSOUT                   36573 24200021
+         BNH   MVRTRN              YES, DUMMY                     36573 24300021
+         EX    R8,MVDATA         GO MOVE                                24400021
+MVRTRN   LA    R8,1(R8)           ADJUST BY 1                           24500021
+         AR    R6,R8              INCR BUF POINTER BY LENGTH MOVED      24600021
+         SR    R7,R8              DECR BUF SIZE AVAIL                   24700021
+         SR    R5,R8              SUBTR SIZE MOVED FROM DATZ LENGTH     24800021
+       BC    8,NXTPRM          IF DATA LENGTH IS ZERO GET NEXT PARAM    24900021
+         AR    R4,R8               OTHERWISE INCREMENT DATA POINTER AND 25000021
+       BC    15,DMPBUF         DUMP BUFFER                              25100021
+MVDATA   MVC   0(0,R6),0(R4)      MOVE DATA TO BUFFER                   25200021
+*                                                                       25300021
+*  GET THE NEXT PARAMETER - AT END TYPE OUT BUFFER                      25400021
+*                                                                       25500021
+NXTPRM   NI    NUMSW(R13),X'FE'       RESET NUM CONVERSION SW           25600021
+         TM    EXHBSW(R13),1          IN AN EXHIBIT...                  25700021
+         BCR   1,R14              YES                                   25800021
+         LA    R1,10(R1)          INCR PARAM LIST POINTER               25900021
+         CLC   0(2,R1),HFF       IS IT TERMINAL CODE                    26000021
+       BC    7,TSTPRM          NO - GO TEST PARAM                       26100021
+SUBEX    LR    R14,R1             PREPARE                               26200021
+         LA    R14,2(R14)         R14                                   26300021
+         ST    R14,SVGPRG+12(R13) STORE IN R1 - R1 IS EXIT REG, NOT 14  26400021
+         OI    LASTSW(R13),1      YES - SET LAST SWITCH AND             26500021
+       BC    15,DMPBUF         GO DUMP BUFFER                           26600021
+*                                                                       26700021
+*  RETURN TO ROUTIN CALLING DISPLAY                                     26800021
+*                                                                       26900021
+DIEXIT   LM    R14,R12,SVGPRG(R13) RESTORE REGS                         27000021
+         BCR   15,R1             EXIT ON R1                             27100021
+* CHECK UNIT AND OPEN IT, DO PUT IF CALLED FROM ID 2 AND NON-CONSOLE,   27200021
+*            SETTING UP POINTERS AND LENGTH IF NON-CONSOLE.             27300021
+*            2 RETURNS... 4(8)  NON-CONSOLE                             27400021
+*                         8(8)  CONSOLE                                 27500021
+UNITCK ST    R1,SAVREG(R13)        SAVE R1                           CS 27600021
+         TM    SVDEV+1(R13),X'03'     SYSPUNCH...                       27700021
+       BC    1,UNIT01               YES                                 27800021
+         TM    SVDEV+1(R13),X'02'     CONSOLE...                        27900021
+       BC    1,UNIT02               YES                                 28000021
+         TM    3(R8),4                FIRST CALL UPON UNIT...         7 28100021
+       BC    7,UNIT16               YES, GO OPEN IF NEC.           7237 28200021
+*                                  SYSOUT                               28300021
+       L     1,DCBSYO              SYSOUT DCB POINTER              8472 28400021
+         LH    R1,82(R1)                                                28500021
+         BCTR  R1,R0                   ALLOW FOR CHAR CONTROL CHAR      28600021
+         SR    R1,R7                                                    28700021
+         LTR   R1,R1                   IS LENGTH = O ...                28800021
+       BC    7,UNIT16               NO                             7241 28900021
+         TM    EXHBSW(R13),4          YES,IS IT AN EXHIBIT NAMED        29000021
+       BC    7,UNIT14                YES, DO NOT DO 'PUT' , LEAVE  7241 29100021
+UNIT16 EQU   *                                                     7241 29200021
+       L     R1,DCBSYO                 LOAD A(DCB IN MAIN)         8472 29300021
+       LTR   R1,R1                     ZERO OR PLUS...             8472 29400021
+       BC    6,UNIT09                  OPEN(POSITIVE),YES..BRANCH  8472 29500021
+       STM   R14,R2,SVLOCL(R13)        NO..DO GETMAIN              8472 29600021
+       GETMAIN  R,LV=96                GET 96-BYTES FOR DCB        8472 29700021
+       L     R15,SVLOCL+4(R13)         RESTORE R15 FOR STORE       8472 29800021
+       ST  R1,DCBSYO                   SAVE ADDRESS OF DCB IN MAIN 8472 29900021
+       MVI   DCBSYO,X'8F'              INDICATE O/P AND LAST DCB   8472 30000021
+       ST    R1,SVLOCL+12(R13)         SAVE ADDRESS OF MAIN        8472 30100021
+       MVC  0(96,R1),DBSYO             MOVE DCB TO MAIN            8472 30200021
+       LA  R1,DCBSYO                   LOAD A(DCB) FOR OPEN        8472 30300021
+       OPEN  MF=(E,(1))                OPEN DCBSYO                 8472 30400021
+         LM    R14,R2,SVLOCL(R13)       SAVE REG'S LOCALLY              30500021
+*                                                                       30600021
+       L     R1,DCBSYO                 ***************     JK           30700021
+       TM    048(R1),X'10'             TEST STATUS OF OPEN IN DCB       30800021
+       BNO   BDOPNR                    NOT SUCCESSFUL, BRANCH TO        30900021
+*                                                                       31000021
+         BC    15,UNIT12                                                31100021
+UNIT09 EQU   *                                                          31200021
+*                                                                       31300021
+       TM    048(R1),X'10'             ***************     JK           31400021
+       BNO   BDOPN1                    NOT SUCCESSFUL OPEN              31500021
+*                                                                       31600021
+         LH    R7,82(R1)               LOAD LENGTH INTO GPR7            31700021
+         BCTR  R7,R0                   ALLOW FOR CARR CONTROL CHAR      31800021
+         TM    3(R8),4                FIRST CALL...                     31900021
+       BC    8,UNIT12              SECOND CALL, GO JOIN SYSPCH          32000021
+         L     R6,TMPSV                                                 32100021
+         LA    R6,1(R6)      ADJUST FOR CARRIAGE CONTROL                32200021
+       BC    15,UNIT14                                                  32300021
+UNIT12   STM   R14,R2,SVLOCL(R13)       SAVE REG'S LOCALLY              32400021
+         LH    R7,82(R1)               LOAD LENGTH INTO GPR7            32500021
+         TM    SVDEV+1(R13),X'03'     SYSPUNCH...                       32600021
+       BC    14,UNIT15              NO                                  32700021
+       L     R6,TMPSV2                 RECAD                            32800021
+*                                                                 44669 32900021
+UNIT12A  DS    0H                                                       33000021
+         LTR   R6,R6               DUMMY SYSOUT                   36573 33100021
+         BNH   UNIT15              YES, DUMMY                     36573 33200021
+         L     R2,SVGPRG+16(R13)       RELOCATE PARAM PASSED IN GPR2    33300021
+         MVC   72(8,R6),0(R2)          MOVE BCD PROG NAME INTO COL 73-8 33400021
+UNIT15 PUT   (1)                   OUPUT ONE LINE OF PRINT              33500021
+         LR    R6,R1                                                    33600021
+         LM    R14,R2,SVLOCL(R13)       SAVE REG'S LOCALLY              33700021
+       TM    SVDEV+1(R13),X'03'        SYSPUNCH                         33800021
+       BNO   UNIT150                   NO...SAVE IN TMPSV               33900021
+       ST    R6,TMPSV2                 YES..SAVE IN TMPSV2              34000021
+       B     UNIT151                   BRANCH AROUND                    34100021
+UNIT150 DS    0H                                                        34200021
+         ST    R6,TMPSV      SAVE  A(BUFFER)                            34300021
+UNIT151 DS    0H                                                        34400021
+         BCTR  R7,R0                                                    34500021
+         LTR   R6,R6               SYSOUT DUMMY                   36573 34600021
+         BNH   UNIT15A                                            36573 34700021
+         BCTR  R7,R0                                                    34800021
+         MVI   0(R6),C' '             PAD BUFFER WITH BLANKS            34900021
+UNIT15A  DS    0H                                                 36573 35000021
+         EX    R7,UNITMV                                                35100021
+         TM    SVDEV+1(R13),X'03'     SYSPUNCH...                       35200021
+       BC    1,UNIT13               YES                                 35300021
+         LA    R6,1(R6)                                               7 35400021
+         LA    R7,1(R7)                COMPENSATE FOR PREV BCTR'S       35500021
+       BC    15,UNIT14                                                  35600021
+UNIT13   LA    R7,72                                                    35700021
+       BC    15,UNIT14                                                  35800021
+UNIT01 EQU   *                     SYSPUNCH                             35900021
+       L     R1,DCBPCH                 LOAD A(DCB IN MAIN)         8472 36000021
+       LTR   R1,R1                     ZERO OR PLUS...             8472 36100021
+       BC    6,UNIT10                  OPEN(POSITIVE),YES BRANCH   8472 36200021
+       STM   R14,R2,SVLOCL(R13)        NO...DO GETMAIN             8472 36300021
+       GETMAIN  R,LV=96                GET 96-BYTES FOR DCB        8472 36400021
+       L     R15,SVLOCL+4(R13)         RESTORE R15 FOR STORE       8472 36500021
+       ST  R1,DCBPCH                   SAVE ADDRESS OF DCB IN MAIN 8472 36600021
+       MVI   DCBPCH,X'8F'              INDICATE O/P AND LAST DCB   8472 36700021
+       ST    R1,SVLOCL+12(R13)         SAVE ADDRESS OF MAIN        8472 36800021
+       MVC  0(96,R1),DBPCH             MOVE DCB TO MAIN            8472 36900021
+       LA  R1,DCBPCH                   LOAD A(DCB) FOR OPEN        8472 37000021
+       OPEN  MF=(E,(1))                OPEN DCBPCH                 8472 37100021
+         LM    R14,R2,SVLOCL(R13)       SAVE REG'S LOCALLY              37200021
+*                                                                       37300021
+*                                                                       37400021
+       TM    048(R1),X'10'             TEST STATUS OF SYSPUNCH          37500021
+       BNO   BDOPNR                    NOT SUCCESSFUL,  BRANCH TO       37600021
+*                                                                       37700021
+         STM   R14,R2,SVLOCL(R13) SAVE REGISTERS                        37800021
+         LH    R7,82(R1)           LOAD LENGTH FROM DCB                 37900021
+*                                                                       38000021
+       B     UNIT15                    DO PUT                           38100021
+UNIT10 EQU   *                                                          38200021
+*                                                                       38300021
+       TM    048(R1),X'10'             ***************     JK           38400021
+       BNO   BDOPN1                    NOT SUCCESSFUL,  BRANCH TO       38500021
+*                                                                       38600021
+         TM    3(R8),4                FIRST CALL...                     38700021
+       BC    8,UNIT12              NO, GO DO PUT                        38800021
+UNIT11   L     R6,76(R1)               LOAD BUF PNTR INTO GPR6          38900021
+         LH    R7,82(R1)               LOAD LENGTH INTO GPR7            39000021
+         SR    R6,R7                   RESET POINTER TO START OF RECORD 39100021
+       LA    R7,72           FOR SYSPUNCH                  3/31/67 SAL  39200021
+UNIT14 L     R1,SAVREG(R13)        RESTORE R1                        CS 39300021
+         BC    15,4(R8)               SYSPUNCH LEAVE                    39400021
+UNIT02 L     R1,SAVREG(R13)        RESTORE R1                        CS 39500021
+         BC    15,8(R8)                                                 39600021
+UNITMV   MVC   1(0,R6),0(R6)           *** EXECUTED ***                 39700021
+*                                                                       39800021
+*  THIS ROUTINE CON VERTS NUMERIC DATA TO EXTERNAL FORMAT               39900021
+*                                                                       40000021
+CONVRT   TM    0(R1),2           IS IT INT DECIMAL                      40100021
+       BC    1,IDRT            YES                                      40200021
+*                                                                       40300021
+* BINARY FIRLD CAN BE HALF, FULL, OR DOUBLE WORD                        40400021
+*                                                                       40500021
+BINRT    CLI   1(R1),2           IS IT HALFWORD                         40600021
+       BC    7,TSTFUL          NO                                       40700021
+         SR    R0,R0               YES - CLEQR WORK REG                 40800021
+         MVC   WORKA1(2,R13),0(R4)  MOVE TO ALLIGN BOUNDARY             40900021
+         LH    R0,WORKA1(R13)      LOAD BINARY VALUE                    41000021
+       BC    15,BINSNG         GO CONVERT                               41100021
+TSTFUL   CLI   1(R1),4           IS IT FULL WORD                        41200021
+       BC    7,BINDBL          NO - ASSUME DOUBLE WORD                  41300021
+         MVC   WORKA1(4,R13),0(R4) MOVE TO ALLIGN BOUNDARY              41400021
+         L     R0,WORKA1(R13)      YES - LOAD VALUE                     41500021
+BINSNG   CVD   R0,WORKA1(R13)      CONVERT TO DECIMAL                   41600021
+         UNPK  WORKA2(10,R13),WORKA1+2(6,R13)  UNPACK INTO FINAL POSITI 41700021
+       BC    15,CNVEND        GO TO SET POINTER AND LENGTH              41800021
+BINDBL   ST    R1,SVREG1(R13)     SAVE REG1                             41900021
+         MVC   WORKA1(8,R13),0(R4)  ALLIGN BOUNDARY                     42000021
+         LM    R0,R1,WORKA1(R13)   LOAD BINZRY COUBLE WORD              42100021
+         D     R0,TENPW9         DIVIDE BY 13 ** 9                      42200021
+         CVD   R1,WORKA2(R13)     CONVERT                               42300021
+         CVD   R0,WORKA3(R13)      BOTH HALVES                          42400021
+         UNPK  WORKA1(9,R13),WORKA2+3(5,R13)  UNPACK                    42500021
+         OI    WORKA1+8(R13),X'F0'  CHANGE SIGN TO ZONE                 42600021
+         UNPK  WORKA1+9(9,R13),WORKA3+3(5,R13)  UNPACK                  42700021
+         L     R1,SVREG1(R13)     RESTORE PARAM POINEER                 42800021
+       BC    15,CNVEND        GO TO SET POINTER                         42900021
+*                                                                       43000021
+* MOVE ID FIELD TO WORK AREA AND CONVERT TO ED                          43100021
+*                                                                       43200021
+*                                                                       43300021
+*                                                                       43400021
+*                                                                       43500021
+*                                                                       43600021
+IDRT     DS    0H                                                       43700021
+         SR    R8,R8               CLEAR REG 8                          43800021
+         IC    R8,DX1(R1)          PICK UP BYTE LENGTH                  43900021
+         XC    WORKA1(LX10,R13),WORKA1(R13)  CLEAR WORK AREA            44000021
+         LA    R5,WORKA1+DX10(R13)                                      44100021
+         SR    R5,R8                                                    44200021
+         BCTR  R8,R0                                                    44300021
+         EX    R8,MVCID                                                 44400021
+*   CONVERT ID ITEM IN 2 STEPS, 9 & 9, TO ALLOW FOR 18 MAX              44500021
+         UNPK  WORKA2+1(9,R13),WORKA1+5(5,R13)  CONVERT                 44600021
+         MVO   WORKA1(6,R13),WORKA1(5,R13)                              44700021
+         UNPK  WORKA1(9,R13),WORKA1+1(5,R13)                            44800021
+         OI    WORKA2(R13),X'F0'   MAKE SIGN A ZONE                     44900021
+* FINAL PHASE - ADJUST SIGN AND SET POINTER                             45000021
+CNVEND   LA    R4,WORKA3+1(R13)   LOAD ADDR OF LOW ORD FIGIT            45100021
+         TM    0(R4),X'30'       TEST LO BITS OF SIGN                   45200021
+       BC    4,*+8            IF MIXED, SIGN IS NEG - LEAVE NEG         45300021
+         OI    0(R4),X'F0'        OTHERWISE MAKE SIGN A ZONE            45400021
+         LA    R4,1(R4)           POINTER TO POS AFTER LAST BYTE        45500021
+         SR    R5,R5              CLEAR LENGTH REG                      45600021
+         LH    R5,2(R1)           LOAD ED LENGTH                        45700021
+         SR    R4,R5              PUT POINTER TO FIRST BYTE TO BE DISPL 45800021
+         OI    NUMSW(R13),X'01'       SET NUMERIC SWITCH                45900021
+       BC    15,DILOOP        GO DISPLAY                                46000021
+MVCID    MVC   DX0(LX0,R5),DX0(R4)                                      46100021
+*                                                                       46200021
+ZAPID    ZAP   WORKA1(0,R13),0(0,R4) MOVE ID TO ZEROD 10 BYTE WORK AREA 46300021
+*                                                                       46400021
+*                                                                       46500021
+*  THIS ROUTINE HANDLES  EXHIBIT, A SPECIAL CASE OF DISPLAY.            46600021
+*  REG 2 POINTS TO THE QUARTER BYTE PARAMETERS                          46700021
+*                                                                       46800021
+EXHIB    MVI   EXHBSW(R13),1     TURN ON EXHIBIT SW                     46900021
+         LTR   R3,R3              TEST FIRST TIME THRU - R3 IS ZERO     47000021
+       BC    8,STNMCH          YES - GO TURN SW ON                      47100021
+         NI    NMCHSW(R13),0      NO - TURN SW OFF                      47200021
+       BC    15,LDPARM         GO LOAD PARAMS                           47300021
+STNMCH   OI    NMCHSW(R13),1     TURN ON FIRST TIME SW                  47400021
+LDPARM   L     R10,0(R2)          LOAD QRTR BYTE PARAMS                 47500021
+         LA    R2,4(R2)           POINT TO NEXT PARAM WORD              47600021
+       LA    R9,32            INITIALIZE COUNT TO 32                 CS 47700021
+TEST     ALR   R10,R10            SHIFT LEFT 1 BIT                      47800021
+       BCTR  R9,0             SUBTR 1 FROM COUNT                     CS 47900021
+       BC    3,TSTNMD         BIT 0 ON                                  48000021
+       BC    15,LITFIG         BIT 0 OFF - LITERAL ORFIGCON             48100021
+TSTNMD   TM    0(R1),X'10'       TEST DIRECT TGT POINTER                48200021
+       BC    8,NOTNMD          NOT DIRECT - THUS NOT NAMED              48300021
+         TM    0(R1),X'0F'       TEST A-N LITERAL                       48400021
+       BC    7,NOTNMD          NOT A-N LIT - THUS NOT NAMED             48500021
+* NAMED - TEST CHANGED                                                  48600021
+         OI    EXHBSW(R13),4                                            48700021
+         ALR   R10,R10            TEST CHANGED BIT                      48800021
+       BC    3,NMCH           CHANGED                                   48900021
+         TM    NMCHSW(R13),1     TEST FIRST TIME SW                     49000021
+       BC    1,NMCH            YES - CHANGED                            49100021
+       BC    15,NMNTCH        NOT CHANGED                               49200021
+* NOT NAMED - TEST CHANGED                                              49300021
+NOTNMD   ALR   R10,R10            TEST CHANGED BIT                      49400021
+       BC    3,NTNMCH         CHANGED                                   49500021
+         TM    NMCHSW(R13),1     TEST FIRST TIME SW                     49600021
+       BC    1,NTNMCH          YES - CHANGED                            49700021
+       BC    15,NTNMNC        NOT CHANGED                               49800021
+*                                                                       49900021
+* NAMED - CHANGED.  TWO SEGMENTS TO BUGFER                              50000021
+NMCH     BAL   R14,TSTPRM        MOVE FIRST SEG TO BUF                  50100021
+         LA    R4,BLEQBL         LOAD ADDR OF BLANK,EQUAL,BLANK         50200021
+         LA    R5,3              LOAD COUNT OF 3                        50300021
+         BAL   R14,DILOOP        MOVE IT TO BUF                         50400021
+         LA    R1,10(R1)          UP PARAM LIST POINTER                 50500021
+NMCHCM   BAL   R14,TSTPRM        MOVE SECOND SEG TO BUF                 50600021
+         LTR   R7,R7              TEST SPACE LEFT IN BUF                50700021
+       BC    8,EXHBEX          COMPLETELY FILLED - NO EXTRA SPACE       50800021
+         MVI   0(R6),X'40'        SPACE LEFT - MOVE IN BLANK            50900021
+         LA    R6,1(R6)           UP BU POINTER BY 1                    51000021
+         BCTR  R7,R0              DEVR BUF SIZE BY 1                    51100021
+       BC    15,EXHBEX        GO TO EXHIB EXIT                          51200021
+*                                                                       51300021
+* NAMED - NOT CHANGED.  SKIP 20 BYTES IN PARAM LIST EXCEPT FIRZT TIME   51400021
+*  TREAT AS NAMED - CHANGED                                             51500021
+NMNTCH   LA    R1,10(R1)          SKIP 10 PARAM BYTES                   51600021
+       BC    15,EXHBEX        EXIT AND SKIP 10 MORE                     51700021
+* NOT NAMED - CHANGEDMOVE ONE SEGMENT TO BUFFER. THE PROCEDURE IS       51800021
+*  SAME AS SECOND PART OF NAMED - CHANGED.                              51900021
+NTNMCH BC    15,NMCHCM        GO TO COMMON PART OF NAMED - CHAMGED      52000021
+* NOT NAMED - NOT CHANGED  MOVE N+1 BLANKS TO BUFFER EXCEPT             52100021
+*  FIRST TIME TREAT AS NOT NAMED - CHANGED                              52200021
+NTNMNC   OI    EXHBSW(R13),2     TURN ON SW AT DILOOP                   52300021
+         BAL   R14,TSTPRM        GO TO GET LENGTH                       52400021
+BLNKLP   CR    R5,R7              COMP DATA LENGTH TO BUF SIZE          52500021
+       BC    12,FITS          WILL FIT IN BUF                           52600021
+         LTR   R7,R7              TEST FOR ZERO BUFFER SIZE AVAIL       52700021
+       BC    7,LDAVAL          NON-ZERO                                 52800021
+         BAL   R14,DMPBUF        GO DUMP BUFFER                         52900021
+       BC    15,BLNKLP                                                  53000021
+LDAVAL   LR    R8,R7              WONT FIT - LOAD AVAILBLE SIZE         53100021
+       BC    15,*+6                                                     53200021
+FITS     LR    R8,R5              LOAD SIZE OF DATA ITEM                53300021
+         BCTR  R8,R0              SUBTR 1 TO EX                         53400021
+         MVI   0(R6),X'40'       MV SINGLE BLANK                        53500021
+         EX    R8,MVBLNK         MV BLANKS TO BUFFER                    53600021
+         BAL   R14,MVRTRN        RETURN TO MAIN LINE                    53700021
+         LTR   R5,R5              TEST THAT N BLANKS HAVE BEEN MOVED    53800021
+       BC    8,BLNKEX          YES                                      53900021
+       BC    15,BLNKLP         NO - REPEAT BLANK LOOP                   54000021
+BLNKEX   NI    EXHBSW(R13),1     TURN OFF ENTRY SW TO THIS ROUTINE      54100021
+       BC    15,NMCHCM+4      GO INSERT A BLANK IF IT WILL FIT          54200021
+*                                                                       54300021
+MVBLNK   MVC   1(0,R6),0(R6)                                            54400021
+*                                                                       54500021
+*  LITERAL OR FIGCON                                                    54600021
+LITFIG   SLL   R10,1             SHIFT I BIT NOT TESTED                 54700021
+       BC    15,NMCHCM                                                  54800021
+* COMMON EXHIBIT EXIT                                                   54900021
+EXHBEX   LA    R1,10(R1)          INCR PARAM LIST POINTER               55000021
+         CLC   0(2,R1),HFF       TEST TERMINAL CODE                     55100021
+       BC    7,TSTEXH          NO                                       55200021
+       BC    15,SUBEX          YES - GO PREP R14 EXIT AND DUMP BUF      55300021
+TSTEXH BCT   R9,TEST          IF 32 BITS OF PARAM USED, LOAD NEW PARMCS 55400021
+       BC    15,LDPARM         ELSE GO TO TEST NEXT QUARTER BYTE        55500021
+*                                                                       55600021
+*                                                                       55700021
+BDOPNR DS    0H                        *****               JK           55800021
+       MVC   FNAME(L'MSGB+8,R13),BDOPN      ERROR MESG INSERTED         55900021
+       MVC   FNAME+L'MSGB-5(8,R13),40(R1)   MOVE DDNAME                 56000021
+       LA    R1,FNAME(R13)                  POINTS TO PARMLIST          56100021
+       WTO   MF=(E,(R1))                                                56200021
+BDOPN1 LM    R14,R12,SVGPRG(R13)   RESTORE REGISTERS                    56300021
+       TM    2(R1),X'40'           TEST FOR TRACE                       56400021
+       BO    BDOPN3                IF YES,  GO TO BDOPN3                56500021
+BDOPN2 LA    R1,1(R1)              ELSE INCREASE ADDR VAL BY 1          56600021
+       CLC   0(2,R1),HFF           UNTIL HFF (X'FFFF')                  56700021
+       BNE   BDOPN2                                                     56800021
+         CLC   DX1(2,R1),HFF       END OF PARAMETER               47953 56900021
+         BE    BDOPN2              YES,  GET RIGHT END OF PARAM   47953 57000021
+       B     2(R1)                 RETURNS TO CALLING RTN               57100021
+BDOPN3 LA    R1,2(R1)            PICK UP TYPE CODE ADDR                 57200021
+       SR    R14,R14                                                    57300021
+       IC    R14,1(R1)             R14 IS USED FOR EXIT                 57400021
+       AR    R14,R1                                                     57500021
+       LA    R14,3(R14)                                                 57600021
+       TM    1(R1),X'01'           TEST FOR NO-SLACK BYTE               57700021
+       BO    *+8                                                        57800021
+       LA    R14,1(R14)            A SLACK BYTE REQUIRED                57900021
+       ST    R14,SVGPRG+12(R13)    STORE EXIT ADDR FOR R1               58000021
+       LM    R14,R12,SVGPRG(R13)   RESTORE REGISTERS                    58100021
+       BR    R1                    RETURNS TO CALLING RTN               58200021
+*                                                                       58300021
+*                                                                       58400021
+       DS    0F                                                         58500021
+BDOPN  DC    AL2(MSGE-MSGB+4)          PARMLIST FOR ERROR MESSAGE       58600021
+       DC    X'8000'                                                    58700021
+MSGB   DC    C'IKF999I UNSUCCESSFUL OPEN FOR          '                 58800021
+MSGE   EQU   *                                                          58900021
+         DC    X'04004020'         DESCRIPTOR AND ROUTING CODES         59000021
+FNAME  EQU   96                                                         59100021
+LX0      EQU   0                                                        59200021
+LX10     EQU   10                                                       59300021
+DX0      EQU   0                                                        59400021
+DX1      EQU   1                                                        59500021
+DX10     EQU   10                                                       59600021
+DX36     EQU   36                                                       59700021
+*                                                                       59800021
+*                                                                       59900021
+*                                                                       60000021
+*NEXT CARD CHANGED BUT COL 68-71 CANT BE USED                      8472 60100021
+DBSYO  DCB   DSORG=PS,MACRF=PL,DDNAME=SYSOUT,                          X60200021
+               BFTEK=S,EXLST=EXLIST                                     60300021
+*NEXT 2 CARDS CHANGED BUT COL 68-71 CANT BE USED                   8472 60400021
+DBPCH  DCB   DSORG=PS,MACRF=PL,DDNAME=SYSPUNCH,                        X60500021
+               LRECL=80,BFTEK=S,EROPT=ABE,EXLST=EXLISP                  60600021
+*  DISPLAY SUBROUTI NE CONSTANTS AND EQUATES                            60700021
+*                                                                       60800021
+DCBSYO DC  A(0)                                                    8472 60900021
+DCBPCH DC  A(0)                                                    8472 61000021
+BUFCNT DC    F'100'                                                     61100021
+TENPW9 DC    X'3B9ACA00'                                                61200021
+HFF    DC    X'FFFF'                                                    61300021
+BLEQBL DC    X'407E40'                                                  61400021
+TMPSV    DC    F'0'          SAVE AREA FOR A(BUFFER)                    61500021
+TMPSV2 DC    F'0'                      SAVE AREA FOR SYSPUNCH BUFFER    61600021
+         DS    0F                  DCB EXIT LIST...                     61700021
+EXLIST DC    XL1'85'                                                    61800021
+       DC    AL3(LENCHK)           FOR DEFAULT LENGTH CHECKS            61900021
+EXLISP DC    XL1'85'               SYSPUNCH DEFAULT LENGTH CHECK   7237 62000021
+       DC    AL3(LENCHP)                                           7237 62100021
+TRACSW     EQU     72                                                   62200021
+WORKA1 EQU   96                                                         62300021
+WORKA2 EQU   104                                                        62400021
+WORKA3 EQU   112                                                        62500021
+BUFSIZ EQU   120                                                        62600021
+BUFFER EQU   124                                                        62700021
+SVREG1 EQU   252                                                        62800021
+SVREG2 EQU   256                                                        62900021
+LASTSW EQU   260                                                        63000021
+EXHBSW EQU   261                                                        63100021
+NMCHSW EQU   262                                                        63200021
+SVGPRG   EQU   264                 60 BYTE AREA IN TGT                  63300021
+SVLOCL EQU   324                   20 BYTE AREA IN TGT                  63400021
+SVDEV  EQU   344                    2 BYTE AREA IN TGT                  63500021
+NUMSW  EQU   346                   1 BYTE SW FOR NUMERIC CONVERSIONS    63600021
+SAVREG EQU   348                                                     CS 63700021
+LDREG  LR    R0,R0            LOAD BASE                              CS 63800021
+         USING *,R15                                                    63900021
+LENCHK EQU   *                     OPEN DCB PROCESSING EXIT ROUTINE     64000021
+         CLC   62(2,R1),N0            BLKSIZE = 0...                    64100021
+       BNE   LENCH                      NO...CONTINUE                   64200021
+         MVI   63(R1),121              YES, SET DEFAULT OPTIONS IN BUFS 64300021
+LENCH  DS    0H                                                         64400021
+         CLC   82(2,R1),N0                LRECL                         64500021
+       BNE   LENCH1                    NO...CONTINUE                    64600021
+         MVI   83(R1),121              AND IN LRECL  (ALLOW FOR CC-CH)7 64700021
+LENCH1 EQU   *                                                     7237 64800021
+         CLI   36(R1),X'00'           HAS A RECFM BEEN SPECIFIED...   7 64900021
+         BCR   7,R14                    YES                           7 65000021
+         MVI   DX36(R1),X'94'      NO, SET RECFM FBA BITS IN DCB        65100021
+         BCR   15,R14                  EXIT                             65200021
+N0     DC    XL2'0'                                                     65300021
+         USING *,R15                                                  7 65400021
+LENCHP EQU   *                                                     7237 65500021
+         CLC   62(2,R1),NN0           PUNCH BLKSIZE = 0 ...           7 65600021
+       BNE   LENCHP1                   NO...ALREADY SET                 65700021
+         MVI   63(R1),80               DEFAULT BLKSIZE = 80           7 65800021
+LENCHP1 DS    0H                                                        65900021
+       CLI   36(R1),X'00'              RECFM SPECIFIED                  66000021
+       BCR   7,R14                     YES..EXIT                        66100021
+       MVI   DX36(R1),X'90'            NO...DEFAULT TO FB               66200021
+         BCR   15,R14                                                 7 66300021
+NN0    DC    XL2'00'                                               7237 66400021
+         END                                                            66500021

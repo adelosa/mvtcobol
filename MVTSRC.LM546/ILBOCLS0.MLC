@@ -1,0 +1,107 @@
+*$MODULE       ILBOCLS0                                                 00900021
+*//    ILBOCLS0                                                         01800021
+CLS0     TITLE     'ILBOCLS0'                                           02700021
+*        ILBOCLS0   CALLING SEQ... L    15,V(ILBOCLS0)                  03600021
+*                                                                       04500021
+*                                                                       05400021
+*        LEVEL  180     09/14/66                                        06300021
+*                                                                       07200021
+*FUNCTION 0 THIS ROUTINE PERFORMS A CLASS TEST FOR OPERANDS WITH LENGTH 08100021
+*   VARIABLE OR GREATER THAN 256 BYTES.  THE OPERAND IS TESTED FOR      09000021
+*   ALPHABETIC OR NUMERIC CLASS.                                        09900021
+*ENTRY POINT 0 ILBOCLAS , CALLING SEQUENCE IS 0-                        10800021
+*                             L    2,V(ILBOATBL, ILBOETBL OR ILBOITBL)  11700021
+*                             L    15,V(ILBOCLAS)                       12600021
+*                             BALR 1,15                                 13500021
+*                             DC   XL10'OPERAND   INFORMATION'          14400021
+*   WHERE OPERAND INFORMATION FIELD HAS ONE OF THE FOLLOWING TWO FORMAT 15300021
+*                          1. FIXED LENGTH                              16200021
+*                             DC   X'TYPE CODE'        SEE BELOW        17100021
+*                             DC   XL3'LENGTH OF ITEM'                  18000021
+*                             DC   AL4(ADDRESS OF POINTER IN TASK       18900021
+*                                     GLOBAL TABLE OR POINTER TO        19800021
+*                                     PROGRAM GLOBAL TABLE)             20700021
+*                             DC   XL2'DISPLACEMENT'                    21600021
+*                          2. VARIABLE LENGTH                           22500021
+*                             DC   X'TYPE CODE'        SEE BELOW        23400021
+*                             DC   AL3(POINTER TO CELL IN TASK GLOBAL   24300021
+*                                     TABLE THAT CONTAINS THE LENGTH)   25200021
+*                             DC   AL4(ADDRESS OF POINTER IN TASK       26100021
+*                                     GLOBAL TABLE)                     27000021
+*                             DC   XL2'DISPLACEMENT'                    27900021
+*   THE TYPE CODE BITS ARE BIT 0   NOT USED                             28800021
+*                              1   TRACE ITEM   (N/A HERE)              29700021
+*                              2   VARIABLE LENGTH                      30600021
+*                              3   DIRECT POINTER (FOR LITERAL OR TALLY 31500021
+*                            4-5   NOT USED                             32400021
+*                              6   INTERNAL DECIMAL ITEM   (N/A HERE)   33300021
+*                              7   BINARY ITEM             (N/A HERE)   34200021
+*INPUT 0 AS EXPLAINED ABOVE.                                            35100021
+*OUTPUT 0 CONDITION CODE IS SET TO 0 WHEN IS TRUE.                      36000021
+*         CONDITION CODE IS NON-ZERO WHEN TEST IS FALSE.                36900021
+*EXIT-NORMAL0BY   BCR   15,1                                            37800021
+*     ERROR0  NONE                                                      38700021
+*WORK AREA 0 BYTES 96-104 OF TGT.                                       39600021
+*ATTRIBUTES 0 SERIALLY REUSABLE.                                        40500021
+*                                                                       41400021
+ILBOCLS0 START 0                                                        42300021
+R0       EQU   0                                                        43200021
+R1       EQU   1                                                        44100021
+R2       EQU   2                                                        45000021
+R3       EQU   3                                                        45900021
+R4       EQU   4                                                        46800021
+R5     EQU   5                                                          47700021
+R6     EQU   6                                                          48600021
+R7     EQU   7                                                          49500021
+R8     EQU   8                                                          50400021
+R9     EQU   9                                                          51300021
+R10    EQU   10                                                         52200021
+R11    EQU   11                                                         53100021
+R12    EQU   12                                                         54000021
+R13    EQU   13                                                         54900021
+R14    EQU   14                                                         55800021
+R15    EQU   15                                                         56700021
+         USING *,R15                                                    57600021
+         STM   R14,R12,SAVE(R13)                                        58500021
+         MVC   ALLIGN(8,R13),0(R1) ALLIGN PARAMETERS ON FULL WORD       59400021
+       MVC   WORK(1,R13),4(R1)     MOVE REG CODE TO WORK             GL 60300021
+       OI    WORK(R13),X'40'      WET UP TO PUT TGT PNTR IN R4       GL 61200021
+       IC    R5,WORK(R13)         REG CODE TO WORKAREA               GL 62100021
+       EX    R5,LDREG             LOAD BASE IN REG 4                 GL 63000021
+       AH    R4,6(R1)             ADD DISP                           GL 63900021
+         TM    0(R1),X'10'       TEST DIRECT POINTER                    64800021
+       BC    1,LDLEN           YES                                      65700021
+         L     R4,0(R4)            NO - LOAD BL                         66600021
+         AH    R4,8(R1)            ADD DISP                             67500021
+LDLEN    L     R3,ALLIGN(R13)     LOAD LENGTH OR VL                     68400021
+         TM    0(R1),X'20'       TEST VL                                69300021
+       BC    1,LOADVL          YES                                      70200021
+         SLL   R3,8               NO - CLEAR                            71100021
+         SRL   R3,8                HI ORDER 8 BITS                      72000021
+       BC    15,LOOP          GO TEST                                   72900021
+LOADVL   DS    0H                                                 47448 73800021
+         LH    R3,0(R3,R13)        LOAD FROM VLC CELL             47448 74700021
+LOOP     DS    0H                                                 47448 75600021
+         LTR   R3,R3               LENGTH NOW EQUAL TO ZERO...    47448 76500021
+         BZ    EXIT                YES, ALL THROUGH               47448 77400021
+         CH    R3,H256             COMPARE LENGTH TO 256          47448 78300021
+       BC    2,GRT256          GREATER THAN 256                         79200021
+         BCTR  R3,R0              SUBTRACT 1 TO EX                      80100021
+         EX    R3,TRANS          TRANSLATE                              81000021
+EXIT     LM    R14,R12,SAVE(R13)     REST REGS                          81900021
+       BC    15,10(R1)                                                  82800021
+GRT256   TRT   0(256,R4),0(R2)    TRANSLATE 256 BYTES                   83700021
+       BC    7,EXIT           NOT ALL ZERO                              84600021
+         SH    R3,H256           ALL ZERO - SUBTR 256 FROM LENGTH       85500021
+         LA    R4,256(R4)         INCR OPERAND POINTER BY 256           86400021
+       BC    15,LOOP          REPEAT                                    87300021
+*                                                                       88200021
+TRANS    TRT   0(0,R4),0(R2)                                            89100021
+*                                                                       90000021
+LDREG  LR    R0,R0             EXECUTED INSTRUCTION TO LOAD BASE     GL 90900021
+H256   DC    H'256'                                                     91800021
+SAVE     EQU   12                                                       92700021
+ALLIGN EQU   96                                                         93600021
+WORK   EQU   104                  1 BYTE WORK AREA                   GL 94500021
+       END                                                              95400021
+         EJECT                                                          96300021

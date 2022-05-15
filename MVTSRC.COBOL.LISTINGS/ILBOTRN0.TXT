@@ -1,0 +1,51 @@
+1TRN0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOTRN0  SD  0001 000000 000100
+1TRN0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOTRN0                                                         02000018
+1TRN0     ILBOTRN0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      3 *        ILBOTRN0   CALLING SEQ... L    15,V(ILBOTRN0)                  06000018
+                                       4 *                                                                       08000018
+                                       5 *        LEVEL  180     09/14/66                                        10000018
+                                       6 *                                                                       12000018
+                                       7 *FUNCTION 0 THIS IS A 256-BYTE TRANSFORM TABLE USED FOR PROCESSING      14000018
+                                       8 *   TRANSFORM STATEMENTS WITH FIXED LENGTH TRANSFORMED FIELDS.          16000018
+                                       9 *INPUT 0 N/A                                                            18000018
+                                      10 *OUTPUT 0 N/A                                                           20000018
+                                      11 *EXTERNAL ROUTINES 0 N/A                                                22000018
+                                      12 *EXITS 0 N/A                                                            24000018
+                                      13 *ATTRIBUTES 0 N/A                                                       26000018
+                                      14 *                                                                       28000018
+ 000000                               15 ILBOTRN0 START 0                                                        30000018
+ 000000 0001020304050607              16        DC    X'000102030405060708090A0B0C0D0E0F'                        32000018
+ 000010 1011121314151617              17        DC    X'101112131415161718191A1B1C1D1E1F'                        34000018
+ 000020 2021222324252627              18        DC    X'202122232425262728292A2B2C2D2E2F'                        36000018
+ 000030 3031323334353637              19        DC    X'303132333435363738393A3B3C3D3E3F'                        38000018
+ 000040 4041424344454647              20        DC    X'404142434445464748494A4B4C4D4E4F'                        40000018
+ 000050 5051525354555657              21        DC    X'505152535455565758595A5B5C5D5E5F'                        42000018
+ 000060 6061626364656667              22        DC    X'606162636465666768696A6B6C6D6E6F'                        44000018
+ 000070 7071727374757677              23        DC    X'707172737475767778797A7B7C7D7E7F'                        46000018
+ 000080 8081828384858687              24        DC    X'808182838485868788898A8B8C8D8E8F'                        48000018
+ 000090 9091929394959697              25        DC    X'909192939495969798999A9B9C9D9E9F'                        50000018
+ 0000A0 A0A1A2A3A4A5A6A7              26        DC    X'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF'                        52000018
+ 0000B0 B0B1B2B3B4B5B6B7              27        DC    X'B0B1B2B3B4B5B6B7B8B9BABBBCBDBEBF'                        54000018
+ 0000C0 C0C1C2C3C4C5C6C7              28        DC    X'C0C1C2C3C4C5C6C7C8C9CACBCCCDCECF'                        56000018
+ 0000D0 D0D1D2D3D4D5D6D7              29        DC    X'D0D1D2D3D4D5D6D7D8D9DADBDCDDDEDF'                        58000018
+ 0000E0 E0E1E2E3E4E5E6E7              30        DC    X'E0E1E2E3E4E5E6E7E8E9EAEBECEDEEEF'                        60000018
+ 0000F0 F0F1F2F3F4F5F6F7              31        DC    X'F0F1F2F3F4F5F6F7F8F9FAFBFCFDFEFF'                        62000018
+                                      32        END                                                              64000018
+1TRN0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    4
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT         33
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                         7
+ TOTAL RECORDS PRINTED                        51

@@ -1,0 +1,21 @@
+$INDEX   You are reading it.                                            00010000
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 00020000
+ASSEMBLE This jobstream assembles all modules of COBOL from source in   00030000
+         MVTSRC.CB545 (loaded from OS360/MVT CD-rom) and MVTSRC.LM546   00040000
+         (library modules loaded from OS360/MVT CD-rom) and places the  00050000
+         OBJECT decks into MVTSRC.COBOL.OBJECT, the listings into       00060000
+         MVTSRC.COBOL.LISTINGS.                                         00070000
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 00080000
+DELINK   This jobstream delinks all modules of COBOL from the LOAD      00090000
+         modules in MVTSRC.SYS1.LINKLIB (copied from a fresh SYSGEN     00100000
+         of OS360/MVT) and MVTSRC.SYS1.COBLIB (copied from a fresh      00110000
+         SYSGEN of OS360/MVT) and places the OBJECT decks into          00120000
+         MVTSRC.COBOL.XOBJECT.                                          00130000
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 00140000
+LINK     This jobstream links all modules of COBOL from the OBJECT      00150000
+         decks in MVTSRC.COBOL.OBJECT (output of ASSEMBLE jobstream)    00160000
+         and places the LOAD modules into MVTSRC.COBOL.LOAD, the        00170000
+         library modules into MVTSRC.COBLIB, and the listings into      00180000
+         MVTSRC.COBOL.LISTINGS(LINK) and MVTSRC.COBOL.LISTINGS(LINKL).  00190000
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 00200000
+COBTEST  This jobstream compiles, links and executes a simple program.  00210000

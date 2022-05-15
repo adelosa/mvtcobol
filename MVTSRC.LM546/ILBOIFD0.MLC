@@ -1,0 +1,102 @@
+*//    ILBOIFD0                                                         00900018
+IFD0     TITLE     'ILBOIFD0'                                           01800018
+*        ILBOIFD0   CALLING SEQ... L    15,V(ILBOIFD0)                  02700018
+*                                                                       03600018
+*        LEVEL  180     09/14/66                                        04500018
+*                                                                       05400018
+*FUNCTION 0 THIS ROUTINE CONVERTS A DOUBLE PRECISION FLOATING POINT     06300018
+*   NUMBER INTO EITHER A 18-BYTE EXTERNAL NUMBER OR A 10-BYTE           07200018
+*   INTERNAL DECIMAL NUMBER.                                            08100018
+*ENTRY POINTS 0 ILBOIFID, ILBOIFEX     CALLING SEQUENCES ARE 0          09000018
+*                                       LD   0,FP-NUMBER                09900018
+*                                  OR   SDR  0,0                        10800018
+*                                       LE   0,FP-NUMBER                11700018
+*                                       L   15,V(ILBOIFID OR ILBOIFED)  12600018
+*                                       CNOP 6,8                        13500018
+*                                       BALR 14,15                      14400018
+*                                       DC   XL8'DOUBLE PRECISION FPT   15300018
+*                                            OF THE FORM 10**X WHERE X  16200018
+*                                            IS THE NUMBER OF DECIMALS  17100018
+*                                            IN THE RESULT FIELD.       18000018
+*OUTPUT 0 EITHER A 10-BYTE INTERNAL DECIMAL NO. OR AN 18-BYTE EXTERNAL  18900018
+*   DECIMAL NUMBER STARING AT 96(13) WHERE 13 POINTS TO THE TGT AND IS  19800018
+*   INITIALIZED BY THE CALLER.                                          20700018
+*EXTERNAL ROUTNES 0 ILBOIFBD - TO CONVERT FP TO BINARY.                 21600018
+*                   ILBOBIID - TO CONVERT BINARY TO INTERNAL DECIMAL.   22500018
+*EXITS - NORMAL 0  BY   BC   15,8(14)                                   23400018
+*        ERROR  0  IF INTERNAL FLOATING POINT EXCEEDS MAXIMUM, REG15    24300018
+*                  IS SET TO 0  AND NORMAL EXIT IS TAKEN.               25200018
+*WORK AREA 0 BYTES 96-200 OF TGT.                                       26100018
+*                                                                       27000018
+*                                                                       27900018
+ILBOIFD0 START 0                                                        28800018
+         ENTRY ILBOIFD1                                                 29700018
+         EXTRN ILBOIFB0                                                 30600018
+         EXTRN ILBOBID1                                                 31500018
+*                                                                       32400018
+R0     EQU   0                                                          33300018
+R1     EQU   1                                                          34200018
+R2     EQU   2                                                          35100018
+R3     EQU   3                                                          36000018
+R4     EQU   4                                                          36900018
+R5     EQU   5                                                          37800018
+R6     EQU   6                                                          38700018
+R7     EQU   7                                                          39600018
+R8     EQU   8                                                          40500018
+R9     EQU   9                                                          41400018
+R10    EQU   10                                                         42300018
+R11    EQU   11                                                         43200018
+R12    EQU   12                                                         44100018
+R13    EQU   13                                                         45000018
+R14    EQU   14                                                         45900018
+R15    EQU   15                                                         46800018
+FR0    EQU   0                                                          47700018
+FR2    EQU   2                                                          48600018
+FR4    EQU   4                                                          49500018
+FR6    EQU   6                                                          50400018
+SAVE     EQU   12                                                       51300018
+         USING *,R10                                                    52200018
+         STM   R14,R12,SAVE(R13)     SAVE REGS                          53100018
+         LR    R10,R15            SET BASE 10                           54000018
+         OI    IDEDSW(R13),1     SET ID EXIT SW                         54900018
+         BAL   R10,COMMON                                               55800018
+         USING *,R10                                                    56700018
+ILBOIFD1 STM   R14,R12,SAVE(R13)    SAVE REGS                           57600018
+         LR    R10,R15            SET BASE                              58500018
+         NI    IDEDSW(R13),0     TURN SW OFF                            59400018
+COMMON   STD   FR0,SVFPRG(R13)     SAVE                                 60300018
+         STD   FR2,SVFPRG+8(R13)    FP                                  61200018
+         STD   FR4,SVFPRG+16(R13)    REGS                               62100018
+         STD   FR6,SVFPRG+24(R13)     IN WC AREA                        63000018
+         LD    FR2,0(R14)          LOAD DECIMALS IN RESULT              63900018
+         L     R15,ADIFBI        ADDR OF IFBI CONV                      64800018
+         BALR  R14,R15            GO CONVERT                            65700018
+         NI    BIGSW(R13),0      RESET TOO-BIG SWITCH                   66600018
+         LTR   R15,R15            TEST IF IFP NUMBER TOO BIG - R15=0    67500018
+       BC    7,*+8             NOT TOO BIG                              68400018
+         OI    BIGSW(R13),1       YES - SET SW                          69300018
+         L     R15,ADBIID        ADDR OF BIID                           70200018
+         BALR  R14,R15            CONV B1 TO 1D                         71100018
+         TM    IDEDSW(R13),1     TEST SW                                72000018
+       BC    1,EXIT            1D - EXIT                                72900018
+         UNPK  WORKA+9(9,R13),WORKA+5(5,R13) CONV                       73800018
+         MVO   WORKA+1(5,R13),WORKA(5,R13)  TO                          74700018
+         OI    WORKA+5(R13),X'0F'          EXTERNAL                     75600018
+         UNPK  WORKA(9,R13),WORKA+1(5,R13)   DECI8AL                    76500018
+EXIT     LM    R14,R12,SAVE(R13)    RESTORE REGS                        77400018
+         LD    FR0,SVFPRG(R13)     RESTORE                              78300018
+         LD    FR2,SVFPRG+8(R13)    FP                                  79200018
+         LD    FR4,SVFPRG+16(R13)    REGS                               80100018
+         LD    FR6,SVFPRG+24(R13)                                       81000018
+         TM    BIGSW(R13),1      TEST IF IFP TOO BIG                    81900018
+         BC    8,8(R14)           NO                                    82800018
+         SR    R15,R15             YES - SET R15 ERROR CODE             83700018
+         BC    15,8(R14)         EXIT                                   84600018
+IDEDSW EQU   166                                                        85500018
+BIGSW  EQU   167                                                        86400018
+WORKA  EQU   96                                                         87300018
+SVFPRG EQU   168                                                        88200018
+ADIFBI   DC    A(ILBOIFB0)                                              89100018
+ADBIID   DC    A(ILBOBID1)                                              90000018
+       END                                                              90900018
+         EJECT                                                          91800018

@@ -1,0 +1,47 @@
+1                                               EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOATB0  SD  0001 000000 000100
+1                                                                                                               PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOATB0                                                         03000018
+                                       2 *        ILBOATB0   CALLING SEQ... L    15,V(ILBOATB0)                  06000018
+                                       3 *                                                                       09000018
+                                       4 *                                                                       12000018
+                                       5 *        LEVEL  180     09/14/66                                        15000018
+                                       6 *                                                                       18000018
+                                       7 *FUNCTION 0 ALPHABETIC TABLE FOR CLASS TEST.                            21000018
+                                       8 *INPUT 0 N/A                                                            24000018
+                                       9 *OUTPUT0 N/A                                                            27000018
+                                      10 *EXTERNAL ROUTINES 0 N/A                                                30000018
+                                      11 *EXITS 0 N/A                                                            33000018
+                                      12 *WORK AREAS 0 N/A                                                       36000018
+                                      13 *ATTRIBUTES 0 N/A                                                       39000018
+                                      14 *                                                                       42000018
+ 000000                               15 ILBOATB0 START 0                                                        45000018
+                                      16 *                                                                       48000018
+ 000000 0101010101010101              17 ATBL   DC    16X'01010101010101010101010101010101'                      51000018
+                                      18 *                                                                       54000018
+                                      19 *      OVERLAY AREAS OF TABLE WHICH CORRESPOND TO ALPHA CHARS WITH 00.  57000018
+                                      20 *                                                                       60000018
+ 000100                      00040    21        ORG   ATBL+64                                                    63000018
+ 000040 00                            22        DC    X'00'       BLANK                                          66000018
+ 000041                      000C1    23        ORG   ATBL+193                                                   69000018
+ 0000C1 0000000000000000              24        DC    9X'00'      A THRU I                                       72000018
+ 0000CA                      000D1    25        ORG   ATBL+209                                                   75000018
+ 0000D1 0000000000000000              26        DC    9X'00'      J THRU R                                       78000018
+ 0000DA                      000E2    27        ORG   ATBL+226                                                   81000018
+ 0000E2 0000000000000000              28        DC    8X'00'      S THRU Z                                       84000018
+                                      29          END                                                            87000018
+1                                                  ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    3
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT         30
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                        11
+ TOTAL RECORDS PRINTED                        47

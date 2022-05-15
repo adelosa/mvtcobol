@@ -1,0 +1,216 @@
+ANE0     TITLE     'ILBOANE0'                                           00400018
+*//    ILBOANE0                                                         00800018
+*        ILBOANE0   CALLING SEQ... L    15,V(ILBOANE0)                  01200018
+ILBOANE0 START 0                                                        01600018
+*                                                                       02000018
+*  ILBOANE0   -  ALPHANUMERIC EDITED ROUTINE.                           02400018
+*                CALLING SEQUENCE.                                      02800018
+*                                                                       03200018
+*                      L    RW0,=LENGTH-OF-SENDING                      03600018
+*                      LA   RW1,SENDING                                 04000018
+*                      LA   RW2,REC.                                    04400018
+*                      LA   RW3,EDITING-MASK                            04800018
+*                      L    R15,V(ILBOANE0)                             05200018
+*                      BALR R14,R15                                     05600018
+*                      DC   X'00'   FLAG BYTE                           06000018
+*                      DC   X'00'   MASK LENGTH.                        06400018
+*                      DC   X'0000' REC. LENGTH                         06800018
+*                                                                       07200018
+*                      FLAG  BYTE      BIT0    RIGTH JUST. RECEIV.      07600018
+*                                      BIT1    SENDING IS FIGCON.       08000018
+*                                      BIT2-7  UNUSED.                  08400018
+*                                                                       08800018
+*              THIS ROUTINE  MOVE  THE  SEND  TO THE RECEIVING          09200018
+*              PERFORMING  THE NECESSARY INSERTION  SPECIFIED BY        09600018
+*              THE MASK  -  THE MASK IS THE COBOL  ANE  PICTURE.        10000018
+*              IBYTE FOR CHAR. TYPE ( X OR 0  OR B)                     10400018
+*              2 BYTES FOR OCCURENCE OF THIS CHARACTER                  10800018
+*              THE FOLLOWING IS AN EXAMPLE OF A MASK FOR AN             11200018
+*              ALPHA NMR. EDITED ITEM WITH A PIRTURE X(3)0(5)B(2)       11600018
+*                              E70003F00005400002                       12000018
+         SPACE 5                                                        12400018
+RW0      EQU   0                                                        12800018
+RW1      EQU   1                                                        13200018
+RW2      EQU   2                                                        13600018
+RW3      EQU   3                                                        14000018
+RW4      EQU   4                                                        14400018
+RW5      EQU   5                                                        14800018
+RW6      EQU   6                                                        15200018
+RW7      EQU   7                                                        15600018
+RW8      EQU   8                                                        16000018
+RW9      EQU   9                                                        16400018
+RW10     EQU   10                                                       16800018
+RW11     EQU   11                                                       17200018
+RW12     EQU   12                                                       17600018
+R12      EQU   12                                                       18000018
+R13      EQU   13                                                       18400018
+R14      EQU   14                                                       18800018
+R15      EQU   15                                                       19200018
+*                                                                       19600018
+* SWITCHES                                                              20000018
+*                                                                       20400018
+RIGTH    EQU   X'80'                                                    20800018
+FIGCON   EQU   X'40'                                                    21200018
+*                                                                       21600018
+ANEX     EQU   X'E7'                   X VALUE                          22000018
+*                                                                       22400018
+         SPACE 5                                                        22800018
+         USING TGT,R13                                                  23200018
+         USING INPUT,R14                                                23600018
+         USING *,R15                                                    24000018
+         STM   R14,R12,SAVE                                             24400018
+         SPACE 3                                                        24800018
+         MVC   ANEC003(2),MINTHRE                                       25200018
+         SR    RW6,RW6                                                  25600018
+         IC    RW6,MASKLEN             GET MASK LENGTH                  26000018
+         SPACE 2                                                        26400018
+         TM    ANESW,RIGTH                                              26800018
+         BZ    ANE000                                                   27200018
+         MVC   ANEC003(2),THREE         REC IS RIGTH ADJUSTED.          27600018
+         AH    RW2,RECVLEN             SRT PTR TO END OF RECV.          28000018
+         AR    RW1,RW0                  SET  -   -  -  -  SEND.         28400018
+         AR    RW3,RW6                                                  28800018
+         SH    RW3,THREE                POINT  TO RIGTMOST CHAR. IN     29200018
+*                                       MASK                            29600018
+ANE000   LH    RW7,RECVLEN                                              30000018
+         SR    RW11,RW11                RESET REMAIN. COUNT FOR ONE     30400018
+*                                       CHAR. IN MASK.                  30800018
+         LR    RW8,RW0                  REMAIN. LENGTH OF SEND.         31200018
+         LR    RW9,RW1                  SAVE INITIAL PTR. TO SENDING    31600018
+*                                       INCASE  OF A FIGCON.            32000018
+         SPACE 3                                                        32400018
+ANE006   MVC   ANETEMP(2),1(RW3)        GET NUMBER OF CHAR. TO          32800018
+         LH    RW10,ANETEMP             BE MOVED.                       33200018
+         LR    RW11,RW10                SAVE IT IN 11  .                33600018
+         SPACE 2                                                        34000018
+ANE008   CR    RW10,RW7                                                 34400018
+         BH    ANE001                   TOO MANY FOR REMAIN. RECEIV.    34800018
+         SPACE 2                                                        35200018
+*                                                                       35600018
+*      TEST FOR INSERTION CHARACTER.                                    36000018
+*                                                                       36400018
+ANE011   CLI   0(RW3),ANEX                                              36800018
+         BNE   ANE022                                                   37200018
+         SPACE 2                                                        37600018
+         CR    RW10,RW8                                                 38000018
+         BH    ANE002                   TOO MUCH FOR SENDING.           38400018
+         SPACE 2                                                        38800018
+ANE013   CH    RW10,ANEC256                                             39200018
+         BH    ANE004                   MORE  THAN ONE MVC.             39600018
+         SPACE 2                                                        40000018
+ANE010   LR    RW12,RW10               PREPARE LENGTH FOR EXECUTED      40400018
+         BCTR  RW12,RW0                MOVE.                            40800018
+         TM    ANESW,RIGTH                                              41200018
+         BO    ANE005                                                   41600018
+         EX    RW12,ANEMOV1             MOVE                            42000018
+         AR    RW2,RW10                 UPDATE POINTERS                 42400018
+         AR    RW1,RW10                                                 42800018
+         SPACE 2                                                        43200018
+*   CONTROLING LOOP                                                     43600018
+*                                                                       44000018
+ANE009   SR    RW7,RW10                                                 44400018
+         BNH   ANEOUT                   DECREASE COUNTS.                44800018
+         SR    RW8,RW10                                                 45200018
+         BNH   ANE015                                                   45600018
+ANE016   SR    RW11,RW10                                                46000018
+         BNH   ANE007                                                   46400018
+         LR    RW10,RW11                MORE OF THAT CHAR. TO BE MOVED. 46800018
+         B     ANE008                                                   47200018
+*                                                                       47600018
+*      GET NEXT CHARACTER IN MASK                                       48000018
+*                                                                       48400018
+ANE007   SH    RW3,ANEC003                                              48800018
+         SH    RW6,THREE                                                49200018
+         BH    ANE006                                                   49600018
+*                                                                       50000018
+*       MASK IS EXHAUSTED . END OF THE GAME.                            50400018
+*                                                                       50800018
+ANEOUT   LM    R14,R12,SAVE                                             51200018
+         B     4(R14)                   EXIT.                           51600018
+         SPACE 2                                                        52000018
+*                                                                       52400018
+*      IF FIGCON IS EXHAUSTED START AGAIN.                              52800018
+*                                                                       53200018
+ANE015   TM    ANESW,FIGCON                                             53600018
+         BZ    ANE016                                                   54000018
+         LR    RW1,RW9                                                  54400018
+         LR    RW8,RW0                                                  54800018
+         B     ANE016                                                   55200018
+         SPACE 2                                                        55600018
+ANE005   SR    RW2,RW10                 FOR RIGTH ADJUSTED.             56000018
+         SR    RW1,RW10                 DECREASE PTR FIRST.             56400018
+         EX    RW12,ANEMOV1                                             56800018
+         B     ANE009                                                   57200018
+         SPACE 2                                                        57600018
+ANE004   LA    RW10,256                 SET MOVE LENGTH TO A MAX OF     58000018
+         B     ANE010                   256.                            58400018
+         SPACE 2                                                        58800018
+ANE001   LR    RW10,RW7                 RESET  COUNTS  TO  REM. LENGTH  59200018
+         LR    RW11,RW7                 OF REC.                         59600018
+         B     ANE011                                                   60000018
+         SPACE 2                                                        60400018
+ANE002   TM    ANESW,FIGCON                                             60800018
+         BO    ANE012                                                   61200018
+         LTR   RW8,RW8                                                  61600018
+         BZ    ANEOUT2                  SENDING IS EXHAUSTED.           62000018
+         LR    RW10,RW8                                                 62400018
+         B     ANE013                                                   62800018
+ANE012   LR    RW10,RW8                                                 63200018
+         B     ANE013                                                   63600018
+         SPACE 2                                                        64000018
+         SPACE 2                                                        64400018
+ANE022   MVC   ANETEMP(1),0(RW3)                                        64800018
+ANE021   EQU   *                                                        65200018
+*                                                                       65600018
+*        FOR RIGTH ADJUSTED UPDATE COUNT FIRST.                         66000018
+*                                                                       66400018
+ANE020   TM    ANESW,RIGTH                                              66800018
+         BZ    ANE019                                                   67200018
+         BCTR  RW2,RW0                                                  67600018
+ANE019   EQU   *                                                        68000018
+         SPACE 3                                                        68400018
+ANE003   MVC   0(1,RW2),ANETEMP                                         68800018
+         BCTR  RW7,RW0                  AND UPDATE COUNTS               69200018
+ANE023   TM    ANESW,RIGTH                                              69600018
+         BO    ANE018                                                   70000018
+         LA    RW2,1(RW2)                                               70400018
+         B     ANE017                                                   70800018
+ANE018   BCTR  RW2,RW0                                                  71200018
+ANE017   EQU   *                                                        71600018
+         BCT   RW11,ANE003                                              72000018
+         TM    ANESW,RIGTH                                              72400018
+         BZ    ANE007                                                   72800018
+         LA    RW2,1(RW2)              FOR RIGTH JUSTIFIED RESET POINTR 73200018
+         B     ANE007                   GET NEXT CHAR. IN MASK.         73600018
+         SPACE 2                                                        74000018
+*                                                                       74400018
+*      WHEN SENDING IS EXHAUSTED MOVE BLANK INSTAED.                    74800018
+*                                                                       75200018
+ANEOUT2  MVI   ANETEMP,X'40'                                            75600018
+         B     ANE021                                                   76000018
+         SPACE 3                                                        76400018
+ANEMOV1  MVC   0(0,RW2),0(RW1)                                          76800018
+         SPACE 3                                                        77200018
+MINTHRE  DC    1H'-3'                                                   77600018
+THREE    DC    1H'3'                                                    78000018
+ANEC256  DC    1H'256'                                                  78400018
+*                                                                       78800018
+*                                                                       79200018
+*   IN LINE DC'S DSECT.                                                 79600018
+*                                                                       80000018
+*                                                                       80400018
+INPUT    DSECT                                                          80800018
+ANESW    DS    XL1                     FLAG BYTE.                       81200018
+MASKLEN  DS    XL1                     MASK LENGTH.                     81600018
+RECVLEN  DS    XL2                     RECEIVING LENGTH.                82000018
+*                                                                       82400018
+*                                                                       82800018
+*      TGT DSECT.                                                       83200018
+*                                                                       83600018
+*                                                                       84000018
+TGT      DSECT                                                          84400018
+FILLER   DS    96X                                                      84800018
+SAVE     DS    60X                     SAVE AREA IN WORKING CELL IN TGT 85200018
+ANETEMP  DS    2X                      WORKING CELL FOR SUB IN TGT.     85600018
+ANEC003  DS    2X                      CONTAINS INCREMENT FOR MASK PTR. 86000018
+         END                                                            86400018

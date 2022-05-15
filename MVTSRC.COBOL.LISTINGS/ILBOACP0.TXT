@@ -1,0 +1,317 @@
+1ACP0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOACP0  SD  0001 000000 0001E7
+1ACP0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *$MODULE       ILBOACP0                                                 00400021
+1ACP0     ILBOACP0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      3 *//    ILBOACP0                                                         01200021
+                                       4 *                                                                       01600021
+                                       5 *STATUS0 CHANGE LEVEL 000                                               02000021
+                                       6 *10490124-0152,0188,0189,0221,0222,0242,0244                       7237 02400021
+                                       7 *FUNCTION/OPERATION0 SERVICE ACCEPT VERB.                               02800021
+                                       8 *ENTRY POINTS0                                                          03200021
+                                       9 *        ILBOACP0   CALLING SEQ... L    15,V(ILBOACP0)                  03600021
+                                      10 *                                  BALR 1,15                            04000021
+                                      11 *                                  DC   XL2'DEVICE-CODE'                04400021
+                                      12 *            DC    XL1'TYPE'  WHOSE BITS HAVE THE MEANINGS...           04800021
+                                      13 *                                  00 EXHIBIT                           05200021
+                                      14 *                                  10 TRACE                             05600021
+                                      15 *                                  20 VARIABLE LENGTH                   06000021
+                                      16 *                                  30 POINTER ADCON IS DIRECT           06400021
+                                      17 *                                  40 (NOT USED)  **4-7 ALL ON0         06800021
+                                      18 *                                  50 SIGNED       ** NUMERIC, NO CONV  07200021
+                                      19 *                                  60 INT. DECIMAL **4-7 ALL OFF0       07600021
+                                      20 *                                  70 BINARY       ** NON-NUM. NO CONV  08000021
+                                      21 *            DC     XL3'MNN'      IF BIN OR INT DEC, M IS NUMBER        08400021
+                                      22 *                                          OF BYTES IN CORE, NN IS      08800021
+                                      23 *                                          LENGTH OF CONVERTED RESULT,  09200021
+                                      24 *                                 IF VARIABLE LENGTH, 3 BYTES ARE AN    09600021
+                                      25 *                                          ADCON POINTING TO VLC-CELL,  10000021
+                                      26 *                                 OTHERWISE, 3 BYTES ARE LENGTH.        10400021
+                                      27 *            DC     AL4(BASE-LOCATOR)...OR... AL4(OPERAND-TEXT) IF      10800021
+                                      28 *                                               BIT 3 OF TYPE SET.      11200021
+                                      29 *            DC     XL2'DISPLACEMENT-OF-TEXT-FROM-BASE'                 11600021
+                                      30 *                                  DC   XL2'FFFF'                       12000021
+                                      31 *                                                                       12400021
+                                      32 *INPUT0 CALLING SEQ ABOVE AND RECORD ACCEPTED FROM SYSIN OR CONSOLE.    12800021
+                                      33 *OUTPUT0 RECORD ACCEPTED IS PLACED IN OPERAND SPECIFIED.                13200021
+                                      34 *EXTERNAL ROUTINES0 N/A.                                                13600021
+                                      35 *EXITS-NORMAL0 RETURN POINTS CALCULATED ON BASIS OF REG 1+ 14.          14000021
+                                      36 *EXITS-ERRORS0 N/A                                                      14400021
+                                      37 *TABLES/WORK AREAS0 IN COBOL OBJECT TGT. DCB FOR SYSIN IN SR IS         14800021
+                                      38 *            DEFAULT-FILLED-IN BY OPEN EXIT.                            15200021
+                                      39 *ATTRIBUTES0 SERIALLY REUSABLE.                                         15600021
+                                      40 *NOTES. NO CONVERSIONS, NO FORMATTING,    MULTI-RECORD ACCEPTS.         16000021
+ 000000                               41 ILBOACP0 START 0                                                        16400021
+                             00001    42 B      EQU   1                                                          16800021
+                             00001    43 D      EQU   1                                                          17200021
+                             00004    44 L      EQU   4                                                          17600021
+                             00005    45 P      EQU   5                                                          18000021
+                             00006    46 LRECL  EQU   6                                                          18400021
+                             00007    47 WORKBS EQU   7                                                          18800021
+                             00008    48 ECB    EQU   8                                                          19200021
+                                      49 *                                                                       19600021
+                             00000    50 R0     EQU   0                                                          20000021
+                             00001    51 R1     EQU   1                                                          20400021
+                             00002    52 R2     EQU   2                                                          20800021
+                             00003    53 R3     EQU   3                                                          21200021
+                             00004    54 R4     EQU   4                                                          21600021
+                             00005    55 R5     EQU   5                                                          22000021
+                             00006    56 R6     EQU   6                                                          22400021
+                             00007    57 R7     EQU   7                                                          22800021
+1ACP0     ILBOACP0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                            00008    58 R8     EQU   8                                                          23200021
+                             00009    59 R9     EQU   9                                                          23600021
+                             0000A    60 R10    EQU   10                                                         24000021
+                             0000B    61 R11    EQU   11                                                         24400021
+                             0000C    62 R12    EQU   12                                                         24800021
+                             0000D    63 R13    EQU   13                                                         25200021
+                             0000E    64 R14    EQU   14                                                         25600021
+                             0000F    65 R15    EQU   15                                                         26000021
+                             00009    66 WRKREG EQU   9                                                       CS 26400021
+                             00000    67          USING *,R15                                                    26800021
+ 000000 90EC D060      00060          68          STM   R14,R12,SVGPRG(R13)    SAVE CALLING REGS IN HIGH TGT     27200021
+                             00000    69        USING TAREA,R10        TEMP WORK AREA BASE                    CS 27600021
+ 000004 41AD 00B0      000B0          70        LA    R10,TAREAP(13)   LOAD BASE                              CS 28000021
+ 000008 5870 F144      00144          71        L     WORKBS,AWORK                                               28400021
+                             00148    72        USING WORK,WORKBS                                                28800021
+ 00000C D209 A000 1002 00000 00002    73          MVC   T(10),2(R1)            SET LENGTH, PNTR AT WD BOUNDARY   29200021
+ 000012 9650 A004      00004          74 ACCP06 OI    T+4,X'50'        SET REG CODE TO LOAD TO REG 5          CS 29600021
+ 000016 4390 A004      00004          75        IC    WRKREG,T+4       REG CODE INTO WRKREG                   CS 30000021
+ 00001A 4490 709A      001E2          76        EX    WRKREG,LDREG     LOAD BASE TO R5 - P                    CS 30400021
+ 00001E 4A50 A006      00006          77        AH    P,T+6            ADD DISP                               CS 30800021
+ 000022 9110 A000      00000          78        TM    T,X'10'               IS THIS A DIRECT REFERENCE...        31200021
+ 000026 4710 F02E      0002E          79        BC    1,ACCP09               YES, DO NOT RELOAD                  31600021
+ 00002A 5855 0000      00000          80        L     P,0(P)                                                     32000021
+ 00002E 9200 A000      00000          81 ACCP09 MVI   T,0                   RESET FIRST BYTE OF T AS ECB         32400021
+ 000032 5840 A000      00000          82        L     L,T                   L = DN LENGTH                        32800021
+ 000036 4A50 A008      00008          83        AH    P,T+8                                                      33200021
+                                      84 *      ACCEPT FROM SYSIN...                                             33600021
+ 00003A 5810 7060      001A8          85 ACCP01 L     R1,DCBSYI                 LOAD A(DCB IN MAIN)         8472 34000021
+ 00003E 1211                          86        LTR   R1,R1                     ZERO OR PLUS..              8472 34400021
+ 000040 4760 F07E      0007E          87        BC    6,ACCP03                  PLUS(ALREADY OPEN) BRANCH   8472 34800021
+ 000044 90E2 D09C      0009C          88        STM   R14,R2,SVLOCL(R13)        NO..SDO GETMAIN             8472 35200021
+                                      89        GETMAIN  R,LV=96                GET 96-BYTES FOR DCB        8472 35600021
+ 000048 4100 0060      00060          90+         LA    0,96(0,0)                         LOAD LENGTH            03800000
+ 00004C 4510 F050      00050          91+         BAL   1,*+4                             INDICATE GETMAIN       03820000
+ 000050 0A0A                          92+         SVC   10                                ISSUE GETMAIN SVC      03840000
+ 000052 58FD 00A0      000A0          93        L     R15,SVLOCL+4(R13)         RESTORE R15 FOR STORE       8472 36000021
+ 000056 5010 7060      001A8          94        ST  R1,DCBSYI                   SAVE ADDRESS OF DCB IN MAIN 8472 36400021
+ 00005A 9280 7060      001A8          95        MVI   DCBSYI,X'80'              INDICATE I/P AND LAST DCB   8472 36800021
+ 00005E 501D 00A8      000A8          96        ST    R1,SVLOCL+12(R13)         SAVE ADDRESS OF MAIN        8472 37200021
+ 000062 D25F 1000 7000 00000 00148    97        MVC  0(96,R1),DBSYI             MOVE DCB TO MAIN            8472 37600021
+ 000068 4110 7060      001A8          98        LA  R1,DCBSYI                   LOAD A(DCB) FOR OPEN        8472 38000021
+                                      99        OPEN  MF=(E,(1))                OPEN DCBSYI                 8472 38400021
+ 00006C 0A13                         100+         SVC   19                                ISSUE OPEN SVC         04000000
+ 00006E 98E2 D09C      0009C         101          LM    R14,R2,SVLOCL(R13)       SAVE REG'S LOCALLY              38800021
+                                     102 *                                                                       39200021
+ 000072 5810 7060      001A8         103        L     R1,DCBSYI                 ****************    JK           39600021
+ 000076 9110 1030      00030         104        TM    048(R1),X'10'             TEST FOR SYSIN DCB               40000021
+ 00007A 47E0 F0F0      000F0         105        BNO   ACCERR                    NOT OPENED, BRANCH TO            40400021
+                                     106 *                                                                       40800021
+                                     107 *                                                                       41200021
+ 00007E 9110 1030      00030         108 ACCP03 TM    048(R1),X'10'             ****************    JK           41600021
+ 000082 47E0 F104      00104         109        BNO   ACCER1                    IF NOT OPENED,  BRANCH TO        42000021
+ 000086 4861 0052      00052         110        LH    LRECL,82(D)               GET LOG REC LENGTH               42400021
+                                     111 *                                                                       42800021
+ 00008A 18B6                         112          LR    R11,LRECL               LOAD R11 WITH LRECL SIZE         43200021
+1ACP0     ILBOACP0                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000008C 1B99                         113          SR    R9,R9                   CLEAR R9                         43600021
+ 00008E 1885                         114          LR    R8,P                                                     44000021
+ 000090 1946                         115          CR    L,LRECL                 L GTR THAN LRECL                 44400021
+ 000092 47B0 F098      00098         116          BNL   ACCP08                  IF HIGH, READ A RECORD           44800021
+ 000096                              117 ACCP07   DS    0H                                                       45200021
+ 000096 18B4                         118          LR    R11,L                   LOAD R11 WITH DNM LENTGH         45600021
+ 000098 1946                         119 ACCP08 CR    L,LRECL               L GT MAX LOG REC SIZE...             46000021
+ 00009A 4720 F0E6      000E6         120        BC    2,ACCP04               HI, READ IN A FULL CARD             46400021
+ 00009E 947F 709E      001E6         121          NI    ACPTSW,X'7F'            TURN OFF SWITCH                  46800021
+                             000A2   122 ACCP11 EQU   *                                                          47200021
+ 0000A2 9180 7070      001B8         123          TM    EODBYTE,X'80'       TEST EOD BIT                   45094 47600021
+ 0000A6 4710 F0DE      000DE         124          BO    ACCP02              GET OUT OF ACP0 RTN            45094 48000021
+ 0000AA 90E2 D09C      0009C         125          STM   R14,R2,SVLOCL(R13)       SAVE REG'S LOCALLY              48400021
+                                     126          GET   (1)                 LOCATE NEXT RECORD      (D=1)        48800021
+ 0000AE 58F0 1030      00030         127+         L     15,48(0,1)                        LOAD GET ROUTINE ADDR. 00100000
+ 0000B2 05EF                         128+         BALR  14,15                             LINK TO GET ROUTINE    00120000
+ 0000B4 98E2 D09C      0009C         129          LM    R14,R2,SVLOCL(R13)       SAVE REG'S LOCALLY              49200021
+ 0000B8 5831 004C      0004C         130          L     R3,76(R1)               REPLACE DCB PNTR BY BUF PNTR     49600021
+ 0000BC 06B0                         131          BCTR  R11,R0                  SUBTRACT 1 FROM DNM LNGTH        50000021
+ 0000BE 1858                         132          LR    P,R8                    GET PNTR TO DNM                  50400021
+ 0000C0 1A59                         133          AR    P,R9                    POINT TO NEXT RCD AREA           50800021
+ 0000C2 44B0 F13C      0013C         134          EX    R11,ACCPMU                                               51200021
+ 0000C6 41BB 0001      00001         135          LA    R11,1(R11)              ADD 1 TO DNM LENGTH              51600021
+ 0000CA 9180 709E      001E6         136          TM    ACPTSW,X'80'            IS SWITCH ON                     52000021
+ 0000CE 4780 F0DE      000DE         137          BZ    ACCP02                  LEAVE ILBOACP0                   52400021
+ 0000D2 1A96                         138          AR    R9,LRECL                POINT TO NEXT RECORD AREA        52800021
+ 0000D4 1946                         139          CR    L,LRECL                 L GTR THAN LRECL                 53200021
+ 0000D6 47B0 F098      00098         140          BNL   ACCP08                  IF HIGH, READ NEXT RECORD        53600021
+ 0000DA 47F0 F096      00096         141          B     ACCP07                                                   54000021
+ 0000DE 98EC D060      00060         142 ACCP02   LM    R14,R12,SVGPRG(R13)                                      54400021
+ 0000E2 47F1 000C      0000C         143          BC    15,12(R1)              *** LEAVE ILBOACPT ***          7 54800021
+ 0000E6                              144 ACCP04   DS    0H                                                       55200021
+ 0000E6 9680 709E      001E6         145          OI    ACPTSW,X'80'            TURN ON SWITCH                   55600021
+ 0000EA 1B46                         146          SR    L,LRECL                                                  56000021
+ 0000EC 47F0 F0A2      000A2         147          B     ACCP11                  BRANCH TO GET ROUTINE            56400021
+                                     148 *                                                                       56800021
+                                     149 *                                                                       57200021
+ 0000F0                              150 ACCERR DS    0H                        *****               JK           57600021
+ 0000F0 D22E D0D8 F10C 000D8 0010C   151        MVC   AFNAME(L'AMSGB+8,R13),ACCERM   ERROR MESG FOR SYSIN        58000021
+ 0000F6 D207 D0FA 1028 000FA 00028   152        MVC   AFNAME+L'AMSGB-5(8,R13),40(R1)                             58400021
+ 0000FC 411D 00D8      000D8         153        LA    R1,AFNAME(R13)            POINTER TO PARMLIST              58800021
+                                     154        WTO   MF=(E,(R1))                    WRITE TO OPERATOR           59200021
+ 000100 1811                         155+         LR    1,(R1)                            LOAD PARAMETER REG 1   00160000
+ 000102 0A23                         156+         SVC   35                                ISSUE SVC              00750021
+ 000104 98EC D060      00060         157 ACCER1 LM    R14,R12,SVGPRG(R13)       RESTORE CALLING MOD. REG.        59600021
+ 000108 47F1 000C      0000C         158        B     12(R1)                RETURNS TO CALLING RTN               60000021
+                                     159 *                                                                       60400021
+                                     160 *                                                                       60800021
+ 00010C                              161        DS    0F                                                         61200021
+ 00010C 002B                         162 ACCERM DC    AL2(AMSGE-AMSGB+4)                                         61600021
+ 00010E 8000                         163        DC    X'8000'                                                    62000021
+ 000110 C9D2C6F9F9F9C940             164 AMSGB  DC    C'IKF999I UNSUCCESSFUL OPEN FOR          '                 62400021
+                             00137   165 AMSGE  EQU   *                                                          62800021
+ 000137 04004020                     166          DC    X'04004020'         DESCRIPTOR AND ROUTING CODES         63200021
+                             000D8   167 AFNAME EQU   216                       WORK AREA IN TGT FOR MESG        63600021
+1ACP0     ILBOACP0                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    168 *                                                                       64000021
+                                     169 *                                                                       64400021
+ 00013B 00
+ 00013C D200 5000 3000 00000 00000   170 ACCPMU   MVC   0(0,P),0(R3)            BUFFER TO DNM **EXECUTED**       64800021
+ 000142 0000
+ 000144 00000148                     171 AWORK  DC    A(WORK)                                                    65200021
+                             00148   172        USING *,WORKBS                                                   65600021
+                             00148   173 WORK   EQU   *                                                          66000021
+                                     174 * NEXT CARD CHANGED BUT COL 68-71 CANT BE USED                     8472 66400021
+                                     175 DBSYI  DCB   DSORG=PS,MACRF=GL,DDNAME=SYSIN,                           X66800021
+                                                        BFTEK=S,EROPT=ABE,EXLST=EXLIST,                         *67200021
+                                                        EODAD=ACPEOD                                             67600021
+0
+                                     177+*                       DATA CONTROL BLOCK                              22770020
+                                     178+*                                                                       22860020
+ 000148                              179+DBSYI    DC    0F'0'                   ORIGIN ON WORD BOUNDARY          22914020
+
+                                     181+*                       DIRECT ACCESS DEVICE INTERFACE                  27360020
+
+ 000148 0000000000000000             183+         DC    BL16'0'                  FDAD,DVTBL                      27540020
+ 000158 00000000                     184+         DC    A(0)                     KEYLE,DEVT,TRBAL                27720020
+
+                                     186+*                       COMMON ACCESS METHOD INTERFACE                  48690020
+
+ 00015C 00                           188+         DC    AL1(0)                  BUFNO                            49050020
+ 00015D 000001                       189+         DC    AL3(1)                  BUFCB                            54720020
+ 000160 0000                         190+         DC    AL2(0)             BUFL                                  55170020
+ 000162 4000                         191+         DC    BL2'0100000000000000'                                   *55800020
+                                        +                                                 DSORG                  55890020
+ 000164 00000001                     192+         DC    A(1)                     IOBAD                           56340020
+
+                                     194+*                       FOUNDATION EXTENSION                            56610020
+
+ 000168 40                           196+         DC    BL1'01000000'                  BFTEK,BFLN,HIARCHY        59850020
+ 000169 0001D8                       197+         DC    AL3(ACPEOD)             EODAD                            65970020
+ 00016C 00                           198+         DC    BL1'00000000'                                           *66150020
+                                        +                                       RECFM                            66240020
+ 00016D 0001B0                       199+         DC    AL3(EXLIST)             EXLST                            66330020
+
+                                     201+*                       FOUNDATION BLOCK                                66690020
+
+ 000170 E2E8E2C9D5404040             203+         DC    CL8'SYSIN'              DDNAME                           66870020
+ 000178 02                           204+         DC    BL1'00000010'           OFLGS                            68220020
+ 000179 00                           205+         DC    BL1'00000000'                          IFLG              68310020
+ 00017A 4800                         206+         DC    BL2'0100100000000000'                                   *68400020
+                                        +                                                                       *68490020
+                                        +                                       MACR                             68580020
+
+                                     208+*                       BSAM-BPAM-QSAM INTERFACE                        74430020
+
+ 00017C 00                           210+         DC    BL1'00000000'                                           *74610020
+                                        +                                                                   RER1 74700020
+ 00017D 000001                       211+         DC    AL3(1)                  CHECK, GERR, PERR                74790020
+ 000180 00000001                     212+         DC    A(1)                    SYNAD                            74880020
+1ACP0     ILBOACP0                                                                                              PAGE    7
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000184 0000                         213+         DC    H'0'                    CIND1, CIND2                     74970020
+ 000186 0000                         214+         DC    AL2(0)                  BLKSIZE                          75240020
+ 000188 00000000                     215+         DC    F'0'                    WCPO, WCPL, OFFSR, OFFSW         75870020
+ 00018C 00000001                     216+         DC    A(1)                    IOBA                             75960020
+ 000190 00                           217+         DC    AL1(0)                  NCP                              76050020
+ 000191 000001                       218+         DC    AL3(1)                  EOBR, EOBAD                      76140020
+
+                                     220+*                            QSAM INTERFACE                             81450020
+
+ 000194 00000001                     222+         DC    A(1)                     RECAD                           81630020
+ 000198 0000                         223+         DC    H'0'                    QSWS                             81810020
+ 00019A 0000                         224+         DC    AL2(0)         LRECL                                     80730020
+ 00019C 20                           225+         DC    BL1'00100000'           EROPT                            82530020
+ 00019D 000001                       226+         DC    AL3(1)                  CNTRL                            82620020
+ 0001A0 00000000                     227+         DC    F'0'                    PRECL                            82710020
+ 0001A4 00000001                     228+         DC    A(1)                    EOB                              82800020
+ 0001A8                              229        DS    0F                                                         68000021
+ 0001A8 00000000                     230 DCBSYI DC  A(0)                                                    8472 68400021
+ 0001AC 00000001                     231 N1     DC    XL4'0001'                                                  68800021
+ 0001B0 85                           232 EXLIST DC    XL1'85'               OPEN EXIT PARAM LIST                 69200021
+ 0001B1 0001BA                       233        DC    AL3(LENCHK)                                                69600021
+ 0001B4 000000DE                     234 ARETAD   DC    A(ACCP02)           ADDR. OF RTN TO LEAVE ACP0     45094 70000021
+ 0001B8 00                           235 EODBYTE  DC    X'00'                                              45094 70400021
+ 0001BA                              236          DS    0H                                                 45094 70800021
+                             001BA   237          USING *,R15    OPEN EXIT TO SET UP LRECL AND BLKSIZE IN DCB    71200021
+                             001BA   238 LENCHK EQU   *              IN EVENT NOT SPECIFIED ON //SYSIN DD CARD   71600021
+ 0001BA D501 1052 F02A 00052 001E4   239        CLC   82(2,R1),N0     LRECL = TO 0...                         SN 72000021
+ 0001C0 4770 F00E      001C8         240        BC    7,*+8           NO..ALREADY SET..CHECK BLKSIZE          SN 72400021
+ 0001C4 9250 1053      00053         241        MVI   83(R1),80       YES..SET LRECL = 80                     SN 72800021
+ 0001C8 D501 103E F02A 0003E 001E4   242        CLC   62(2,R1),N0     BLKSIZE = 0...                          SN 73200021
+ 0001CE 077E                         243        BCR   7,R14           NO..ALREADY SET..RETURN                 SN 73600021
+ 0001D0 D201 103E 1052 0003E 00052   244        MVC   62(2,R1),82(R1) SET BLKSIZE = TO LRECL                  SN 74000021
+ 0001D6 07FE                         245          BCR   15,R14                                                   74400021
+-
+                                     247 *                                                                 45094 75200021
+ 0001D8                              248 ACPEOD   DS    0H                                                       75600021
+
+                                     250 *                                                                       76400021
+                                     251 *        END-OF-DATA-SET ROUTINE FOR SYSIN. AT END OF FILE, WE          76800021
+                                     252 *        RETURN TO THE USER DIRECTLY AFTER THE ACCEPT STATEMENT,        77200021
+                                     253 *        WITH HIS LAST REFERENCED DATA AREAS UNCHANGED.                 77600021
+                                     254 *                                                                       78000021
+
+ 0001D8 58F0 706C      001B4         256          L     R15,ARETAD          GET ADDRESS OF EXIT ROUTINE          78800021
+ 0001DC 9280 7070      001B8         257          MVI   EODBYTE,X'80'       SET EOD BIT                    45094 79200021
+ 0001E0 07FF                         258          BCR   R15,R15             LEAVE ACP0                           79600021
+-
+                                     260 *                                                                 45094 80400021
+-
+1ACP0     ILBOACP0                                                                                              PAGE    8
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00001E2 1800                         262 LDREG  LR    0,0              LOAD BASE                              CS 81200021
+ 0001E4 0000                         263 N0     DC    XL2'0000'             CONSTANT ZERO FOR LENCHK BASE        81600021
+ 0001E6 00                           264 ACPTSW   DC    X'00'                                                    82000021
+                             00060   265 SVGPRG   EQU   96                  60 BYTE AREA IN TGT                  82400021
+                             0009C   266 SVLOCL EQU   156                   20 BYTE AREA IN TGT                  82800021
+                             000B0   267 TAREAP EQU   176                   DISPLACEMENT OF DSECT IN TGT         83200021
+                             001E7   268        USING *,R10                                                   CS 83600021
+ 000000                              269 TAREA  DSECT                                                            84000021
+ 000000                              270 T      DS    XL10                  TEMP WORK AREA                       84400021
+                                     271        END                                                              84800021
+1ACP0                                              RELOCATION DICTIONARY                                        PAGE    9
+-POS.ID   REL.ID   FLAGS   ADDRESS                                                                ASM 0201 11.03 02/14/15
+0 0001     0001      0C     000144
+  0001     0001      08     000169
+  0001     0001      08     00016D
+  0001     0001      08     0001B1
+  0001     0001      0C     0001B4
+
+1ACP0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE   10
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        213
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY     3355
+ TOTAL RECORDS PUNCHED                        12
+ TOTAL RECORDS PRINTED                       317

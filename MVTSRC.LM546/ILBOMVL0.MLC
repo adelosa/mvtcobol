@@ -1,0 +1,67 @@
+*//    ILBOMVL0                                                         01000018
+MVL0     TITLE     'ILBOMVL0'                                           02000018
+*********************************************************************** 03000018
+* TITLE: ILBOMVL0                                                     * 04000018
+* STATUS: CHANGE LEVEL 000                                            * 05000018
+* FUNCTION/OPERATION: THIS ROUTINE MOVES A FIGCON OF MORE THAN ONE    * 06000018
+*                     CHARACTER IN LENGTH INTO A NONNUMERIC RECEIVING * 07000018
+*                     FIELD WHICH MAY BE EITHER RIGHT OR LEFT ADJUSTED* 08000018
+* ENTRY POINTS: ILBOMVL0 AND ILBOMVL0                                 * 09000018
+* INPUT:  REGISTER 0 - LENGTH OF RECEIVING FIELD                      * 10000018
+*         REGISTER 1 - LENGTH OF FIGCON                               * 11000018
+*         REGISTER 2 - PTR TO RECEIVING FIELD                         * 12000018
+*         REGISTER 3 - PTR TO FIGCON                                  * 13000018
+* OUTPUT: THE RECEIVING FIELD FILLED WITH THE FIGURATIVE CONSTANT     * 14000018
+* EXTERNAL ROUTINES: NONE                                             * 15000018
+* EXITS: NORMAL - BCR 15,14      NO ERROR EXITS                       * 16000018
+* TABLES/WORK AREAS: NONE                                             * 17000018
+* ATTRIBUTES: REENTRANT                                               * 18000018
+* NOTE:   R2 IS NEGATIVE WHEN REC. FIELD IS RIGHT ADJUSTED            * 19000018
+*                                                                     * 20000018
+*********************************************************************** 21000018
+ILBOMVL0 START 0                                                        22000018
+R0       EQU   0                                                        23000018
+R1       EQU   1                                                        24000018
+R2       EQU   2                                                        25000018
+R3       EQU   3                                                        26000018
+R12      EQU   12                                                       27000018
+R13      EQU   13                                                       28000018
+R14      EQU   14                                                       29000018
+SAVEA    EQU   96                                                       30000018
+RJSW     EQU   SAVEA+72                                                 31000018
+         USING *,15                                                     32000018
+         STM   R14,R12,SAVEA(R13)                                       33000018
+         NI    RJSW(R13),0        INIT SW TO ZERO                       34000018
+         LTR   R2,R2               RIGHT ADJUSTED?                      35000018
+         BC    11,MVLAB1           NO-                                  36000018
+         LNR   R2,R2                                                    37000018
+         OI    RJSW(R13),X'FF'    SET RIGHT ADJUSTMENT SWITCH           38000018
+         AR    R2,R0               MOVE RECEIVING FIELD POINTER TO FAR  39000018
+*                                  RIGHT                                40000018
+MVLAB1   CR    R1,R0               FIGCON LENGTH GREATER THAN REC.      41000018
+*                                  FIELD LENGTH?                        42000018
+         BC    2,MVLAB3            YES-                                 43000018
+         TM    RJSW(R13),X'FF'    RIGHT ADJUSTED?                       44000018
+         BC    14,MVLAB2           NO-                                  45000018
+         SR    R2,R1               MOVE REC. FIELD POINTER TO LEFT      46000018
+MVLAB2   BCTR  R1,R0                                                    47000018
+         EX    R1,EXMVC                                                 48000018
+         SR    R0,R1               SUB FIGCON LENGTH FROM REC. FIELD    49000018
+*                                  LENGTH                               50000018
+         TM    RJSW(R13),X'FF'    RIGHT ADJUSTED?                       51000018
+         BC    1,MVLAB1            YES-                                 52000018
+         AR    R2,R1               MOVE REC. FIELD PTR TO RIGHT         53000018
+         BC    15,MVLAB1                                                54000018
+MVLAB3   LTR   R0,R0                                                    55000018
+         BC    8,MVEXIT                                                 56000018
+         TM    RJSW(R13),X'FF'    RIGHT ADJUSTED?                       57000018
+         BC    14,MVLAB4           NO-                                  58000018
+         SR    R2,R0               MOVE REC. FIELD PTR TO FAR RIGHT     59000018
+         AR    R3,R1               MOVE FIGCON PTR TO CORRECT POSITION  60000018
+         SR    R3,R0               FOR LAST MOVE                        61000018
+MVLAB4   LR    R1,R0                                                    62000018
+         EX    R1,EXMVC                                                 63000018
+MVEXIT   LM    R14,R12,SAVEA(R13)                                       64000018
+         BCR   15,14                                                    65000018
+EXMVC    MVC   0(0,R2),0(R3)                                            66000018
+         END                                                            67000018

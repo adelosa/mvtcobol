@@ -1,0 +1,77 @@
+*//    ILBOBID0                                                         01000018
+BID0     TITLE     'ILBOBID0'                                           02000018
+*                                                                       03000018
+*                                                                       04000018
+*        LEVEL  180     09/14/66                                        05000018
+*                                                                       06000018
+*FUNCTION0 THIS ROUTINE CONVERTS A DOUBLE PRECISION BINARY NUMBER TO    07000018
+*   A 10-BYTE INTERNAL DECIMAL NUMBER .                                 08000018
+*ENTRY POINTS0 ILBOBID4, ILBOBID2, ILBOBIID                             09000018
+*INPUT0 THE BINARY NUMBER CAN BE IN REGISTER PAIRS 0,1 OR 2,3 OR 4,5    10000018
+*   FOR ENTRY POINTS ILBOBIID, ILBOBID2 OR ILBOBID4.                    11000018
+*OUTPUT0 10-BYTE INTERNAL DECIMAL NUMBER STARTING AT WORKA(13) WHERE    12000018
+*   13 IS THE REGISTER POINTING TO THE TGT OF COBOL PROGRAM.            13000018
+*   13 IS INITIALIZED BY THE CALLING ROUTINE.                           14000018
+*EXTERNAL ROUTINES0 NONE                                                15000018
+*EXITS0 BY BCR  15,14    THERE ARE NO ERROR EXITS.                      16000018
+*WORK AREAS0  BYTES 96-140 OF TGT.                                      17000018
+*ATTRIBUTES0 REENTRANT CODING.  NO CHARACTER DEPENDENCY.                18000018
+*                                                                       19000018
+*        ILBOBID0   CALLING SEQ... L    15,V(ILBOBID0)                  20000018
+ILBOBID0 START 0                                                        21000018
+         ENTRY ILBOBID1                                                 22000018
+         ENTRY ILBOBID2                                                 23000018
+*                                                                       24000018
+R0     EQU   0                                                          25000018
+R1     EQU   1                                                          26000018
+R2     EQU   2                                                          27000018
+R3     EQU   3                                                          28000018
+R4     EQU   4                                                          29000018
+R5     EQU   5                                                          30000018
+R6     EQU   6                                                          31000018
+R7     EQU   7                                                          32000018
+R8     EQU   8                                                          33000018
+R9     EQU   9                                                          34000018
+R10    EQU   10                                                         35000018
+R11    EQU   11                                                         36000018
+R12    EQU   12                                                         37000018
+R13    EQU   13                                                         38000018
+R14    EQU   14                                                         39000018
+R15    EQU   15                                                         40000018
+         USING *,R15                                                    41000018
+         STM   R0,R1,SVWRD1(R13)  SAVE WORK REGS                        42000018
+         LR    R0,R4              LOAD REG                              43000018
+         LR    R1,R5              LOAD REG                              44000018
+         BAL   R15,SUBCOM                                               45000018
+         USING *,R15                                                    46000018
+ILBOBID2 STM   R0,R1,SVWRD1(R13)  SAVE WORK REGS                        47000018
+         LR    R0,R2              LOAD REGS                             48000018
+         LR    R1,R3                                                    49000018
+SUBCOM   NI    SWITCH(R13),0     CLEAR SWITCH                           50000018
+         OI    SWITCH(R13),1     TURN ON EXIT SW                        51000018
+         BAL   R15,COMMON                                               52000018
+         USING *,R15                                                    53000018
+ILBOBID1 NI    SWITCH(R13),0    TURN OFF EXIT SW                        54000018
+COMMON   LTR   R0,R0              TEST FOR NEGATIVE                     55000018
+       BC    11,DIV            NO - POS                                 56000018
+         OI    SWITCH(R13),2      YES - SET NEG SW                      57000018
+DIV      D     R0,TNPW9          DIV BY 10 ** 9 - SPLIT IN TWO          58000018
+         CVD   R1,WORKA2(R13)     CONV HI-ORD 9 DIGS                    59000018
+         CVD   R0,WORKA3(R13)     CONV LO ORD 9 DIGS                    60000018
+         MVO   WORKA(6,R13),WORKA2(8,R13)  LEFT JUSTIFY HI 9 DIGS       61000018
+         MVC   WORKA+5(5,R13),WORKA3+3(R13)  MOVE IN LO-ORD 9 DIGS      62000018
+         TM    SWITCH(R13),2     TEST NEG SW                            63000018
+       BC    14,EXIT           NOT NEG                                  64000018
+         OI    WORKA+9(R13),1     MAKE SIGN NEG                         65000018
+EXIT     TM    SWITCH(R13),1     TEST EXIT SW                           66000018
+         BCR   8,R14             SWITCH OFF                             67000018
+         LM    R0,R1,SVWRD1(R13)   RESTORE                              68000018
+         BCR   15,R14                                                   69000018
+*                                                                       70000018
+WORKA  EQU   96                                                         71000018
+WORKA2 EQU   104                                                        72000018
+WORKA3 EQU   112                                                        73000018
+SWITCH EQU   130                                                        74000018
+SVWRD1 EQU   120                                                        75000018
+TNPW9  DC    F'1000000000'                                              76000018
+       END                                                              77000018

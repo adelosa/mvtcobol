@@ -1,0 +1,127 @@
+1CLS0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOCLS0  SD  0001 000000 000088
+1CLS0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *$MODULE       ILBOCLS0                                                 00900021
+                                       2 *//    ILBOCLS0                                                         01800021
+1CLS0     ILBOCLS0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      4 *        ILBOCLS0   CALLING SEQ... L    15,V(ILBOCLS0)                  03600021
+                                       5 *                                                                       04500021
+                                       6 *                                                                       05400021
+                                       7 *        LEVEL  180     09/14/66                                        06300021
+                                       8 *                                                                       07200021
+                                       9 *FUNCTION 0 THIS ROUTINE PERFORMS A CLASS TEST FOR OPERANDS WITH LENGTH 08100021
+                                      10 *   VARIABLE OR GREATER THAN 256 BYTES.  THE OPERAND IS TESTED FOR      09000021
+                                      11 *   ALPHABETIC OR NUMERIC CLASS.                                        09900021
+                                      12 *ENTRY POINT 0 ILBOCLAS , CALLING SEQUENCE IS 0-                        10800021
+                                      13 *                             L    2,V(ILBOATBL, ILBOETBL OR ILBOITBL)  11700021
+                                      14 *                             L    15,V(ILBOCLAS)                       12600021
+                                      15 *                             BALR 1,15                                 13500021
+                                      16 *                             DC   XL10'OPERAND   INFORMATION'          14400021
+                                      17 *   WHERE OPERAND INFORMATION FIELD HAS ONE OF THE FOLLOWING TWO FORMAT 15300021
+                                      18 *                          1. FIXED LENGTH                              16200021
+                                      19 *                             DC   X'TYPE CODE'        SEE BELOW        17100021
+                                      20 *                             DC   XL3'LENGTH OF ITEM'                  18000021
+                                      21 *                             DC   AL4(ADDRESS OF POINTER IN TASK       18900021
+                                      22 *                                     GLOBAL TABLE OR POINTER TO        19800021
+                                      23 *                                     PROGRAM GLOBAL TABLE)             20700021
+                                      24 *                             DC   XL2'DISPLACEMENT'                    21600021
+                                      25 *                          2. VARIABLE LENGTH                           22500021
+                                      26 *                             DC   X'TYPE CODE'        SEE BELOW        23400021
+                                      27 *                             DC   AL3(POINTER TO CELL IN TASK GLOBAL   24300021
+                                      28 *                                     TABLE THAT CONTAINS THE LENGTH)   25200021
+                                      29 *                             DC   AL4(ADDRESS OF POINTER IN TASK       26100021
+                                      30 *                                     GLOBAL TABLE)                     27000021
+                                      31 *                             DC   XL2'DISPLACEMENT'                    27900021
+                                      32 *   THE TYPE CODE BITS ARE BIT 0   NOT USED                             28800021
+                                      33 *                              1   TRACE ITEM   (N/A HERE)              29700021
+                                      34 *                              2   VARIABLE LENGTH                      30600021
+                                      35 *                              3   DIRECT POINTER (FOR LITERAL OR TALLY 31500021
+                                      36 *                            4-5   NOT USED                             32400021
+                                      37 *                              6   INTERNAL DECIMAL ITEM   (N/A HERE)   33300021
+                                      38 *                              7   BINARY ITEM             (N/A HERE)   34200021
+                                      39 *INPUT 0 AS EXPLAINED ABOVE.                                            35100021
+                                      40 *OUTPUT 0 CONDITION CODE IS SET TO 0 WHEN IS TRUE.                      36000021
+                                      41 *         CONDITION CODE IS NON-ZERO WHEN TEST IS FALSE.                36900021
+                                      42 *EXIT-NORMAL0BY   BCR   15,1                                            37800021
+                                      43 *     ERROR0  NONE                                                      38700021
+                                      44 *WORK AREA 0 BYTES 96-104 OF TGT.                                       39600021
+                                      45 *ATTRIBUTES 0 SERIALLY REUSABLE.                                        40500021
+                                      46 *                                                                       41400021
+ 000000                               47 ILBOCLS0 START 0                                                        42300021
+                             00000    48 R0       EQU   0                                                        43200021
+                             00001    49 R1       EQU   1                                                        44100021
+                             00002    50 R2       EQU   2                                                        45000021
+                             00003    51 R3       EQU   3                                                        45900021
+                             00004    52 R4       EQU   4                                                        46800021
+                             00005    53 R5     EQU   5                                                          47700021
+                             00006    54 R6     EQU   6                                                          48600021
+                             00007    55 R7     EQU   7                                                          49500021
+                             00008    56 R8     EQU   8                                                          50400021
+                             00009    57 R9     EQU   9                                                          51300021
+                             0000A    58 R10    EQU   10                                                         52200021
+1CLS0     ILBOCLS0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                            0000B    59 R11    EQU   11                                                         53100021
+                             0000C    60 R12    EQU   12                                                         54000021
+                             0000D    61 R13    EQU   13                                                         54900021
+                             0000E    62 R14    EQU   14                                                         55800021
+                             0000F    63 R15    EQU   15                                                         56700021
+                             00000    64          USING *,R15                                                    57600021
+ 000000 90EC D00C      0000C          65          STM   R14,R12,SAVE(R13)                                        58500021
+ 000004 D207 D060 1000 00060 00000    66          MVC   ALLIGN(8,R13),0(R1) ALLIGN PARAMETERS ON FULL WORD       59400021
+ 00000A D200 D068 1004 00068 00004    67        MVC   WORK(1,R13),4(R1)     MOVE REG CODE TO WORK             GL 60300021
+ 000010 9640 D068      00068          68        OI    WORK(R13),X'40'      WET UP TO PUT TGT PNTR IN R4       GL 61200021
+ 000014 435D 0068      00068          69        IC    R5,WORK(R13)         REG CODE TO WORKAREA               GL 62100021
+ 000018 4450 F084      00084          70        EX    R5,LDREG             LOAD BASE IN REG 4                 GL 63000021
+ 00001C 4A41 0006      00006          71        AH    R4,6(R1)             ADD DISP                           GL 63900021
+ 000020 9110 1000      00000          72          TM    0(R1),X'10'       TEST DIRECT POINTER                    64800021
+ 000024 4710 F030      00030          73        BC    1,LDLEN           YES                                      65700021
+ 000028 5844 0000      00000          74          L     R4,0(R4)            NO - LOAD BL                         66600021
+ 00002C 4A41 0008      00008          75          AH    R4,8(R1)            ADD DISP                             67500021
+ 000030 583D 0060      00060          76 LDLEN    L     R3,ALLIGN(R13)     LOAD LENGTH OR VL                     68400021
+ 000034 9120 1000      00000          77          TM    0(R1),X'20'       TEST VL                                69300021
+ 000038 4710 F048      00048          78        BC    1,LOADVL          YES                                      70200021
+ 00003C 8930 0008      00008          79          SLL   R3,8               NO - CLEAR                            71100021
+ 000040 8830 0008      00008          80          SRL   R3,8                HI ORDER 8 BITS                      72000021
+ 000044 47F0 F04C      0004C          81        BC    15,LOOP          GO TEST                                   72900021
+ 000048                               82 LOADVL   DS    0H                                                 47448 73800021
+ 000048 4833 D000      00000          83          LH    R3,0(R3,R13)        LOAD FROM VLC CELL             47448 74700021
+ 00004C                               84 LOOP     DS    0H                                                 47448 75600021
+ 00004C 1233                          85          LTR   R3,R3               LENGTH NOW EQUAL TO ZERO...    47448 76500021
+ 00004E 4780 F060      00060          86          BZ    EXIT                YES, ALL THROUGH               47448 77400021
+ 000052 4930 F086      00086          87          CH    R3,H256             COMPARE LENGTH TO 256          47448 78300021
+ 000056 4720 F068      00068          88        BC    2,GRT256          GREATER THAN 256                         79200021
+ 00005A 0630                          89          BCTR  R3,R0              SUBTRACT 1 TO EX                      80100021
+ 00005C 4430 F07E      0007E          90          EX    R3,TRANS          TRANSLATE                              81000021
+ 000060 98EC D00C      0000C          91 EXIT     LM    R14,R12,SAVE(R13)     REST REGS                          81900021
+ 000064 47F1 000A      0000A          92        BC    15,10(R1)                                                  82800021
+ 000068 DDFF 4000 2000 00000 00000    93 GRT256   TRT   0(256,R4),0(R2)    TRANSLATE 256 BYTES                   83700021
+ 00006E 4770 F060      00060          94        BC    7,EXIT           NOT ALL ZERO                              84600021
+ 000072 4B30 F086      00086          95          SH    R3,H256           ALL ZERO - SUBTR 256 FROM LENGTH       85500021
+ 000076 4144 0100      00100          96          LA    R4,256(R4)         INCR OPERAND POINTER BY 256           86400021
+ 00007A 47F0 F04C      0004C          97        BC    15,LOOP          REPEAT                                    87300021
+                                      98 *                                                                       88200021
+ 00007E DD00 4000 2000 00000 00000    99 TRANS    TRT   0(0,R4),0(R2)                                            89100021
+                                     100 *                                                                       90000021
+ 000084 1800                         101 LDREG  LR    R0,R0             EXECUTED INSTRUCTION TO LOAD BASE     GL 90900021
+ 000086 0100                         102 H256   DC    H'256'                                                     91800021
+                             0000C   103 SAVE     EQU   12                                                       92700021
+                             00060   104 ALLIGN EQU   96                                                         93600021
+                             00068   105 WORK   EQU   104                  1 BYTE WORK AREA                   GL 94500021
+                                     106        END                                                              95400021
+1CLS0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    5
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        107
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                         5
+ TOTAL RECORDS PRINTED                       127

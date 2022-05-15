@@ -1,0 +1,281 @@
+1SPA0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOSPA0  SD  0001 000000 0002D8
+1SPA0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOSPA0                                                         00300018
+1SPA0     ILBOSPA0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000000                                3 ILBOSPA0 CSECT                                                          00900018
+                             00000     4          USING *,ADDRSSNG                                               01200018
+                             00000     5          USING PARAMLST,PL                                              01500018
+                             00000     6          USING WRKAREA,STORADR                                          01800018
+ 000000 90EC D060      00060           7          STM   14,12,WRK(SA)           SAVE REGISTERS                   02100018
+ 000004 18CF                           8          LR    ADDRSSNG,R15            ESTABLISH ADDRESSABILITY         02400018
+ 000006 18B1                           9          LR    PL,R1                   PL=ADDRESS OF PARAMETER LIST     02700018
+ 000008 41AD 009C      0009C          10          LA    STORADR,WRK+60(SA)      STORADR=ADDRESS OF WORKNG STRAGE 03000018
+ 00000C 5860 B000      00000          11          L     RECADR,RECAREA          ADDRESS OF RECORD                03300018
+ 000010 1B99                          12          SR    INTEGER,INTEGER                                          03600018
+ 000012 4390 B007      00007          13          IC    INTEGER,N+3             INTEGER=N= NUMBER OF LINES       03900018
+ 000016 9201 A000      00000          14          MVI   FIRST,1                 FIRST TIME THRU                  04200018
+ 00001A 9680 B008      00008          15          OI    DCBADR,X'80'            SIGNAL TO ILBOERR0 IF I/O ERROR  04500018
+ 00001E 5820 B008      00008          16          L     DCB,DCBADR                                               04800018
+ 000022 9104 B000      00000          17          TM    OPTNBYTE,FTYPE          F TYPE RECORD                    05100018
+ 000026 47E0 C032      00032          18          BC    NOTONE,NOTFTYPE         NO,  U, V, OR S TYPE             05400018
+ 00002A 4872 0052      00052          19          LH    L,82(DCB)               L=LRECL                          05700018
+ 00002E 47F0 C036      00036          20          BC    UNCOND,A                                                 06000018
+ 000032 5870 B00C      0000C          21 NOTFTYPE L     L,RCDLNGTH              L=RCDLNGTH                       06300018
+ 000036 9200 A002      00002          22 A        MVI   MOVE,0                                                   06600018
+ 00003A 9201 A001      00001          23          MVI   LAST,1                                                   06900018
+ 00003E 9200 A004      00004          24          MVI   BLANKS,0                                                 07200018
+ 000042 9140 B000      00000          25          TM    OPTNBYTE,MNEUM          MNEUMONIC OPTION                 07500018
+ 000046 47E0 C050      00050          26          BC    NOTONE,X2               NO                               07800018
+ 00004A 1889                          27          LR    COUNT,INTEGER                                            08100018
+ 00004C 47F0 C22E      0022E          28          BC    UNCOND,B                                                 08400018
+ 000050 4990 C2D0      002D0          29 X2       CH    INTEGER,=H'3'           INTEGER GREATER THAN 3           08700018
+ 000054 47D0 C064      00064          30          BC    NOTHI,X3                NO                               09000018
+ 000058 4180 0003      00003          31          LA    COUNT,3                 YES,MAXIMUM VALUE IS 3           09300018
+ 00005C 9200 A001      00001          32          MVI   LAST,0                  LAST=0                           09600018
+ 000060 47F0 C066      00066          33          BC    UNCOND,X4                                                09900018
+ 000064 1889                          34 X3       LR    COUNT,INTEGER           COUNT=INTEGER                    10200018
+ 000066 9110 B000      00000          35 X4       TM    OPTNBYTE,AFTER          AFTER OPTION                     10500018
+ 00006A 4780 C08E      0008E          36          BC    ZERO,X5                 NO, BEFORE OPTION                10800018
+ 00006E 9180 B000      00000          37          TM    OPTNBYTE,MIXING         MIXED FILE                       11100018
+ 000072 4780 C07E      0007E          38          BC    ZERO,X6                 NO                               11400018
+ 000076 9200 A001      00001          39          MVI   LAST,0                  YES, LAST=0                      11700018
+ 00007A 47F0 C09E      0009E          40          BC    UNCOND,C                                                 12000018
+ 00007E 41E0 C282      00282          41 X6       LA    WK,ASATBL               CODE=ASA EQUIVALENT OF COUNT     12300018
+ 000082 1AE8                          42 X7       AR    WK,COUNT                                                 12600018
+ 000084 D200 A003 E000 00003 00000    43          MVC   CODE,0(WK)                                               12900018
+ 00008A 47F0 C0A6      000A6          44          BC    UNCOND,D                                                 13200018
+ 00008E 9101 A000      00000          45 X5       TM    FIRST,1                 FIRST=1                          13500018
+ 000092 4780 C09E      0009E          46          BC    ZERO,C                                                   13800018
+ 000096 41E0 C286      00286          47          LA    WK,MACHTBL              CODE=MACHINE EQUIV OF COUNT      14100018
+ 00009A 47F0 C082      00082          48          BC    UNCOND,X7                                                14400018
+ 00009E 41E0 C28A      0028A          49 C        LA    WK,SPCIMTBL             CODE=SPACE IMMED EQUIV OF COUNT  14700018
+ 0000A2 47F0 C082      00082          50          BC    UNCOND,X7                                                15000018
+ 0000A6 9110 B000      00000          51 D        TM    OPTNBYTE,AFTER          BEFORE OPTION                    15300018
+ 0000AA 4710 C0C6      000C6          52          BC    ONE,X8                  NO                               15600018
+ 0000AE 9101 A000      00000          53          TM    FIRST,1                 YES, FIRST=1                     15900018
+ 0000B2 47E0 C0DE      000DE          54          BC    NOTONE,F                NO, BRANCH                       16200018
+ 0000B6 9201 A002      00002          55 G        MVI   MOVE,1                  MOVE=1                           16500018
+ 0000BA 9200 A000      00000          56          MVI   FIRST,0                 FIRST=0                          16800018
+ 0000BE 1846                          57          LR    FROMADR,RECADR          FROMADR=RECADR                   17100018
+1SPA0     ILBOSPA0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00000C0 1837                          58          LR    RECLEN,L                RECLEN=L                         17400018
+ 0000C2 47F0 C0F0      000F0          59          BC    UNCOND,CHKSTYPE                                          17700018
+ 0000C6 9101 A001      00001          60 X8       TM    LAST,1                  LAST=1                           18000018
+ 0000CA 4710 C0B6      000B6          61          BC    ONE,G                   YES LAST=1 AND AFTER OPTION      18300018
+ 0000CE 9180 B000      00000          62          TM    OPTNBYTE,MIXING         AFTER AND MIXING                 18600018
+ 0000D2 4710 C0DE      000DE          63          BC    ONE,F                   YES                              18900018
+ 0000D6 9201 A004      00004          64          MVI   BLANKS,1               SET SW TO INDICATE MOVE BLANK RCD 19200018
+ 0000DA 9201 A002      00002          65          MVI   MOVE,1                                                   19500018
+ 0000DE 9104 B000      00000          66 F        TM    OPTNBYTE,FTYPE          F TYPE RECORD                    19800018
+ 0000E2 47E0 C0EC      000EC          67          BC    NOTONE,F1                                                20100018
+ 0000E6 1837                          68          LR    RECLEN,L                RECLEN=L                         20400018
+ 0000E8 47F0 C132      00132          69          BC    UNCOND,E                                                 20700018
+ 0000EC 4130 0012      00012          70 F1       LA    RECLEN,18               NO, RECLEN=18                    21000018
+ 0000F0 9101 B000      00000          71 CHKSTYPE TM    OPTNBYTE,STYPE          SPANNED RECORDS                  21300018
+ 0000F4 47E0 C132      00132          72          BC    NOTONE,E                NO                               21600018
+ 0000F8 9101 A004      00004          73          TM    BLANKS,1                YES, BLANK RCD                   21900018
+ 0000FC 4710 C10C      0010C          74          BC    ONE,BLNKLINE                                             22200018
+ 000100 1846                          75          LR    FROMADR,RECADR          NO                               22500018
+ 000102 D200 4000 A003 00000 00003    76          MVC   0(1,FROMADR),CODE       MOVE CARRIAGE CONTROL CHAR       22800018
+ 000108 47F0 C132      00132          77          BC    UNCOND,E                                                 23100018
+ 00010C 9120 B000      00000          78 BLNKLINE TM    OPTNBYTE,REPORTCD       REPORT RECORD WITH CODE?         23400018
+ 000110 4710 C122      00122          79          BC    ONE,REPCODE             YES,                             23700018
+ 000114 4140 C2BA      002BA          80          LA    FROMADR,BLANKREC+1                                       24000018
+ 000118 D200 4000 A003 00000 00003    81          MVC   0(1,FROMADR),CODE       MOVE CARRIAGE CONTROL CHAR       24300018
+ 00011E 47F0 C132      00132          82          BC    UNCOND,E                                                 24600018
+ 000122 4140 C2B9      002B9          83 REPCODE  LA    FROMADR,BLANKREC                                         24900018
+ 000126 D200 4000 6000 00000 00000    84          MVC   0(1,FROMADR),0(RECADR)  MOVE REPORT CODE                 25200018
+ 00012C D200 4001 A003 00001 00003    85          MVC   1(1,FROMADR),CODE       MOVE CARRIAGE CONTROL CHAR       25500018
+ 000132 1812                          86 E        LR    R1,DCB                                                   25800018
+ 000134 9104 B000      00000          87          TM    OPTNBYTE,FTYPE                                           26100018
+ 000138 4710 C166      00166          88          BC    ONE,X10                 YES                              26400018
+ 00013C 9108 B000      00000          89          TM    OPTNBYTE,VTYPE                                           26700018
+ 000140 47E0 C150      00150          90          BC    NOTONE,X11              NO                               27000018
+ 000144 41E3 0004      00004          91          LA    WK,4(RECLEN)            V TYPE RCD                       27300018
+ 000148 40E2 0052      00052          92          STH   WK,82(DCB)              LRECL                            27600018
+ 00014C 47F0 C166      00166          93          BC    UNCOND,X10                                               27900018
+ 000150 9102 B000      00000          94 X11      TM    OPTNBYTE,UTYPE                                           28200018
+ 000154 47E0 C160      00160          95          BC    NOTONE,X11A             NO                               28500018
+ 000158 4032 0052      00052          96          STH   RECLEN,82(DCB)          YES, LRECL                       28800018
+ 00015C 47F0 C166      00166          97          BC    UNCOND,X10                                               29100018
+ 000160 4032 005A      0005A          98 X11A     STH   RECLEN,90(DCB)          S TYPE RCD                       29400018
+ 000164 1804                          99          LR    R0,FROMADR              POINT TO RECORD                  29700018
+ 000166                              100 X10      DS    0H                                                       30000018
+ 000166 58F2 0030      00030         101          L     R15,48(DCB)             GET ADDRESS OF WRITE ROUTINE     30300018
+ 00016A 05EF                         102          BALR  RETRG,R15                                                30600018
+ 00016C 9101 B000      00000         103          TM    OPTNBYTE,STYPE          SPANNED RECORDS                  30900018
+ 000170 4710 C1EC      001EC         104          BC    ONE,NOMOVE              YES, SKIP MOVE                   31200018
+ 000174 9108 B000      00000         105          TM    OPTNBYTE,VTYPE                                           31500018
+ 000178 47E0 C186      00186         106          BC    NOTONE,X12              NO                               31800018
+ 00017C D201 1000 2052 00000 00052   107          MVC   0(2,R1),82(DCB)         YES, INITIALIZE CONTROL WORD     32100018
+ 000182 4111 0004      00004         108          LA    R1,4(R1)                                                 32400018
+ 000186 9120 B000      00000         109 X12      TM    OPTNBYTE,REPORTCD       REPORT RCD WITH CODE             32700018
+ 00018A 4710 C212      00212         110          BC    ONE,RPTCDRCD            YES                              33000018
+ 00018E D200 1000 A003 00000 00003   111          MVC   0(1,R1),CODE            MOVE CARRIAGE CONTROL CHARACTER  33300018
+ 000194 4111 0001      00001         112          LA    R1,1(R1)                INCREMENT BUFFER ADDRESS         33600018
+1SPA0     ILBOSPA0                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000198 4144 0001      00001         113          LA    FROMADR,1(FROMADR)      INCREMENT FROM ADDRESS           33900018
+ 00019C 4B30 C2D2      002D2         114          SH    RECLEN,=H'1'            DECREASE LENGTH OF RECORD        34200018
+ 0001A0 9101 A002      00002         115 X20      TM    MOVE,1                  IS A MOVE NECESSARY              34500018
+ 0001A4 47E0 C1EC      001EC         116          BC    NOTONE,NOMOVE           NO                               34800018
+ 0001A8 9101 A004      00004         117          TM    BLANKS,1                YES, MOVE BLANK RCD              35100018
+ 0001AC 47E0 C1BE      001BE         118          BC    NOTONE,X16              NO                               35400018
+ 0001B0 9240 1000      00000         119          MVI   0(R1),C' '              YES                              35700018
+ 0001B4 1841                         120          LR    FROMADR,R1              *                                36000018
+ 0001B6 4111 0001      00001         121          LA    R1,1(R1)                *                                36300018
+ 0001BA 4B30 C2D2      002D2         122          SH    RECLEN,=H'1'            *                                36600018
+ 0001BE 4930 C2D4      002D4         123 X16      CH    RECLEN,=H'256'                                           36900018
+ 0001C2 4720 C1D0      001D0         124          BC    HI,X13                  LENGTH GREATER THAN 256          37200018
+ 0001C6 18E3                         125          LR    WK,RECLEN               LENGTH NOT GREATER THAN 256      37500018
+ 0001C8 4BE0 C2D2      002D2         126          SH    WK,=H'1'                SUBTRACT 1 FOR EXECUTE           37800018
+ 0001CC 47F0 C1D4      001D4         127          BC    UNCOND,X14                                               38100018
+ 0001D0 41E0 00FF      000FF         128 X13      LA    WK,255                  SET LENGTH=256-1 FOR EXECUTE     38400018
+ 0001D4 44E0 C27C      0027C         129 X14      EX    WK,MVC                  MOVE MAX OF 256 BYTES OF RECORD  38700018
+ 0001D8 4B30 C2D4      002D4         130          SH    RECLEN,=H'256'          IS MOVE COMPLETE                 39000018
+ 0001DC 47D0 C1EC      001EC         131          BC    NOTHI,NOMOVE            YES                              39300018
+ 0001E0 4A10 C2D4      002D4         132          AH    R1,=H'256'              NO, INCREMENT ADDRESSES          39600018
+ 0001E4 4A40 C2D4      002D4         133          AH    FROMADR,=H'256'                                          39900018
+ 0001E8 47F0 C1BE      001BE         134          BC    UNCOND,X16              GO BACK AND MOVE SOME MORE       40200018
+ 0001EC 1B98                         135 NOMOVE   SR    INTEGER,COUNT           INTEGER=INTEGER-COUNT            40500018
+ 0001EE 4740 C26E      0026E         136          BC    LO,EXIT                 INTEGER LESS THAN ZERO           40800018
+ 0001F2 4720 C036      00036         137          BC    HI,A                    INTEGER GREATER THAN ZERO        41100018
+ 0001F6 9190 B000      00000         138          TM    OPTNBYTE,X'90'          INTEGER=0, MIXING AND AFTER?     41400018
+ 0001FA 47E0 C26E      0026E         139          BC    NOTONE,EXIT             NO                               41700018
+ 0001FE 9501 A003      00003         140          CLI   CODE,1                                                   42000018
+ 000202 4780 C26E      0026E         141          BE    EXIT                                                     42300018
+ 000206 9201 A003      00003         142          MVI   CODE,X'01'              YES, SET CODE TO SUPPRESS SPACE  42600018
+ 00020A 9201 A001      00001         143          MVI   LAST,1                  LAST=1                           42900018
+ 00020E 47F0 C0A6      000A6         144          BC    UNCOND,D                                                 43200018
+ 000212 D200 1001 A003 00001 00003   145 RPTCDRCD MVC   1(1,R1),CODE            MOVE CODE TO BUFFER+1            43500018
+ 000218 D200 1000 6000 00000 00000   146          MVC   0(1,R1),0(RECADR)       MOVE REPORT CODE TO BUFFER       43800018
+ 00021E 4111 0002      00002         147          LA    R1,2(R1)                INCREMENT BUFFER POINTER         44100018
+ 000222 4144 0002      00002         148          LA    FROMADR,2(FROMADR)      INCREMENT 'FROM' POINTER         44400018
+ 000226 4B30 C2D6      002D6         149          SH    RECLEN,=H'2'            SUBTRACT 2 FROM LENGTH           44700018
+ 00022A 47F0 C1A0      001A0         150          BC    UNCOND,X20              GO TO MOVE                       45000018
+ 00022E 41E0 C28E      0028E         151 B        LA    WK,MNEUMTBL             TRANSLATE COUNT TO SKIP TO CHNL  45300018
+ 000232 1AE8                         152          AR    WK,COUNT                                                 45600018
+ 000234 9110 B000      00000         153          TM    OPTNBYTE,AFTER          AFTER OPTION                     45900018
+ 000238 4710 C246      00246         154          BC    ONE,X18                 YES                              46200018
+ 00023C D200 A003 E000 00003 00000   155 X17      MVC   CODE,0(WK)              NO, SET CODE                     46500018
+ 000242 47F0 C0B6      000B6         156          BC    UNCOND,G                                                 46800018
+ 000246 9180 B000      00000         157 X18      TM    OPTNBYTE,MIXING         FILE MIXED                       47100018
+ 00024A 4710 C256      00256         158          BC    ONE,X19                 YES                              47400018
+ 00024E 41EE 000F      0000F         159          LA    WK,15(WK)               NO                               47700018
+ 000252 47F0 C23C      0023C         160          BC    UNCOND,X17                                               48000018
+ 000256 41EE 001E      0001E         161 X19      LA    WK,30(WK)                                                48300018
+ 00025A D200 A003 E000 00003 00000   162          MVC   CODE,0(WK)                                               48600018
+ 000260 1288                         163          LTR   COUNT,COUNT             SUPPRESS SPACING                 48900018
+ 000262 4770 C0DE      000DE         164          BC    NOTZER,F                NO                               49200018
+ 000266 947F B000      00000         165          NI    OPTNBYTE,X'7F'          YES, TURN OFF MIXING BIT         49500018
+ 00026A 47F0 C0DE      000DE         166          BC    UNCOND,F                                                 49800018
+ 00026E                              167 EXIT     DS    0H                                                       50100018
+1SPA0     ILBOSPA0                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000026E 5852 0024      00024         168          L     FREEREG1,36(DCB)        ADDRESS OF EXITLIST              50400018
+ 000272 9400 5023      00023         169          NI    35(FREEREG1),0          TURN OFF BIT SIGNAL TO ILBOERR0  50700018
+ 000276 98EC D060      00060         170          LM    14,12,WRK(SA)           RESTORE REGISTERS                51000018
+ 00027A 07FE                         171          BCR   UNCOND,RETRG            BRANCH BACK TO INLINE CODE       51300018
+                                     172 *                        REGISTER ASSIGNMENTS                           51600018
+                                     173 *                        *                                              51900018
+                                     174 *                        *                                              52200018
+                                     175 *                        *                                              52500018
+                                     176 *                        *                                              52800018
+                             00000   177 R0       EQU   0         *                                              53100018
+                             00001   178 R1       EQU   1         *             USED FOR I/O                     53400018
+                             00002   179 DCB      EQU   2         *                                              53700018
+                             00003   180 RECLEN   EQU   3         *                                              54000018
+                             00004   181 FROMADR  EQU   4         *                                              54300018
+                             00005   182 FREEREG1 EQU   5         *                                              54600018
+                             00006   183 RECADR   EQU   6         *                                              54900018
+                             00007   184 L        EQU   7         *                                              55200018
+                             00008   185 COUNT    EQU   8         *                                              55500018
+                             00009   186 INTEGER  EQU   9         *                                              55800018
+                             0000A   187 STORADR  EQU   10        *             ADDRESS IN TGT/SGT FOR TMP STORG 56100018
+                             0000B   188 PL       EQU   11        *             ADDRESS OF PARAMETER LIST        56400018
+                             0000C   189 ADDRSSNG EQU   12        *             ADDRESSABILITY                   56700018
+                             0000D   190 SA       EQU   13        *             SAVE ADDRESS                     57000018
+                             0000E   191 WK       EQU   14        *             WORK REGISTER                    57300018
+                             0000E   192 RETRG    EQU   14        *                                              57600018
+                             0000F   193 R15      EQU   15        *                                              57900018
+                                     194 *                        *                                              58200018
+                                     195 *                        *                                              58500018
+                                     196 *                        *                                              58800018
+                                     197 *                        *                                              59100018
+                             0000F   198 UNCOND   EQU   15                                                       59400018
+                             00008   199 ZERO     EQU   8                                                        59700018
+                             00007   200 NOTZER   EQU   7                                                        60000018
+                             00001   201 ONE      EQU   1                                                        60300018
+                             0000E   202 NOTONE   EQU   14                                                       60600018
+                             00004   203 MIXED    EQU   4                                                        60900018
+                             00004   204 LO       EQU   4                                                        61200018
+                             00008   205 EQ       EQU   8                                                        61500018
+                             00002   206 HI       EQU   2                                                        61800018
+                             0000B   207 NOTLO    EQU   11                                                       62100018
+                             00007   208 NOTEQ    EQU   7                                                        62400018
+                             0000D   209 NOTHI    EQU   13                                                       62700018
+                             00010   210 AFTER    EQU   X'10'                                                    63000018
+                             00080   211 MIXING   EQU   X'80'                                                    63300018
+                             00040   212 MNEUM    EQU   X'40'                                                    63600018
+                             00020   213 REPORTCD EQU   X'20'                                                    63900018
+                             00008   214 VTYPE    EQU   X'08'                                                    64200018
+                             00004   215 FTYPE    EQU   X'04'                                                    64500018
+                             00002   216 UTYPE    EQU   X'02'                                                    64800018
+                             00001   217 STYPE    EQU   X'01'                                                    65100018
+                             00060   218 WRK      EQU   96                                                       65400018
+                                     219 *                            READ ONLY STORAGE                          65700018
+                                     220 *                                    *                                  66000018
+                                     221 *                                    *                                  66300018
+                                     222 *                                    *                                  66600018
+1SPA0     ILBOSPA0                                                                                              PAGE    7
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    223 *                                    *                                  66900018
+ 00027C D200 1000 4000 00000 00000   224 MVC      MVC   0(0,R1),0(FROMADR)    *                                  67200018
+ 000282 4E40F060                     225 ASATBL   DC    C'+ 0-'               * SKIP 0,1,2,3 LINES AND PRINT     67500018
+ 000286 01091119                     226 MACHTBL  DC    X'01091119'           * PRINT AND SKIP 0,1,2,3 LINES     67800018
+ 00028A 030B131B                     227 SPCIMTBL DC    X'030B131B'           * SPACE IMMEDIATE 0,1,2,3 LINES    68100018
+ 00028E 01899199A1A9B1               228 MNEUMTBL DC    X'01899199A1A9B1'     * BEFORE OPTION                    68400018
+ 000295 B9C1C9D1D9E1                 229          DC    X'B9C1C9D1D9E1'       * *                                68700018
+ 00029B E5E6                         230          DC    C'VW'                 * *                                69000018
+ 00029D 4EF1F2F3F4F5F6F7             231          DC    C'+123456789ABCVW'    * AFTER OPTION                     69300018
+ 0002AC 018B939BA3ABB3               232          DC    X'018B939BA3ABB3'     * SKIP TO CHANNEL IMMEDIATE        69600018
+ 0002B3 BBC3CBD3DBE3                 233          DC    X'BBC3CBD3DBE3'       * *                                69900018
+ 0002B9                              234 BLANKREC DS    XL2                                                      70200018
+ 0002BB 4040404040404040             235          DC    17C' '                                                   70500018
+ 0002D0                              236          LTORG                                                          70800018
+ 0002D0 0003                         237                =H'3'
+ 0002D2 0001                         238                =H'1'
+ 0002D4 0100                         239                =H'256'
+ 0002D6 0002                         240                =H'2'
+ 000000                              241 PARAMLST DSECT                                                          71100018
+ 000000                              242 RECAREA  DS    0F                                                       71400018
+ 000000                              243 OPTNBYTE DS    XL1                                                      71700018
+ 000001                              244          DS    XL3                                                      72000018
+ 000004                              245 N        DS    F                                                        72300018
+ 000008                              246 DCBADR   DS    F                                                        72600018
+ 00000C                              247 RCDLNGTH DS    F                                                        72900018
+ 000000                              248 WRKAREA  DSECT                                                          73200018
+ 000000                              249 FIRST    DS    XL1                                                      73500018
+ 000001                              250 LAST     DS    XL1                                                      73800018
+ 000002                              251 MOVE     DS    XL1                                                      74100018
+ 000003                              252 CODE     DS    XL1                                                      74400018
+ 000004                              253 BLANKS   DS    XL1                                                      74700018
+                                     254          END                                                            75000018
+1SPA0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    8
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        250
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                        17
+ TOTAL RECORDS PRINTED                       281

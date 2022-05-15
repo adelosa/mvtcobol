@@ -1,0 +1,257 @@
+*//    ILBOFPW0                                                         00300018
+FPW0     TITLE     'ILBOFPW0'                                           00600018
+*        ILBOFPW0   CALLING SEQ... L    15,V(ILBOFPW0)                  00900018
+*                                                                       01200018
+*        LEVEL  180     09/14/66                                        01500018
+*                                                                       01800018
+*FUNCTION 0 THIS ROUTINE EXPONENTIATES A DOUBLE PRECISION FLOATING      02100018
+*   POINT NUMBER TO A DOUBLE PRECISION FLOATING POINT EXPONENT.         02400018
+*ENTRY POINT 0 ILBOFPWR, CALLING SEQUENCE IS 0-                         02700018
+*                            LD    0,BASE                               03000018
+*                            MVC   104(8,13),EXPONENT                   03300018
+*                            L     15,=V(ILBOFPWR)                      03600018
+*                            BALR  14,15                                03900018
+*   WHERE REG 13 IS INITIALIZED BY THE CALLER TO POINT TO START OF TGT. 04200018
+*INPUT 0 DOUBLE PRECISION FLOATING POINT BASE AND EXPONENT.             04500018
+*OUTPUT 0 RESULT IS LEFT IN FLOATING REGISTER 0.                        04800018
+*   NUMBER.  IF BOTH BASE AND EXPONENT ARE NEGATIVE, BASE IS MADE       05100018
+*   POSITIVE.                                                           05400018
+*   0 ** 0 = 1     , 0 ** +N = 0                                        05700018
+*   0 ** -N= LARGEST FLOATING POINT NUMBER                              06000018
+*   ANY CONDITION WHICH WOULD CAUSE EXPONENT OVERFLOW RESULTS IN AN     06300018
+*   ANSWER = LARGEST FLOATING POINT NUMBER.                             06600018
+*   ANY CONDITION WHICH WOULD CAUSE EXPONENT UNDERFLOW RESULTS IN AN    06900018
+*   ANSWER = 0.                                                         07200018
+*EXTERNAL ROUTINES 0 NONE                                               07500018
+*EXITS -NORMAL 0 BY  BCR  15,14                                         07800018
+*       ERROR  0 NO ERROR INDICATION IS GIVEN AND EXITS BY  BCR  15,14  08100018
+*WORK AREA 0 BYTES 96-144 OF TGT.                                       08400018
+*ATTRIBUTES 0 SERIALLY REUSABLE.                                        08700018
+*                                                                       09000018
+*                                                                     * 09300018
+*                                                                       09600018
+ILBOFPW0 START 0                                                        09900018
+R0     EQU   0                                                          10200018
+FR0    EQU   0                    ANSWER REGISTER                       10500018
+FR2    EQU   2                    SCRATCH REGISTER                      10800018
+GR0    EQU   0                                                          11100018
+GR1    EQU   1                          GENERAL REGISTER 1              11400018
+GR2    EQU   2                                                          11700018
+GR3    EQU   3                          GENERAL REGISTER 3              12000018
+GR12   EQU   12                         GENERAL REGISTER 12             12300018
+GRS    EQU   13                   SAVE AREA POINTER                     12600018
+GR13   EQU   13                         GENERAL REGISTER 13             12900018
+GRR    EQU   14                   RETURN REGISTER                       13200018
+GR14   EQU   14                         GENERAL REGISTER 14             13500018
+GRL    EQU   15                   LINK REGISTER                         13800018
+GR15   EQU   15                         GENERAL REGISTER 15             14100018
+GRB    EQU   15                         BASE REGISTER                   14400018
+WORK1  EQU   96                         WORK AREA 1 IN GLOBAL TABLE     14700018
+WORK2  EQU   104                        WORK AREA 2 IN GLOBAL TABLE     15000018
+WORK3  EQU   112                        WORK AREA 3 IN GLOBAL TABLE     15300018
+WORK4  EQU   144                                                        15600018
+BUFF   EQU   120                                                        15900018
+IPART  EQU   128                                                        16200018
+SIGN   EQU   136                                                        16500018
+FIELDS EQU   SIGN+4                                                     16800018
+SAVE     EQU   12                                                       17100018
+       USING *,GRB                      SPECIFY BASE REGISTER           17400018
+FPOWER   STM   GR14,GR12,SAVE(GR13)   SAVE CALLING REGS                 17700018
+         STD   FR0,WORK1(R0,GRS)                                        18000018
+         STD   FR2,WORK4(R0,GRS)                                        18300018
+       LTDR  FR0,FR0                    TEST BASE                       18600018
+       BC    4,FP001                    BRANCH IF MINUS - MAKE POSITIVE 18900018
+       BC    8,FP002                    BRANCH IF ZERO - TEST EXPONENT  19200018
+FP005  BAL   GR14,DLOG                 GO TO LOG ROUTINE                19500018
+         MD    FR0,WORK2(R0,GRS)           MULTIPLY PRODUCG TIMES EXPON 19800018
+       CE    FR0,FPMAX                  IS PROD BIGGER THAN 174.6731    20100018
+       BC    2,FP004                    YES, MAKE ANS MAX FP NUMBER     20400018
+         STD   FR0,WORK1(R0,GRS)           PRODUCT TO WORK1             20700018
+       BAL   GR14,DEXP                  RAISE TO PRODUCT POWER          21000018
+FP006    LD    FR2,WORK4(R0,GRS)                                        21300018
+         LM    GR14,GR12,SAVE(GR13)    RESTORE REGS                     21600018
+       BCR   15,GR14                    RETURN                          21900018
+FP001  NI    WORK1(GRS),X'7F'           MAKE BASE POSITIVE              22200018
+FPRET1 BC    15,FP005                   CONTINUE EXPONENTIATION         22500018
+FP002  TM    WORK2(GRS),X'80'           IS EXPONENT POSITIVE            22800018
+       BC    8,FP003                    YES - MAKE ANSWER ZERO          23100018
+FP004  LD    FR0,FPBIG                 MAKE ANSWER LARGEST FP NUMBER    23400018
+FPRET2 BC    15,FP006                   EXIT                            23700018
+FP003  LD    FR0,FPZERO                 MAKE ANSWER ZERO                24000018
+FPRET3 BC    15,FP006                   EXIT                            24300018
+       DS    0D                         DOUBLE WORD BOUNDARY            24600018
+FPZERO DC    X'0000000000000000'        ZERO                            24900018
+FPBIG  DC    X'7FFFFFFFFFFFFFFF'        MAXIMUM FLOATING POINT NUMBER   25200018
+FPMAX  DC    X'42AEAC4E'                174.6731                        25500018
+*******************************************                             25800018
+*** FLOATING POINT LOGARITHM SUBROUTINE ***                             26100018
+*******************************************                             26400018
+* LOGARITMIC FUNCTION (LONG)                                            26700018
+* WRITE X=(16**P)*(2**-Q)*M,Q BETWEEN 0 AND 3, AND                      27000018
+* M BETWEEN 1/2 AND 1. DEFINE A=1, B=0 IF M IS GREATER                  27300018
+* THAN SQRT2/2, OTHERWISE A=1/2, B=1.                                   27600018
+* WRITE Z=(M-A)/(M+A), THEN                                             27900018
+* LOG(X)=(4P-Q-B)*LOG(2)+LOG((1+Z)/(1-Z))                               28200018
+DLOG   MVC   IPART(8,GRS),IPART1                                        28500018
+       LM    GR0,GR1,WORK1(GRS)        PUT ARGUMENT IN REG. 0-1         28800018
+       LR    GR2,GR0                                                    29100018
+       SRDL  GR2,24               CHAR IN LOW GR2,1ST DIGIT IN HIGH GR3 29400018
+       SLL   GR2,2                                                      29700018
+       STH   GR2,IPART+2(GRS)           FLOAT 4* CHAR AND SAVE IT       30000018
+       SR    GR2,GR2                                                    30300018
+       SLDL  GR2,4                1ST DIGIT IN GR2                      30600018
+       IC    GR2,TABLE(GR2)       NUMBER OF LEADING ZEROS (=Q) IN GR2   30900018
+       SLDL  GR0,0(GR2)                                                 31200018
+       STM   GR0,GR1,BUFF(GRS)                                          31500018
+       MVI   BUFF(GRS),X'40'            M#FRACTION*2**Q IN CELL BUFF    31800018
+       LA    GR1,8                                                      32100018
+       LD    FR0,BUFF(GRS)              PICK M IN FR0                   32400018
+       CE    FR0,LIMIT            IF M GREATER THAN SQRT2/2,GR1=8.      32700018
+       BC    2,READY                                                    33000018
+       SR    GR1,GR1              IF M LESS THAN SQRT2/2,GR1=0          33300018
+       LA    GR2,1(GR2)           AND CRANK GR2 BY 1. Q+B IN GR2.       33600018
+READY  LDR   FR2,FR0              COMPUTE Z=(M-A)(M+A),A=1 OR 1/2       33900018
+       SD    FR0,HALF             SUBTRACT A IN 2 STEPS TO PROTECT      34200018
+       SD    FR0,ZERO(GR1)        THE LAST DIGIT.                       34500018
+       AD    FR2,HALF(GR1)        M+A HAS ONLY 53 BITS. NOT SERIOUS     34800018
+       DDR   FR0,FR2                                                    35100018
+       STD   FR0,BUFF(GRS)                                              35400018
+       MDR   FR0,FR0              COMPUTE LOG((1+Z)/(1-Z))              35700018
+       LDR   FR2,FR0              BY CHEBYSHEV INTERPOLATION            36000018
+       MD    FR2,C7               POLYNOMIAL (IN ZSQ) OF DEGREE 7       36300018
+       AD    FR2,C6                                                     36600018
+       MDR   FR2,FR0                                                    36900018
+       AD    FR2,C5                                                     37200018
+       MDR   FR2,FR0                                                    37500018
+       AD    FR2,C4                                                     37800018
+       MDR   FR2,FR0                                                    38100018
+       AD    FR2,C3                                                     38400018
+       MDR   FR2,FR0                                                    38700018
+       AD    FR2,C2                                                     39000018
+       MDR   FR2,FR0                                                    39300018
+       AD    FR2,C1                                                     39600018
+       MDR   FR2,FR0              F=ZSQ*(C1+ZSQ*(C2+...ZSQ*C7..)        39900018
+       LD    FR0,BUFF(GRS)                                              40200018
+       MDR   FR2,FR0                              =Z+Z+Z*F              40500018
+       ADR   FR2,FR0              TO GAIN ACCURACY                      40800018
+       ADR   FR2,FR0                                                    41100018
+       LD    FR0,IPART(GRS)             1*CHARACTERISTIC IN FR0         41400018
+       LA    GR2,256(GR2)         ADD 4*(BASE CHARAC=64) TO Q+B,        41700018
+       STH   GR2,IPART+2(GRS)           FLOAT AND SUBTRACT FROM FR0     42000018
+       SE    FR0,IPART(GRS)             TO OBTAIN 4P-Q-B                42300018
+       MD    FR0,LOGE2            MULTIPLY LOG(2) BASE E                42600018
+       ADR   FR0,FR2              AND ADD TO LOG ((1+Z)/(1-Z))          42900018
+       BCR   15,GRR               RETURN                                43200018
+       CNOP    0,8                                                      43500018
+IPART1 DC    X'4600000000000000'                                        43800018
+TABLE  DC    X'0303020201010101'  THESE 4                               44100018
+ZERO   DC    X'0000000000000000'  CONSTANTS                             44400018
+HALF   DC    X'4080000000000000'  MUST BE                               44700018
+       DC    X'4110000000000000'  TOGETHER                              45000018
+C7     DC    X'4025E9B17CA9B973'  .1480971268990510                     45300018
+C6     DC    X'40273337E26DBA7F'  .1531252792171731                     45600018
+C5     DC    X'402E8CD32A425C06'  .1818363168880382                     45900018
+C4     DC    X'4038E38A00083F68'  .2222219705656678                     46200018
+C3     DC    X'4049249251450212'  .2857142876064318                     46500018
+C2     DC    X'40666666665EBAA3'  .3999999999930233                     46800018
+C1     DC    X'40AAAAAAAAAAAD6C'  .6666666666666764                     47100018
+LOGE2  DC    X'40B17217F7D1CF7B'  LOG2 (BE)+1 IN LAST DIGIT             47400018
+LOGTE  DC    X'406F2DEC549B943A'        LOE  (B10)+1 IN LAST DIGIT      47700018
+LIMIT  DC    X'40B504F3'          1/SQRT2                               48000018
+       CNOP  0,4                                                        48300018
+*********************************************                           48600018
+*** FLOATING POINT EXPONENTIAL SUBROUTINE ***                           48900018
+*********************************************                           49200018
+* EXPONENTIAL FUNCTION (LONG)                                           49500018
+* Y=X*LOG2(E)=4A-B-C/16-D, WHERE A,B, AND C ARE INTEGERS,               49800018
+* B BETWEEN 0 AND 3, C BETWEEN 0 AND 15.                                50100018
+* D IS A FRACTION BETWEEN 0 AND 1/16.                                   50400018
+* THEN E**X=2**Y=(16**A)(2**-B)(2**-C/16)(2**-D)                        50700018
+DEXP     LD    FR0,WORK1(R0,GRS)          ARGUMENT IN FR0               51000018
+       CE    FR0,FPMAX                 MAX=63*LOG16=174.67309           51300018
+       BC    2,FP004              IF GREATER, ANS = BIGGEST FP NUMBER   51600018
+       CE    FR0,MIN              MIN=-65*LOG16=-180.21867              51900018
+       BC    12,FP003              IF LESS, ANS = 0                     52200018
+       DD    FR0,LOGE2A           Y=X*LOG2(E) BY ACCURATE DIVISION      52500018
+       STE   FR0,SIGN(GRS)        SAVE SIGN OF Y                        52800018
+       LER   FR2,FR0              DECOMPOSE Y=(-4A'-B'-C'/16)-D'        53100018
+       AU    FR2,SCALER           BY FORCING CHARACTERISTIC OF X'45'    53400018
+       STE   FR2,FIELDS(GRS)      -4A'-B'-C'/16 IN FIELDS,UNNORMALIZED  53700018
+       SDR   FR2,FR2                                                    54000018
+       AE    FR2,FIELDS(GRS)      NORMALIZE THIS AND SUBTRACT IT        54300018
+       SDR   FR0,FR2              FROM Y TO OBTAIN -D' IN FR0           54600018
+       L     GR2,FIELDS(GRS)                                            54900018
+       TM    SIGN(GRS),X'80'            IF Y NEGATIVE SKIP              55200018
+       BC    1,READY1             IF Y NON-NEGATIVE,                    55500018
+       SD    FR0,ONO16            -D= /D'/-1/16                         55800018
+       LA    GR2,1(GR2)           -4A-B-C/16=-(-4A'-B'-(C'+1)/16)       56100018
+       LCR   GR2,GR2              NOW IN ANY CASE B, C, AND D ARE +     56400018
+READY1 SR    GR3,GR3                                                    56700018
+       SRDL  GR2,4                C IN HIGH GR3                         57000018
+       SRL   GR3,25                                                     57300018
+       SRDL  GR2,2                B IN HIGH GR3, C IN LOW GR3           57600018
+       SLL   GR2,24                                                     57900018
+       LCR   GR0,GR2              A (IN SCALE B7) IN GR0, CHAR MODIFIER 58200018
+       SR    GR2,GR2                                                    58500018
+       SLDL  GR2,2                B IN GR2, 8*C IN GR3                  58800018
+       LDR   FR2,FR0              COMPUTE 2**-D BY USE OF               59100018
+       ME    FR0,C60              CHEBYSHEV INTERPOLATION               59400018
+       AD    FR0,C50              POLYNOMIAL OF DEGREE 6                59700018
+       MDR   FR0,FR2                                                    60000018
+       AD    FR0,C40                                                    60300018
+       MDR   FR0,FR2                                                    60600018
+       AD    FR0,C30                                                    60900018
+       MDR   FR0,FR2                                                    61200018
+       AD    FR0,C20                                                    61500018
+       MDR   FR0,FR2                                                    61800018
+       AD    FR0,C10                                                    62100018
+       MDR   FR0,FR2                                                    62400018
+       AD    FR0,C0A              ADD C0 = 1  IN TWO STEPS              62700018
+       AD    FR0,C0A              TO PROTECT LAST DIGIT                 63000018
+       LTR   GR3,GR3              MULTIPLY 2**(-C/16)                   63300018
+       BC    8,SKIP2              IN DOING SO AVOID                     63600018
+       CE    FR0,ONE              MULTIPLICATION BY 1.                  63900018
+       BC    4,SKIP1                                                    64200018
+       LD    FR0,MCONST-8(GR3)                                          64500018
+       BC    15,SKIP2                                                   64800018
+SKIP1  MD    FR0,MCONST-8(GR3)                                          65100018
+SKIP2  LTR   GR2,GR2              MULTIPLY 2**(-B)                      65400018
+       BC    8,SKIP3              BY HALVING B TIMES.                   65700018
+       HDR   FR0,FR0                                                    66000018
+       BCT   GR2,*-2                                                    66300018
+SKIP3  STD   FR0,SIGN(GRS)        ADD A TO CHARACTERISTIC               66600018
+       A     GR0,SIGN(GRS)                                              66900018
+       ST    GR0,SIGN(GRS)                                              67200018
+       SDR   FR0,FR0              NORMALIZE THE ANSWER JUST IN CASE     67500018
+       AD    FR0,SIGN(GRS)                                              67800018
+EXIT   BCR   15,GRR                                                     68100018
+       CNOP    0,8                                                      68400018
+LOGE2A DC    X'40B17217F7D1CF79'  LOG 2(BE) TRUNCATED                   68700018
+ONO16  DC    X'4010000000000000'                                        69000018
+ONE    DC    X'41100000'                                                69300018
+C60    DC    X'3D9E0F1E'          .1507368551403575E-3                  69600018
+C50    DC    X'3E575D42BB7276D4'  .1333073417706260E-2                  69900018
+C40    DC    X'3F276553A5F9BC94'  .9618117095313700E-2                  70200018
+C30    DC    X'3FE35846A61AEE7A'  .5550410840231345E-1                  70500018
+C20    DC    X'403D7F7BFF0289DE'  .2402265069563678                     70800018
+C10    DC    X'40B17217F7D1CC79'  .6931471805599346                     71100018
+C0A    DC    X'4080000000000000'  .5  C0/2                              71400018
+MCONST DC    X'40F5257D152486CC'  2**(-1/16)                            71700018
+       DC    X'40EAC0C6E7DD2439'  2**(-2/16)                            72000018
+       DC    X'40E0CCDEEC2A94E1'  2**(-3/16)                            72300018
+       DC    X'40D744FCCAD69D6B'  2**(-1/16)                            72600018
+       DC    X'40CE248C151F8481'  2**(-5/16)                            72900018
+       DC    X'40C5672A115506DB'  2**(-6/16)                            73200018
+       DC    X'40BD08A39F580C37'  2**(-7/16)                            73500018
+       DC    X'40B504F333F9DE65'  2**(-8/16)                            73800018
+       DC    X'40AD583EEA42A14B'  2**(-9/16)                            74100018
+       DC    X'40A5FED6A9B15139'  2**(-10/16)                           74400018
+       DC    X'409EF5326091A112'  2**(-11/16)                           74700018
+       DC    X'409837F0518DB8A9'  2**(-12/16)                           75000018
+       DC    X'4091C3D373AB11C3'  2**(-13/16)                           75300018
+       DC    X'408B95C1E3EA8BD7'  2**(-14/16)                           75600018
+       DC    X'4085AAC367CC487B'  2**(-15/16)                           75900018
+SCALER DC    X'45000000'                                                76200018
+MIN    DC    X'C2B437DF'          -180.2187                             76500018
+       END                                                              76800018
+         EJECT                                                          77100018

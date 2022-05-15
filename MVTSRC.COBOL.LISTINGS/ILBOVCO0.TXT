@@ -1,0 +1,245 @@
+1VCO0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOVCO0  SD  0001 000000 0001F2
+1VCO0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOVCO0                                                         00400018
+1VCO0     ILBOVCO0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      3 *        ILBOVCO0   CALLING SEQ... L    15,V(ILBOVCO0)                  01200018
+                                       4 *                                                                       01600018
+                                       5 *        LEVEL  180     09/14/66                                        02000018
+                                       6 *                                                                       02400018
+                                       7 *FUNCTION 0 THIS ROUTINE COMPARES TWO OPERANDS, ONE OR BOTH OF WHICH    02800018
+                                       8 *   ARE VARIABLE IN LENGTH. THEY MAY EXCEED 256 BYTES IN LENGTH.        03200018
+                                       9 *ENTRY POINT 0 ILBOVCOM ,CALLING SEQUENCE IS                            03600018
+                                      10 *                             L    15,V(ILBOVCOM)                       04000018
+                                      11 *                             BALR 1,15                                 04400018
+                                      12 *                             DC   XL10'OPERAND A INFORMATION'          04800018
+                                      13 *                             DC   XL10'OPERAND B INFORMATION'          05200018
+                                      14 *                                                                       05600018
+                                      15 *   WHERE THE 10-BYTE OPERAND INFORMATION FIELD HAS ONE OF THE FOLLOW-  06000018
+                                      16 *   ING TWO FORMATS 0-                                                  06400018
+                                      17 *                          1. FIXED LENGTH                              06800018
+                                      18 *                             DC   XL1'TYPE CODE '        SEE BELOW     07200018
+                                      19 *                             DC   XL3'LENGTH OF ITEM'                  07600018
+                                      20 *                             DC   AL4(ADDRESS OF POINTER IN TASK       08000018
+                                      21 *                                     GLOBAL TABLE OR POINTER TO        08400018
+                                      22 *                                     PROGRAM GLOBAL TABLE)             08800018
+                                      23 *                             DC   XL2'DISPLACEMENT'                    09200018
+                                      24 *                          2. VARIABLE LENGTH             SEE BELOW     09600018
+                                      25 *                             DC   XL1'TYPE CODE'                       10000018
+                                      26 *                             DC   AL3(POINTER TO CELL IN TASK GLOBAL   10400018
+                                      27 *                                     TABLE THAT CONTAINS THE LENGTH)   10800018
+                                      28 *                             DC   AL4(ADDRESS OF POINTER IN THE TASK   11200018
+                                      29 *                                     GLOBAL TABLE)                     11600018
+                                      30 *                             DC   XL2'DISPLACEMENT'                    12000018
+                                      31 *   THE TYPE CODE BITS ARE0 BIT0   FIGURATIVE CONSTANT                  12400018
+                                      32 *                              1   NOT USED                             12800018
+                                      33 *                              2   VARIABLE LENGTH                      13200018
+                                      34 *                              3   DIRECT POINTER TO THE PROGRAM GLOBAL 13600018
+                                      35 *                                  TABLE (FOR A LITERAL)                14000018
+                                      36 *                           4-7   NOT USED                              14400018
+                                      37 *INPUT 0 AS EXPLAINED ABOVE.                                            14800018
+                                      38 *OUTPUT0 CONDITION CODE IS SET TO INDICATE WHETHER OPERAND-A IS LESS    15200018
+                                      39 *   THEN, EQUAL TO, OR GREATER THAN OPERAND-B.                          15600018
+                                      40 *EXTERNAL ROUTINES 0 NONE                                               16000018
+                                      41 *EXIT-NORMAL 0    BC    15,20(1)                                        16400018
+                                      42 *     ERROR  0    NONE                                                  16800018
+                                      43 *WORK AREA 0 BYTES 96-100 OF TGT.                                       17200018
+                                      44 *ATTRIBUTES 0 REENTRANT CODE.  BLANK IS X'40'                           17600018
+                                      45 *                                                                       18000018
+                                      46 *                                                                       18400018
+ 000000                               47 ILBOVCO0 START 0                                                        18800018
+                             00002    48 PNTA   EQU   2                                                          19200018
+                             00003    49 PNTB   EQU   3                                                          19600018
+                             00004    50 LENA   EQU   4                                                          20000018
+                             00005    51 LENB   EQU   5                                                          20400018
+                             00006    52 CMPLEN EQU   6                                                          20800018
+                             00007    53 PNTEND EQU   7                                                          21200018
+                                      54 *                                                                       21600018
+                             00000    55 R0     EQU   0                                                          22000018
+                             00001    56 R1     EQU   1                                                          22400018
+                             00002    57 R2     EQU   2                                                          22800018
+1VCO0     ILBOVCO0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                            00003    58 R3     EQU   3                                                          23200018
+                             00004    59 R4     EQU   4                                                          23600018
+                             00005    60 R5     EQU   5                                                          24000018
+                             00006    61 R6     EQU   6                                                          24400018
+                             00007    62 R7     EQU   7                                                          24800018
+                             00008    63 R8     EQU   8                                                          25200018
+                             00009    64 R9     EQU   9                                                          25600018
+                             0000A    65 R10    EQU   10                                                         26000018
+                             0000B    66 R11    EQU   11                                                         26400018
+                             0000C    67 R12    EQU   12                                                         26800018
+                             0000D    68 R13    EQU   13                                                         27200018
+                             0000E    69 R14    EQU   14                                                         27600018
+                             0000F    70 R15    EQU   15                                                         28000018
+                             00008    71 WRKREG EQU   8                                                       CS 28400018
+                             00060    72 WRK    EQU   96                                                      CS 28800018
+                                      73 *                                                                       29200018
+                             00000    74          USING *,R15                                                    29600018
+ 000000 90EC D00C      0000C          75          STM   R14,R12,SAVE(R13)    SAVE CALLING REGS                   30000018
+ 000004 D200 D060 1004 00060 00004    76        MVC   WRK(1,R13),4(R1) MOVE REG CODE TO WORK                  CS 30400018
+ 00000A 9620 D060      00060          77        OI    WRK(R13),X'20'   SET UP FOR PNTA - REG2                 CS 30800018
+ 00000E 438D 0060      00060          78        IC    WRKREG,WRK(R13)  PUT CODE IN WORK REG                   CS 31200018
+ 000012 4480 F1EE      001EE          79        EX    WRKREG,LDREG     LOAD BASE TO PNTA                      CS 31600018
+ 000016 4A21 0006      00006          80        AH    PNTA,6(R1)       ADD DISP                               CS 32000018
+ 00001A D200 D060 100E 00060 0000E    81        MVC   WRK(1,R13),14(R1) SAME CODING AS                        CS 32400018
+ 000020 9630 D060      00060          82        OI    WRK(R13),X'30'      ABOVE 5 LINES ONLY                  CS 32800018
+ 000024 438D 0060      00060          83        IC    WRKREG,WRK(R13)      FOR PNTB IN                        CS 33200018
+ 000028 4480 F1EE      001EE          84        EX    WRKREG,LDREG          REG 3                             CS 33600018
+ 00002C 4A31 0010      00010          85        AH    PNTB,16(R1)                                             CS 34000018
+ 000030 9180 1000      00000          86          TM    0(R1),X'80'       TEST A-FIELD FIGCON                    34400018
+ 000034 4710 F0B6      000B6          87        BC    1,PRBSUB          YES - GO TEST B-PARAM                    34800018
+ 000038 9110 1000      00000          88 PARAMA   TM    0(R1),X'10'       TEST DIRECT TGT                        35200018
+ 00003C 4710 F048      00048          89        BC    1,GETLNA          YES                                      35600018
+ 000040 5822 0000      00000          90        L     PNTA,0(PNTA)      NO - LOAD BL IN TGT                      36000018
+ 000044 4A21 0008      00008          91          AH    PNTA,8(R1)        ADD DISP                               36400018
+ 000048 D203 D060 1000 00060 00000    92 GETLNA   MVC   ALLIGN(4,R13),0(R1) LOAD LENGTH                          36800018
+ 00004E 584D 0060      00060          93          L     LENA,ALLIGN(R13)    OR VLC                               37200018
+ 000052 9120 1000      00000          94          TM    0(R1),X'20'       TEST VL                                37600018
+ 000056 4710 F066      00066          95        BC    1,VLA             YES                                      38000018
+ 00005A 8940 0008      00008          96        SLL   LENA,8            NO - CLEAR HI 8 BITS                     38400018
+ 00005E 8840 0008      00008          97        SRL   LENA,8            FROM LENGTH                              38800018
+ 000062 47F0 F0A6      000A6          98        BC    15,PARAMB        GO TEST B-PARAM                           39200018
+ 000066 D200 D060 1004 00060 00004    99 VLA    MVC   WRK(1,R13),4(R1) MOVE REG CODE TO WORK                  CS 39600018
+ 00006C 9640 D060      00060         100        OI    WRK(R13),X'40'   SET UP FOR LENA - REG 4                CS 40000018
+ 000070 438D 0060      00060         101        IC    WRKREG,WRK(R13)  PUT CODE IN WORK REG                   CS 40400018
+ 000074 4480 F1EE      001EE         102        EX    WRKREG,LDREG     LOAD BASE TO LENA                      CS 40800018
+ 000078 4A41 0002      00002         103        AH    LENA,2(R1)       ADD DISP TO POINT TO VLC               CS 41200018
+ 00007C 4844 0000      00000         104        LH    LENA,0(LENA)     LOAD LENGTH IN VLC                     CS 41600018
+ 000080 1244                         105        LTR     LENA,LENA                                                42000018
+ 000082 4770 F0A6      000A6         106        BC    7,PARAMB                                                   42400018
+ 000086 9120 100A      0000A         107          TM    10(R1),X'20'         IS B A VL.                          42800018
+ 00008A 47E0 F0A6      000A6         108        BC    14,PARAMB                                                  43200018
+ 00008E D203 D060 100A 00060 0000A   109          MVC   ALLIGN(4,R13),10(R1)    YES, LOAD VLC.                   43600018
+ 000094 585D 0060      00060         110          L     LENB,ALLIGN(R13)                                         44000018
+ 000098 4855 0000      00000         111        LH    LENB,0(LENB)                                               44400018
+ 00009C 1255                         112        LTR   LENB,LENB           VLC OF BOTH A AND B = 0, SET           44800018
+1VCO0     ILBOVCO0                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000009E 4780 F1E6      001E6         113        BC    8,EXIT                CONDITION CODE TO EQUAL AND EXIT.    45200018
+ 0000A2 4770 F124      00124         114        BC    7,COMP1                                                    45600018
+                                     115 *                                                                       46000018
+ 0000A6 9180 100A      0000A         116 PARAMB   TM    10(R1),X'80'      TEST B-FIELD FIGCON                    46400018
+ 0000AA 4710 F1D4      001D4         117        BC    1,BFIG            YES - GO TO FIGB RT                      46800018
+ 0000AE 9110 100A      0000A         118          TM    10(R1),X'10'       NO - TEST DIRECT POINTER              47200018
+ 0000B2 4710 F0BE      000BE         119        BC    1,GETLNB          YES                                      47600018
+ 0000B6 5833 0000      00000         120 PRBSUB L     PNTB,0(PNTB)      NO - LOAD BL IN TGT                      48000018
+ 0000BA 4A31 0012      00012         121          AH    PNTB,18(R1)       ADD DISP                               48400018
+ 0000BE D203 D060 100A 00060 0000A   122 GETLNB   MVC   ALLIGN(4,R13),10(R1) LOAD LENGTH                         48800018
+ 0000C4 585D 0060      00060         123          L     LENB,ALLIGN(R13)     OR VLC                              49200018
+ 0000C8 9120 100A      0000A         124          TM    10(R1),X'20'      TEST VL                                49600018
+ 0000CC 4710 F0DC      000DC         125        BC    1,VLB             YES                                      50000018
+ 0000D0 8950 0008      00008         126        SLL   LENB,8            NO -CLEAR HI 8 BITS                      50400018
+ 0000D4 8850 0008      00008         127        SRL   LENB,8             FROM LENGTH                             50800018
+ 0000D8 47F0 F11C      0011C         128        BC    15,TSTFIG        GO TEST IF A-FLD IS FIGCON                51200018
+ 0000DC D200 D060 100E 00060 0000E   129 VLB    MVC   WRK(1,R13),14(R1) MOVE REG CODE TO WORK                 CS 51600018
+ 0000E2 9650 D060      00060         130        OI    WRK(R13),X'50'    SET UP FOR LENB - REG 5               CS 52000018
+ 0000E6 438D 0060      00060         131        IC    WRKREG,WRK(R13)   PUT CODE IN WORK REG                  CS 52400018
+ 0000EA 4480 F1EE      001EE         132        EX    WRKREG,LDREG      LOAD BASE TO LENB                     CS 52800018
+ 0000EE 4A51 000C      0000C         133        AH    LENB,12(R1)       ADD DISP TO POINT TO VLC              CS 53200018
+ 0000F2 4855 0000      00000         134        LH    LENB,0(LENB)      LOAD LENGTH IN VLC                    CS 53600018
+ 0000F6 1255                         135        LTR   LENB,LENB                                                  54000018
+ 0000F8 4770 F11C      0011C         136        BC    7,TSTFIG                                                   54400018
+ 0000FC 9120 1000      00000         137          TM    0(R1),X'20'                                              54800018
+ 000100 47E0 F11C      0011C         138        BC    14,TSTFIG                                                  55200018
+ 000104 D203 D060 1000 00060 00000   139          MVC   ALLIGN(4,R13),0(R1)   A IS A VLC, LOAD VLC.              55600018
+ 00010A 584D 0060      00060         140          L     LENA,ALLIGN(R13)                                         56000018
+ 00010E 4844 0000      00000         141        LH    LENA,0(LENA)                                               56400018
+ 000112 1244                         142        LTR   LENA,LENA           VLC OF BOTH A AND B = 0, SET           56800018
+ 000114 4780 F1E6      001E6         143        BC    8,EXIT               CONDITION CODE TO EQUAL AND EXIT.     57200018
+ 000118 4770 F124      00124         144        BC    7,COMP1                                                    57600018
+ 00011C 9180 1000      00000         145 TSTFIG   TM    0(R1),X'80'       TEST A-FLD FIGCON                      58000018
+ 000120 4710 F1BE      001BE         146        BC    1,AFIG                                                     58400018
+                                     147 * MAIN COMPARE ROUTINE                                                  58800018
+ 000124 1945                         148 COMP1  CR    LENA,LENB        COMPARE FIELD LENGTH.                     59200018
+ 000126 4740 F138      00138         149        BC    4,ALESSB         A SHORTER THAN B                          59600018
+ 00012A 4720 F15E      0015E         150        BC    2,AGRTRB         A LONGER THAN B                           60000018
+                                     151 * A LEN = B LEN                                                         60400018
+ 00012E 1864                         152        LR    CMPLEN,LENA                                                60800018
+ 000130 45E0 F17E      0017E         153          BAL   R14,COMPEQ        LINK TO SUBROUTINE TO COMP EQ LENGTHS  61200018
+ 000134 47F0 F1E6      001E6         154        BC    15,EXIT          CONDITION CODE SET                        61600018
+                                     155 * A-LENGTH LESS THAN B                                                  62000018
+ 000138 1864                         156 ALESSB LR    CMPLEN,LENA      LENGTH A DETERMINES COMP LENGTH           62400018
+ 00013A 1873                         157        LR    PNTEND,PNTB      SAVE PNTB IN CASE OF EQ VALUE COMP        62800018
+ 00013C 1244                         158        LTR   LENA,LENA                                                  63200018
+ 00013E 4780 F14A      0014A         159        BC    8,COMPB                                                    63600018
+ 000142 45E0 F17E      0017E         160          BAL   R14,COMPEQ        LINK TO COMP                           64000018
+ 000146 4770 F1E6      001E6         161        BC    7,EXIT           COND CODE SET - HI OR LOW                 64400018
+ 00014A 1A74                         162 COMPB  AR    PNTEND,LENA      EQ, COMP EXCESS B FIELD CHARACTERS TO     64800018
+ 00014C 1865                         163        LR    CMPLEN,LENB       BLANKS.  CMPLEN CONTAINS NO. OF CHARS    65200018
+ 00014E 1B64                         164        SR    CMPLEN,LENA      AND PNTEND CONTAINS POINTER               65600018
+ 000150 45E0 F1AE      001AE         165          BAL   R14,COMPBL        GO COMP TO BLANKS                      66000018
+ 000154 4780 F1E6      001E6         166        BC    8,EXIT           EQ COMP TO BLANKS - COND CODE IS EQ       66400018
+ 000158 11EE                         167          LNR   R14,R14            A-FLD LESS THAN B-FLD - CHNGE COND CO 66800018
+1VCO0     ILBOVCO0                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000015A 47F0 F1E6      001E6         168        BC    15,EXIT          EXIT                                      67200018
+                                     169 * A LENGTH GREATER THAN B LENGTH                                        67600018
+ 00015E 1865                         170 AGRTRB LR    CMPLEN,LENB      B-LENGTH DETERMINES COMP                  68000018
+ 000160 1872                         171        LR    PNTEND,PNTA      SAVE A-FIELD POINTER TO TEST EXTRA CHARS  68400018
+ 000162 1255                         172        LTR   LENB,LENB                                                  68800018
+ 000164 4780 F170      00170         173        BC    8,COMPA                                                    69200018
+ 000168 45E0 F17E      0017E         174          BAL   R14,COMPEQ        LINK TO COMP EQ LENGTHS                69600018
+ 00016C 4770 F1E6      001E6         175        BC    7,EXIT            UNEQUAL COMP - COND CODE SET             70000018
+ 000170 1A75                         176 COMPA  AR    PNTEND,LENB      EQ, COMPARE EXCESS A FIELD                70400018
+ 000172 1864                         177        LR    CMPLEN,LENA        CHARACTERS TO BLANKS. CMPLEN CONTAINS   70800018
+ 000174 1B65                         178        SR    CMPLEN,LENB        LENGTH. PNTEND IS PNTR                  71200018
+ 000176 45E0 F1AE      001AE         179          BAL   R14,COMPBL        GO COMP TO BLANKS                      71600018
+ 00017A 47F0 F1E6      001E6         180        BC    15,EXIT          COND CODE SET - EXIT                      72000018
+                                     181 *                                                                       72400018
+ 00017E 4960 F1F0      001F0         182 COMPEQ CH    CMPLEN,H256      COMPARE LENGTH TO 256                     72800018
+ 000182 4720 F18E      0018E         183        BC    2,GRT256          GRTR THAN 256                            73200018
+ 000186 0660                         184          BCTR  CMPLEN,R0          LESS OR EQ                            73600018
+ 000188 4460 F1A8      001A8         185        EX    CMPLEN,COMPAB    COMPARE                                   74000018
+ 00018C 07FE                         186          BCR   15,R14            RETURN TO MAIN LINE                    74400018
+ 00018E D5FF 2000 3000 00000 00000   187 GRT256 CLC   0(256,PNTA),0(PNTB) COMP 256 BYTES                         74800018
+ 000194 4770 F1E6      001E6         188        BC    7,EXIT           IF UNEQUAL, EXIT                          75200018
+ 000198 4122 0100      00100         189        LA    PNTA,256(PNTA)    OTHERWISE, UP POINTERS                   75600018
+ 00019C 4133 0100      00100         190        LA    PNTB,256(PNTB)    DECREMENT LENGTH                         76000018
+ 0001A0 4B60 F1F0      001F0         191        SH    CMPLEN,H256       REPEAT                                   76400018
+ 0001A4 47F0 F17E      0017E         192        BC    15,COMPEQ         LOOP                                     76800018
+                                     193 *                                                                       77200018
+ 0001A8 D500 2000 3000 00000 00000   194 COMPAB CLC   0(0,PNTA),0(PNTB)                                          77600018
+                                     195 *                                                                       78000018
+ 0001AE 9540 7000      00000         196 COMPBL CLI   0(PNTEND),X'40'  COMPARE TO A BLANK                        78400018
+ 0001B2 077E                         197          BCR   7,R14             EXIT IF UNEQUAL                        78800018
+ 0001B4 4177 0001      00001         198        LA    PNTEND,1(PNTEND) ADD 1 TO POINTER                          79200018
+ 0001B8 4660 F1AE      001AE         199        BCT   CMPLEN,COMPBL    SUBTR 1 FROM LENGTH, REPEAT IF NOT ZERO   79600018
+ 0001BC 07FE                         200          BCR   15,R14            WHEN LENGTH IS ZERO, RETURN            80000018
+                                     201 *                                                                       80400018
+                                     202 * A-FIELD FIGCON                                                        80800018
+ 0001BE D500 2000 3000 00000 00000   203 AFIG   CLC   0(1,PNTA),0(PNTB) COMP ONE BYTE TO FIGCON                  81200018
+ 0001C4 4770 F1E6      001E6         204        BC    7,EXIT           IF UNEQUAL, EXIT                          81600018
+ 0001C8 4133 0001      00001         205        LA    PNTB,1(PNTB)     UP POINTER BY 1                           82000018
+ 0001CC 4650 F1BE      001BE         206        BCT   LENB,AFIG        REPEAT LOOP                               82400018
+ 0001D0 47F0 F1E6      001E6         207        BC    15,EXIT          EXIT WHEN LENB IS ZERO                    82800018
+                                     208 * B-FIELD FIGCON                                                        83200018
+ 0001D4 D500 2000 3000 00000 00000   209 BFIG   CLC   0(1,PNTA),0(PNTB) SAME                                     83600018
+ 0001DA 4770 F1E6      001E6         210        BC    7,EXIT             AS                                      84000018
+ 0001DE 4122 0001      00001         211        LA    PNTA,1(PNTA)        A-FIELD                                84400018
+ 0001E2 4640 F1D4      001D4         212        BCT   LENA,BFIG            FIGCON                                84800018
+ 0001E6 98EC D00C      0000C         213 EXIT     LM    R14,R12,SAVE(R13)         RESTORE CALLING REGS           85200018
+ 0001EA 47F1 0014      00014         214          BC    15,20(R1)                                                85600018
+                                     215 * CONSTANTS AND EQUATES                                                 86000018
+ 0001EE 1800                         216 LDREG  LR    R0,R0             LOAD BASE                             CS 86400018
+ 0001F0 0100                         217 H256   DC    H'256'                                                     86800018
+                             0000C   218 SAVE     EQU   12                                                       87200018
+                             00060   219 ALLIGN EQU   96                                                         87600018
+                                     220        END                                                              88000018
+1VCO0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    7
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        221
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                        11
+ TOTAL RECORDS PRINTED                       245

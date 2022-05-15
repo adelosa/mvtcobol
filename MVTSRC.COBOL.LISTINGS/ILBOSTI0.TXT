@@ -1,0 +1,237 @@
+1STI0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOSTI0  SD  0001 000000 000244
+1STI0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOSTI0                                                         00400018
+1STI0     ILBOSTI0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      3 *        ILBOSTI0   CALLING SEQ... L    15,V(ILBOSTI0)                  01200018
+                                       4 *                                                                       01600018
+                                       5 *        LEVEL  180     09/14/66                                        02000018
+                                       6 *                                                                       02400018
+                                       7 *  THIS ROUTINE CONVERTS ANY STERLING NON-REPORT FIELD INTO A 16-BYTE   02800018
+                                       8 *    ID NUMBER.  THE CALLING SEQUENCE IS -                              03200018
+                                       9 *        LA    0,STERLING-FIELD                                         03600018
+                                      10 *        L     15,V(STTOID)                                             04000018
+                                      11 *        BALR  14,15                                                    04400018
+                                      12 *        DC    AL4(OUTPUT ADDRESS)                                      04800018
+                                      13 *        DC    XL2(INFO)       WHERE INFO HAS THE FOLLOWING INFORMATION 05200018
+                                      14 *                                                                       05600018
+                                      15 *        BIT 0    =1 IF IBM SHILLING                                    06000018
+                                      16 *        BIT 1    =1 IF 2 CHARACTER PENCE REPRESENTATION                06400018
+                                      17 *        BIT 2    =1 IF IBM PENCE                                       06800018
+                                      18 *        BIT 3 -7 =NO. OF DIGITS OF PENCE DECIMAL                       07200018
+                                      19 *        BIT 8 -12=NO. OF DIGITS OF POUND INTEGER                       07600018
+                                      20 *        BIT 13-15= 000  NO SIGN                                        08000018
+                                      21 *                 = 001  SIGN ON HIGH-ORDER POUND                       08400018
+                                      22 *                 = 010  SIGN ON LOW-ORDER POUND                        08800018
+                                      23 *                 = 011  SIGN ON HIGH-ORDER SHILLING                    09200018
+                                      24 *                 = 100 SIGN ON LOW-ORDER PENCE                         09600018
+                                      25 *                 = 101  SIGN ON LOW-ORDER DECIMAL                      10000018
+                                      26 *ENTRY POINT 0 ILBOSTID                                                 10400018
+                                      27 *INPUT 0 SEE ABOVE. REG13 IS INITIALIZED BY CALLER TO POINT TO TGT.     10800018
+                                      28 *OUTPUT 0 A 16-BYTE INTERNAL DECIMAL NUMBER AT OUTPUT ADDRESS SPECIFIED 11200018
+                                      29 *   IN THE CALLING SEQUENCE.                                            11600018
+                                      30 *EXTERNAL ROUTINES 0 NONE                                               12000018
+                                      31 *EXITS - NORMAL 0  BY  BC   15,6(14)                                    12400018
+                                      32 *        ERROR 0  NONE                                                  12800018
+                                      33 *WORK AREAS 0 BYTES 96-158 OF TGT.                                      13200018
+                                      34 *ATTRIBUTES 0 SERIALLY REUSABLE.                                        13600018
+ 000000                               35 ILBOSTI0 START 0                                                        14000018
+                             00000    36 R0       EQU   0                                                        14400018
+                             00001    37 R1       EQU   1                                                        14800018
+                             00002    38 R2       EQU   2                                                        15200018
+                             00003    39 R3       EQU   3                                                        15600018
+                             00004    40 R4       EQU   4                                                        16000018
+                             00005    41 R5       EQU   5                                                        16400018
+                             0000D    42 R13      EQU   13                                                       16800018
+                             0000E    43 R14      EQU   14                                                       17200018
+                             0000F    44 R15      EQU   15                                                       17600018
+                             00008    45 ZERO     EQU   8                                                        18000018
+                             00001    46 ONES     EQU   1                                                        18400018
+                             0000E    47 NOTONE   EQU   14                                                       18800018
+                             00008    48 EQ       EQU   8                                                        19200018
+                             00007    49 NOTEQ    EQU   7                                                        19600018
+                             00002    50 HI       EQU   2                                                        20000018
+                             00004    51 LO       EQU   4                                                        20400018
+                             0000B    52 NOTLO    EQU   11                                                       20800018
+                             0000F    53 UNCOND   EQU   15                                                       21200018
+                                      54 *                                                                       21600018
+                             00000    55          USING WC,R13                                                   22000018
+                             00000    56          USING *,R15                                                    22400018
+ 000000 9015 D060      00060          57          STM   R1,R5,RS1                                                22800018
+1STI0     ILBOSTI0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000004 92FF D09D      0009D          58          MVI   SIGN,X'FF'                                               23200018
+ 000008 432E 0005      00005          59          IC    R2,5(R14)                                                23600018
+ 00000C 8820 0003      00003          60          SRL   R2,3                                                     24000018
+ 000010 5420 F238      00238          61          N     R2,MK2832           NO. OF POUND INTEGERS.               24400018
+ 000014 0620                          62          BCTR  R2,0                                                     24800018
+ 000016 1810                          63          LR    R1,R0               STERLING INPUT FIELD ADDRESS.        25200018
+ 000018 D200 D09C E005 0009C 00005    64          MVC   LOCSIG(1),5(R14)     SAVE SIGN POSITION IS WORK CELL.    25600018
+ 00001E 9407 D09C      0009C          65          NI    LOCSIG,X'07'                                             26000018
+ 000022 9501 D09C      0009C          66          CLI   LOCSIG,1                                                 26400018
+ 000026 4770 F034      00034          67          BC    NOTEQ,STT010                                             26800018
+ 00002A F200 D09D 1000 0009D 00000    68          PACK  SIGN(1),0(1,R1)        SIGN ON HI ORDER POUND            27200018
+ 000030 47F0 F046      00046          69          BC    15,STT020                                                27600018
+ 000034 9502 D09C      0009C          70 STT010   CLI   LOCSIG,2                                                 28000018
+ 000038 4770 F046      00046          71          BC    NOTEQ,STT020                                             28400018
+ 00003C 1A20                          72          AR    R2,R0                                                    28800018
+ 00003E F200 D09D 2000 0009D 00000    73          PACK  SIGN(1),0(1,R2)        SIGN ON LOW ORDER POUND           29200018
+ 000044 1B20                          74          SR    R2,R0                                                    29600018
+ 000046 4420 F21E      0021E          75 STT020   EX    R2,PACK                                                  30000018
+ 00004A FCF1 D074 F23C 00074 0023C    76          MP    WORK(16),CON240(2)     POUND * 240 = PENCE.              30400018
+ 000050 960F D083      00083          77          OI    WORK+15,X'0F'          CHANGE SIGN TO + TO WORK WITH.    30800018
+ 000054 F8FF D088 D074 00088 00074    78          ZAP   WORK2(16),WORK(16)                                       31200018
+ 00005A 1A20                          79 STT030   AR    R2,R0                                                    31600018
+ 00005C 4122 0001      00001          80          LA    R2,1(R2)                                                 32000018
+ 000060 9180 E004      00004          81          TM    4(R14),X'80'        2 CHARACTERS SHILLING REPRESENTATION 32400018
+ 000064 4780 F098      00098          82          BC    ZERO,STT050                                              32800018
+ 000068 9503 D09C      0009C          83          CLI   LOCSIG,3                                                 33200018
+ 00006C 4770 F076      00076          84          BC    NOTEQ,STT040                                             33600018
+ 000070 F200 D09D 2000 0009D 00000    85          PACK  SIGN(1),0(1,R2)        SIGN ON HI-ORDER SHILLING         34000018
+ 000076 F2F1 D074 2000 00074 00000    86 STT040   PACK  WORK(16),0(2,R2)                                         34400018
+ 00007C 4122 0001      00001          87          LA    R2,1(R2)                                                 34800018
+ 000080 FCF1 D074 F23E 00074 0023E    88 STT045   MP    WORK(16),CON12(2)      SHILLING * 12 = PENCE.            35200018
+ 000086 960F D083      00083          89          OI    WORK+15,X'0F'          CHANGE SIGN TO + TO WORK WITH.    35600018
+ 00008A FAFF D088 D074 00088 00074    90          AP    WORK2(16),WORK(16)                                       36000018
+ 000090 4122 0001      00001          91          LA    R2,1(R2)                                                 36400018
+ 000094 47F0 F0CE      000CE          92          BC    15,STT080                                                36800018
+ 000098 91F0 2000      00000          93 STT050   TM    0(R2),X'F0'         1 CHARACTER SHILLING REPRESENTATION. 37200018
+ 00009C 4710 F0BC      000BC          94          BC    ONES,STT070                                              37600018
+ 0000A0 9550 2000      00000          95          CLI   0(R2),X'50'            IS IT TEN SHILLINGS.              38000018
+ 0000A4 4780 F0C4      000C4          96          BC    EQ,STT075                                                38400018
+ 0000A8 9201 D082      00082          97          MVI   WORK+14,X'01'                                            38800018
+ 0000AC D70D D074 D074 00074 00074    98 STT060   XC    WORK(14),WORK                                            39200018
+ 0000B2 F200 D083 2000 00083 00000    99          PACK  WORK+15(1),0(1,R2)                                       39600018
+ 0000B8 47F0 F080      00080         100          BC    15,STT045                                                40000018
+ 0000BC 9200 D082      00082         101 STT070   MVI   WORK+14,X'00'                                            40400018
+ 0000C0 47F0 F0AC      000AC         102          BC    15,STT060                                                40800018
+ 0000C4 F8F1 D074 F240 00074 00240   103 STT075   ZAP   WORK(16),TEN(2)                                          41200018
+ 0000CA 47F0 F080      00080         104          BC    UNCOND,STT045                                            41600018
+                                     105 *                                                                       42000018
+ 0000CE 9140 E004      00004         106 STT080   TM    4(R14),X'40'                                             42400018
+ 0000D2 4780 F100      00100         107          BC    ZERO,STT100                                              42800018
+ 0000D6 9504 D09C      0009C         108          CLI   LOCSIG,4            2 CHARACTER PENCE REPRESENTATION.    43200018
+ 0000DA 4770 F0E4      000E4         109          BC    NOTEQ,STT090                                             43600018
+ 0000DE F200 D09D 2001 0009D 00001   110          PACK  SIGN(1),1(1,R2)        SIGN ON LOW ORDER PENCE.          44000018
+ 0000E4 F2F1 D074 2000 00074 00000   111 STT090   PACK  WORK(16),0(2,R2)                                         44400018
+ 0000EA 960F D083      00083         112          OI    WORK+15,X'0F'          CHANGE SIGN TO + TO WORK WITH.    44800018
+1STI0     ILBOSTI0                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00000EE 4122 0001      00001         113          LA    R2,1(R2)                                                 45200018
+ 0000F2 FAFF D088 D074 00088 00074   114 STT095   AP    WORK2(16),WORK(16)                                       45600018
+ 0000F8 4122 0001      00001         115          LA    R2,1(R2)                                                 46000018
+ 0000FC 47F0 F144      00144         116          BC    15,STT150                                                46400018
+ 000100 9560 2000      00000         117 STT100   CLI   0(R2),X'60'         1 CHARACTER PENCE REPRESENTATION.    46800018
+ 000104 4720 F13A      0013A         118          BC    HI,STT130              BUT, ONLY 0-9 PENCE,BRANCH.       47200018
+ 000108 4740 F12E      0012E         119          BC    LO,STT120                                                47600018
+ 00010C 9120 E004      00004         120          TM    4(R14),X'20'                                             48000018
+ 000110 4780 F11E      0011E         121          BC    ZERO,STT110                                              48400018
+ 000114 D201 D082 F240 00082 00240   122 STT105   MVC   WORK+14(2),TEN         IBM REP, 10 PENCE                 48800018
+ 00011A 47F0 F124      00124         123          BC    15,STT115                                                49200018
+ 00011E D201 D082 F242 00082 00242   124 STT110   MVC   WORK+14(2),ELEVEN      BSI REP, 11 PENCE                 49600018
+ 000124 D70D D074 D074 00074 00074   125 STT115   XC    WORK(14),WORK                                            50000018
+ 00012A 47F0 F0F2      000F2         126          BC    15,STT095                                                50400018
+ 00012E 9120 E004      00004         127 STT120   TM    4(R14),X'20'                                             50800018
+ 000132 4780 F114      00114         128          BC    ZERO,STT105            BSI REP, 10 PENCE                 51200018
+ 000136 4710 F11E      0011E         129          BC    ONES,STT110            IBM REP, 11 PENCE                 51600018
+                                     130 *                                                                       52000018
+ 00013A F2F0 D074 2000 00074 00000   131 STT130   PACK  WORK(16),0(1,R2)                                         52400018
+ 000140 47F0 F0F2      000F2         132          BC    15,STT095                                                52800018
+                                     133 *                                                                       53200018
+ 000144 435E 0005      00005         134 STT150   IC    R5,5(R14)                                                53600018
+ 000148 8850 0003      00003         135          SRL   R5,3                                                     54000018
+ 00014C 5450 F238      00238         136          N     R5,MK2832           NO. OF DIGITS IN TOTAL PENCE FIELD   54400018
+ 000150 4155 0002      00002         137          LA    R5,2(R5)               = NO. OF POUND INTEGERS +3.       54800018
+ 000154 1835                         138          LR    R3,R5                                                    55200018
+ 000156 4100 0011      00011         139          LA    R0,17(0)                                                 55600018
+ 00015A 1930                         140          CR    R3,R0               ARE THERE MORE THAN 18 DIGITS        56000018
+ 00015C 47B0 F1EE      001EE         141          BC    NOTLO,STT190          18 OR MORE BYTES,ONLY 18 RETURNED  56400018
+ 000160 0600                         142          BCTR  R0,0                                                     56800018
+ 000162 1930                         143          CR    R3,R0                                                    57200018
+ 000164 4780 F20E      0020E         144          BC    EQ,STT200              17 BYTES.                         57600018
+ 000168 8950 0004      00004         145          SLL   R5,4                                                     58000018
+ 00016C 4450 F224      00224         146          EX    R5,UNPKT                                                 58400018
+ 000170 4140 D074      00074         147 STT155   LA    R4,WORK                                                  58800018
+ 000174 1A43                         148          AR    R4,R3                                                    59200018
+ 000176 4144 0001      00001         149          LA    R4,1(R4)            R4 NOW POINTS TO 1ST BYTE AFTER      59600018
+                                     150 *                                    PENCE FIELD.                       60000018
+ 00017A 431E 0004      00004         151          IC    R1,4(R14)           GET NO. OF PENCE DECIMALS.           60400018
+ 00017E 5410 F238      00238         152          N     R1,MK2832                                                60800018
+ 000182 1211                         153          LTR   R1,R1                                                    61200018
+ 000184 4780 F194      00194         154          BC    ZERO,STT180                                              61600018
+ 000188 0610                         155          BCTR  R1,0                                                     62000018
+ 00018A 4410 F22A      0022A         156          EX    R1,MVC              MOVE PENCE DEC TO THE RIGHT OF       62400018
+ 00018E 4133 0001      00001         157          LA    R3,1(R3)                                                 62800018
+ 000192 1A31                         158          AR    R3,R1                 PENCE FIELD.                       63200018
+                                     159 *                                                                       63600018
+                                     160 *  OUTPUT CONVERTED DATA TO ADDRESS INDICATED IN CALLING PARAMETER.     64000018
+                                     161 *                                                                       64400018
+ 000194 D200 D088 E000 00088 00000   162 STT180 MVC   WORK2(1),0(R14)    MOVE  BASE REG CODE BYTE TO WORK     CS 64800018
+ 00019A 9640 D088      00088         163        OI    WORK2,X'40'      SET UP TO LOAD TO REG 4                CS 65200018
+ 00019E 4350 D088      00088         164        IC    R5,WORK2         REG CODE TO WORK REG                   CS 65600018
+ 0001A2 4450 F236      00236         165        EX    R5,LDREG         LOAD BASE 11,12,OR13 TO REG 4          CS 66000018
+ 0001A6 4A4E 0002      00002         166        AH    R4,2(R14)        ADD DISP                               CS 66400018
+ 0001AA 1930                         167          CR    R3,R0               R0 HAS 16 IN IT.                     66800018
+1STI0     ILBOSTI0                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00001AC 4780 F1BC      001BC         168          BC    EQ,STT186              17 BYTES TO UNPACK.               67200018
+ 0001B0 4720 F1CC      001CC         169          BC    HI,STT187              18 BYTES TO UNPACK.               67600018
+ 0001B4 4430 F230      00230         170 STT185   EX    R3,PACKA                                                 68000018
+ 0001B8 47F0 F1D8      001D8         171          BC    UNCOND,EXIT                                              68400018
+ 0001BC F282 4000 D074 00000 00074   172 STT186   PACK  0(9,R4),WORK(3)                                          68800018
+ 0001C2 F27E 4008 D076 00008 00076   173          PACK  8(8,R4),WORK+2(15)                                       69200018
+ 0001C8 47F0 F1D8      001D8         174          BC    UNCOND,EXIT                                              69600018
+ 0001CC F283 4000 D074 00000 00074   175 STT187   PACK  0(9,R4),WORK(4)                                          70000018
+ 0001D2 F27E 4008 D077 00008 00077   176          PACK  8(8,R4),WORK+3(15)                                       70400018
+ 0001D8 9505 D09C      0009C         177 EXIT     CLI   LOCSIG,5            PUT IN THE ORIGINAL SIGN.            70800018
+ 0001DC 4780 F1E6      001E6         178          BC    EQ,EXIT1                                                 71200018
+ 0001E0 D100 400F D09D 0000F 0009D   179          MVN   15(1,R4),SIGN                                            71600018
+ 0001E6 9815 D060      00060         180 EXIT1    LM    R1,R5,RS1                                                72000018
+ 0001EA 47FE 0006      00006         181          BC    15,6(R14)                                                72400018
+ 0001EE D200 D074 E000 00074 00000   182 STT190 MVC   WORK(1),0(R14)   MOVE BASE REG CODE TO WORK             CS 72800018
+ 0001F4 9640 D074      00074         183        OI    WORK,X'40'       SET UP TO LOAD TO REG 4                CS 73200018
+ 0001F8 4350 D074      00074         184        IC    R5,WORK          REG CODE TO WORK REG                   CS 73600018
+ 0001FC 4450 F236      00236         185        EX    R5,LDREG         LOAD BASE TO REG 4                     CS 74000018
+ 000200 4A4E 0002      00002         186        AH    R4,2(R14)        ADD DISP                               CS 74400018
+ 000204 F8FF 4000 D088 00000 00088   187          ZAP   0(16,R4),WORK2(16)     MOVE TO OUTPUT AREA.              74800018
+ 00020A 47F0 F1D8      001D8         188          BC    15,EXIT                                                  75200018
+ 00020E F321 D074 D08F 00074 0008F   189 STT200   UNPK  WORK(3),WORK2+7(2)                                       75600018
+ 000214 F3E7 D076 D090 00076 00090   190          UNPK  WORK+2(15),WORK2+8(8)       UNPACK TO 17 BYTES.          76000018
+ 00021A 47F0 F170      00170         191          BC    15,STT155                                                76400018
+-
+
+ 00021E F2F0 D074 1000 00074 00000   193 PACK     PACK  WORK(16),0(0,R1)                                         77200018
+ 000224 F30F D074 D088 00074 00088   194 UNPKT    UNPK  WORK(0),WORK2(16)                                        77600018
+ 00022A D200 4000 2000 00000 00000   195 MVC      MVC   0(0,R4),0(R2)                                            78000018
+ 000230 F2F0 4000 D074 00000 00074   196 PACKA    PACK  0(16,R4),WORK(0)                                         78400018
+ 000236 1800                         197 LDREG  LR    R0,R0            LOAD BASE TO REG4                      CS 78800018
+ 000238                              198          DS    0F                                                       79200018
+ 000238 0000001F                     199 MK2832   DC    X'0000001F'                                              79600018
+ 00023C 240C                         200 CON240   DC    X'240C'                                                  80000018
+ 00023E 012C                         201 CON12    DC    X'012C'                                                  80400018
+ 000240 010C                         202 TEN      DC    X'010C'                                                  80800018
+ 000242 011C                         203 ELEVEN   DC    X'011C'                                                  81200018
+ 000000                              204 WC       DSECT                                                          81600018
+ 000000                              205          DS    95C                                                      82000018
+ 000060                              206 RS1      DS    5F                                                       82400018
+ 000074                              207 WORK     DS    20C                                                      82800018
+ 000088                              208 WORK2    DS    20C                                                      83200018
+ 00009C                              209 LOCSIG   DS    C                                                        83600018
+ 00009D                              210 SIGN     DS    C                                                        84000018
+                                     211          END                                                            84400018
+1STI0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    7
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        212
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                        13
+ TOTAL RECORDS PRINTED                       237

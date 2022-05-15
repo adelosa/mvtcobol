@@ -1,0 +1,105 @@
+*//    ILBODCI0                                                         00900018
+DCI0     TITLE     'ILBODCI0'                                           01800018
+*        ILBODCI0   CALLING SEQ... L    15,V(ILBODCI0)                  02700018
+*                                                                       03600018
+*        LEVEL  180     09/14/66                                        04500018
+*                                                                       05400018
+*FUNCTION 0 THIS ROUTINE CONVERTS A 16-BYTE INTERNAL DECIMAL NO. OR AN  06300018
+*   18-BYTE EXTERNAL DECIMAL NO. INTO A DOUBLE PRECISION INTERNAL       07200018
+*   FLOATING POINT NUMBER.                                              08100018
+*ENTRY POINTS 0 ILBODCIF - FROM EXTERNAL DECIMAL TO INTERNAL FLT POINT. 09000018
+*               ILBOIDIF - FROM INTERNAL DECIMAL TO INTERNAL FLT POINT. 09900018
+*               CALLING SEQUENCE 0   MVC   96(L,13),ED OR ID FIELD      10800018
+*                                    L     15,V(ILBODCIF) OR V(ILBOIDIF 11700018
+*                                    BALR  14,15                        12600018
+*                                    DC    XL2'DECIMALS IN INPUT NO'    13500018
+*               WHERE L=18 FOR ED NUMBER AND L=16 FOR ID NUMBER.        14400018
+*               REG13 IS INITIALIZED BY CALLER TO POINT TO THE TGT.     15300018
+*OUTPUT 0 A DOUBLE PRECISION INTERNAL FLOATING POINT NUMBER IN FP REG 0 16200018
+*EXTERNAL ROUTINES 0 ILBOEDBI - CONVERSION FROM EXT DECIMAL TO BINARY   17100018
+*                    ILBOIDBI - CONVERSION FROM INT DECIMAL TO BINARY   18000018
+*                    ILBOBIIL - CONVERSION FROM INT DECIMAL TO INT FLT  18900018
+*EXITS-NORMAL 0 BY  BCR    15,2(14)                                     19800018
+*      ERROR  0 NONE                                                    20700018
+*WORK AREAS 0 BYTES 96-200 OF TGT.                                      21600018
+*ATTRIBUTES 0 REENTRANT CODE. NO CHARACTER DEPENDENCY.                  22500018
+*                                  L    15,V(ILBODISP)                  23400018
+*                                                                       24300018
+ILBODCI0 START 0                                                        25200018
+         ENTRY ILBODCI1                                                 26100018
+         EXTRN ILBOIDB1                                                 27000018
+         EXTRN ILBOIDB0                                                 27900018
+         EXTRN ILBOBII2                                                 28800018
+*                                                                       29700018
+R0     EQU   0                                                          30600018
+R1     EQU   1                                                          31500018
+R2     EQU   2                                                          32400018
+R3     EQU   3                                                          33300018
+R4     EQU   4                                                          34200018
+R5     EQU   5                                                          35100018
+R6     EQU   6                                                          36000018
+R7     EQU   7                                                          36900018
+R8     EQU   8                                                          37800018
+R9     EQU   9                                                          38700018
+R10    EQU   10                                                         39600018
+R11    EQU   11                                                         40500018
+R12    EQU   12                                                         41400018
+R13    EQU   13                                                         42300018
+R14    EQU   14                                                         43200018
+R15    EQU   15                                                         44100018
+FR0    EQU   0                                                          45000018
+FR2    EQU   2                                                          45900018
+FR4    EQU   4                                                          46800018
+FR6    EQU   6                                                          47700018
+SAVE     EQU   12                                                       48600018
+         USING *,R10                                                    49500018
+         STM   R14,R12,SAVE(R13)   SAVE CALLING REGS                    50400018
+         LR    R10,R15            LOAD BASE 10                          51300018
+         LH    R2,0(R14)                                                52200018
+         L     R15,ADEDBI        GO TO                                  53100018
+         BALR  R14,R15             ED-BI                                54000018
+         BAL   R10,COMMON        GO TO COMMON                           54900018
+         USING *,R10                                                    55800018
+ILBODCI1 STM   R14,R12,SAVE(R13)    SAVE CALLING REGS                   56700018
+         LR    R10,R15            LOAD BASE                             57600018
+         LH    R2,0(R14)          LOAD NO OF DECIMALS                   58500018
+*                                                                       59400018
+* THIS ROUTINE SCALES A 16 BYTE ID NO. TO A 10 BYTE ID NO. IN WORKA     60300018
+*                                                                       61200018
+         LA    R4,WORKA(R13)      POINT TO FIRST BYTE OF ID             62100018
+         LA    R3,6              INIT FOR 6 TIMES THRU                  63000018
+LOOP     CLI   0(R4),0           COMP HI BYTES TO ZERO                  63900018
+       BC    7,TRUNC          TRUNCATION REQUIRED                       64800018
+         LA    R4,1(R4)           UP POINTER BY 1                       65700018
+         BCT   R3,LOOP           REPEAT 6 TIMES                         66600018
+       CLC   0(5,R4),MAXNUM             MAX POSSIBLE NUM FOR CONV  2213 67500018
+       BC    12,MVLEFT                  OK. EQUAL OR LESS THAN MAX 2213 68400018
+TRUNC    SLL   R3,1              MULT BY 2 GIVING DIGITS TRUNCATED      69300018
+         TM    0(R4),X'F0'       TEST HI ORD ZERO                       70200018
+       BC    8,ADPW10          YES                                      71100018
+         LA    R3,1(R3)            NO - ADD 1 MORE DIG TRUNC            72000018
+         MVO   0(10,R4),0(9,R4)   SHIFT RIGHT ONE DIGIT                 72900018
+ADPW10   AR    R2,R3              ADD DIGS TRUNC TO PWR-10-EXP          73800018
+MVLEFT   MVC   WORKA(10,R13),0(R4)  SHIFT LEFT                          74700018
+         MVN   WORKA+9(1,R13),WORKA+15(R13)  MOVE SIGN                  75600018
+CONVID   L     R15,ADIDBI        GO TO                                  76500018
+         BALR  R14,R15             ID BI                                77400018
+COMMON   STD   FR2,SVFPRG+8(R13)   SAVE                                 78300018
+         STD   FR4,SVFPRG+16(R13)   FP                                  79200018
+         STD   FR6,SVFPRG+24(R13)    REGS                               80100018
+         L     R15,ADBIIF        GO TO CONVERT                          81000018
+         BALR  R14,R15             BI-IF                                81900018
+         LM    R14,R12,SAVE(R13)                                        82800018
+         LD    FR2,SVFPRG+8(R13)   RESTORE                              83700018
+         LD    FR4,SVFPRG+16(R13)   FP                                  84600018
+         LD    FR6,SVFPRG+24(R13)    REGS                               85500018
+         BC    15,2(R14)         RETURN                                 86400018
+*                                                                       87300018
+ADEDBI   DC    A(ILBOIDB1)                                              88200018
+ADBIIF   DC    A(ILBOBII2)                                              89100018
+ADIDBI   DC    A(ILBOIDB0)                                              90000018
+SVFPRG EQU   168                                                        90900018
+WORKA  EQU   96                                                         91800018
+MAXNUM DC    XL5'2147483647'            MAX NUM FOR CVB INSTR      2213 92700018
+       END                                                              93600018
+         EJECT                                                          94500018

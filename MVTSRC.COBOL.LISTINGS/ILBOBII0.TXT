@@ -1,0 +1,214 @@
+1BII0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOBII0  SD  0001 000000 0001C0
+ ILBOBII1  LD       000014        0001
+ ILBOBII2  LD       000030        0001
+1BII0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOBII0                                                         00500018
+1BII0     ILBOBII0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      3 *        ILBOBII0   CALLING SEQ... L    15,V(ILBOBII0)                  01500018
+                                       4 *                                                                       02000018
+                                       5 *                                                                       02500018
+                                       6 *        LEVEL  180     09/14/66                                        03000018
+                                       7 *                                                                       03500018
+                                       8 *FUNCTION0 THIS ROUTINE CONVERTS A SINGLE PRECISION BINARY NUMBER OR    04000018
+                                       9 *   A DOUBLE PRECISION BINARY NUMBER TO A DOUBLE PRECISION FLOATING     04500018
+                                      10 *   POINT NUMBER.                                                       05000018
+                                      11 *ENTRY POINTS0 ILBOBIIF, ILBOBIFD, ILBOBIIL                             05500018
+                                      12 *INPUT0 SINGLE PRECISION BINARY NUMBER IS IN REG0  (MUST BE INTEGER)    06000018
+                                      13 *       DOUBLE PRECISION BINARY NUMBER IS IN REG0,1 (MUST BE INTEGER)   06500018
+                                      14 *OUTPUT0 DOUBLE PRECISION FLOATING POINT NUMBER IN FP REG 0.            07000018
+                                      15 *EXTERNAL ROUTINES 0 NONE                                               07500018
+                                      16 *EXITS- NORMAL0  BY  BCR  15,14                                         08000018
+                                      17 *                OR  BC   15,1(14)    IF PARAMETER GIVEN FOR DECIMALS   08500018
+                                      18 *                                     IN BINARY NUMBER.                 09000018
+                                      19 *       ERROR 0  RESULT EXCEEDS MAXIMUM OR MINIMUM SIZE, MADE MAXIMUM   09500018
+                                      20 *                OR MINIMUM. NO ERROR INDICATION GIVEN AND NORMAL EXITS 10000018
+                                      21 *                ARE TAKEN.                                             10500018
+                                      22 *WORK AREAS 0 BYTES 96-208 OF TGT.                                      11000018
+                                      23 *ATTRIBUTES 0 REENTRANT CODING. NO CHARACTER DEPENDENCY.                11500018
+                                      24 *                                                                       12000018
+ 000000                               25 ILBOBII0 START 0                                                        12500018
+                                      26          ENTRY ILBOBII1                                                 13000018
+                                      27          ENTRY ILBOBII2                                                 13500018
+                             00000    28 R0     EQU   0                                                          14000018
+                             00001    29 R1     EQU   1                                                          14500018
+                             00002    30 R2     EQU   2                                                          15000018
+                             00003    31 R3     EQU   3                                                          15500018
+                             00004    32 R4     EQU   4                                                          16000018
+                             00005    33 R5     EQU   5                                                          16500018
+                             00006    34 R6     EQU   6                                                          17000018
+                             00007    35 R7     EQU   7                                                          17500018
+                             00008    36 R8     EQU   8                                                          18000018
+                             00009    37 R9     EQU   9                                                          18500018
+                             0000A    38 R10    EQU   10                                                         19000018
+                             0000B    39 R11    EQU   11                                                         19500018
+                             0000C    40 R12    EQU   12                                                         20000018
+                             0000D    41 R13    EQU   13                                                         20500018
+                             0000E    42 R14    EQU   14                                                         21000018
+                             0000F    43 R15    EQU   15                                                         21500018
+                             00000    44 FR0    EQU   0                                                          22000018
+                             00002    45 FR2    EQU   2                                                          22500018
+                             00004    46 FR4    EQU   4                                                          23000018
+                             00006    47 FR6    EQU   6                                                          23500018
+                             00000    48          USING *,R15                                                    24000018
+                                      49 *                                                                       24500018
+                                      50 *   THIS IS THE ENTRY POINT FOR SNGL PREC BIN NO IN REG 0 - DIRECT CALL 25000018
+                                      51 *                                                                       25500018
+ 000000 9012 D0C8      000C8          52          STM   R1,R2,SVWRD1(R13)   SAVE REGS 1 AND 2                    26000018
+ 000004 9601 D0A2      000A2          53          OI    BIIFSW(R13),1     TURN ON EXIT SWITCH FOR DIRECT CALL    26500018
+ 000008 8E00 0020      00020          54          SRDA  R0,32             EXPAND TO COUBLE WORD                  27000018
+ 00000C 482E 0000      00000          55          LH    R2,0(R14)          LOAD EXP FROM CALL SEQ                27500018
+ 000010 45F0 F020      00020          56          BAL   R15,SAVEFP        GO SAVE FP REGS                        28000018
+                             00014    57          USING *,R15                                                    28500018
+1BII0     ILBOBII0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                     58 *                                                                       29000018
+                                      59 *  THIS IS ENTRY POINT FOR DBL PREC BIN NO IN REGS 0,1 - DIRECT CALL    29500018
+                                      60 *                                                                       30000018
+ 000014 9601 D0A2      000A2          61 ILBOBII1 OI    BIIFSW(R13),1     TURN ON EXIT SW FOR DIRECT CALL        30500018
+ 000018 9012 D0C8      000C8          62          STM   R1,R2,SVWRD1(R13)   SAVE REGS 1 AND 2                    31000018
+ 00001C 482E 0000      00000          63          LH    R2,0(R14)          LOD EXP FROM CALL SEQ                 31500018
+ 000020 602D 00B0      000B0          64 SAVEFP   STD   FR2,SVFPRG+8(R13)   SAVE                                 32000018
+ 000024 604D 00B8      000B8          65          STD   FR4,SVFPRG+16(R13)   FP                                  32500018
+ 000028 606D 00C0      000C0          66          STD   FR6,SVFPRG+24(R13)    REGS                               33000018
+ 00002C 47F0 F020      00034          67        BC    15,COMMON        GO TO COMMON                              33500018
+                             00030    68          USING *,R15                                                    34000018
+                                      69 *                                                                       34500018
+                                      70 *  THIS IS THE ENTRY POINT FOR A CALL FROM ANOTHER SUBROUTINE           35000018
+                                      71 *                                                                       35500018
+ 000030 9400 D0A2      000A2          72 ILBOBII2 NI    BIIFSW(R13),0   CLEAR EXIT SW.                           36000018
+ 000034 05F0                          73 COMMON   BALR  R15,R0                                                   36500018
+                             00036    74          USING *,R15                                                    37000018
+ 000036 9400 D0A0      000A0          75          NI    SIGNSW(R13),0     SET MANT SW SIGN POS                   37500018
+ 00003A 924E D0A1      000A1          76          MVI   FLTEXP(R13),X'4E' INITIALIZE EXP TO ZERO                 38000018
+ 00003E 1200                          77          LTR   R0,R0              TEST MANTISSA SIGN                    38500018
+ 000040 47A0 F026      0005C          78        BC    10,POSMAN         POSITIVE                                 39000018
+ 000044 9601 D0A0      000A0          79          OI    SIGNSW(R13),1     SET MANTISSA SW NEGATIVE               39500018
+ 000048 5700 F172      001A8          80          X     R0,ALLFF           NEG - INVERT MANTISSA HI-ORD          40000018
+ 00004C 5710 F172      001A8          81          X     R1,ALLFF           INVERT LO-ORD                         40500018
+ 000050 5E10 F16E      001A4          82          AL    R1,F1             ADD 1                                  41000018
+ 000054 47C0 F026      0005C          83        BC    12,POSMAN        NO CARRY                                  41500018
+ 000058 5E00 F16E      001A4          84          AL    R0,F1             CARRY - ADD 1 TO HI-ORD                42000018
+ 00005C 5900 F176      001AC          85 POSMAN   C     R0,TWOP24         COMP TO 2 ** 24                        42500018
+ 000060 4740 F046      0007C          86        BC    4,STORE          8 HI BITS ARE CLEAR                       43000018
+ 000064 8C00 0004      00004          87          SRDL  R0,4              SHIFT RIGHT 4 BITS                     43500018
+ 000068 924F D0A1      000A1          88          MVI   FLTEXP(R13),X'4F' MAKE EXP 1                             44000018
+ 00006C 5900 F176      001AC          89          C     R0,TWOP24         COMP AGAIN                             44500018
+ 000070 4740 F046      0007C          90        BC    4,STORE          8 HI BITS ARE CLEAR                       45000018
+ 000074 8C00 0004      00004          91          SRDL  R0,4              SHIFT RIGHT 4 BITS                     45500018
+ 000078 9250 D0A1      000A1          92          MVI   FLTEXP(R13),X'50' MAKE EXP 2                             46000018
+ 00007C 9001 D060      00060          93 STORE    STM   R0,R1,WORKA(R13)    STORE BINARY DBL WORD                46500018
+ 000080 D200 D060 D0A1 00060 000A1    94          MVC   WORKA(1,R13),FLTEXP(R13)  INSERT FLT PNT EXP             47000018
+ 000086 680D 0060      00060          95          LD    FR0,WORKA(R13)      LOAD UNNORMALIZED FLT PT NO.         47500018
+ 00008A 6C00 F17A      001B0          96          MD    FR0,FLTONE         MULT BY 1 TO NORMALIZE                48000018
+ 00008E 2200                          97          LTDR  FR0,FR0              TEST FOR 0 VALUE                    48500018
+ 000090 4780 F0DA      00110          98        BC    8,EXIT            IF 0, EXIT                               49000018
+ 000094 1202                          99          LTR   R0,R2              SHIFT EXP TO R0, TEST SIGN            49500018
+ 000096 4740 F096      000CC         100        BC    4,EXPNEG          GO TO NEG EXP RT                         50000018
+ 00009A 4110 F0FA      00130         101          LA    R1,PLSTBL          POSITIVE  -LOAD POINTER TO TEST TABLE 50500018
+ 00009E 4120 F132      00168         102          LA    R2,PWRTBL         LOAD POINTER TO POWER-OF-10 TABLE      51000018
+ 0000A2 8900 0019      00019         103          SLL   R0,25             PREPARE FOR MULT LOOP                  51500018
+ 0000A6 1E00                         104 PLLOOP   ALR   R0,R0              ADD EXP TO ITSELF - IF NO CARRY,      52000018
+ 0000A8 47C0 F082      000B8         105        BC    12,NOMULT         THAT BIT NOT ON - DON'T MULTIPLY         52500018
+ 0000AC 7901 0000      00000         106          CE    FR0,0(R1)           TEST FOR TOO BIG                     53000018
+ 0000B0 4720 F0D4      0010A         107        BC    2,TOOBIG          YEP, TOO BIG                             53500018
+ 0000B4 6C02 0000      00000         108          MD    FR0,0(R2)           MULT BY APPROPRIATE POWER-OF-10      54000018
+ 0000B8 4111 0004      00004         109 NOMULT   LA    R1,4(R1)           INCREMENT TABLE                       54500018
+ 0000BC 4122 0008      00008         110          LA    R2,8(R2)            POINTERS                             55000018
+ 0000C0 5920 F16A      001A0         111          C     R2,TBLEND         TEST 7 TIMES THRU LOOP                 55500018
+ 0000C4 4770 F070      000A6         112        BC    7,PLLOOP          NO - REPEAT                              56000018
+1BII0     ILBOBII0                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00000C8 47F0 F0C6      000FC         113        BC    15,FINAL          YES - GO TO FINISH UP SIGN               56500018
+ 0000CC 4110 F116      0014C         114 EXPNEG   LA    R1,NEGTBL         ADDR OF TABLE FOR NEG EXPONS           57000018
+ 0000D0 4120 F132      00168         115          LA    R2,PWRTBL         ADDR OF POWER-OF-10 TABLE              57500018
+ 0000D4 1000                         116          LPR   R0,R0              MAKE REG POS                          58000018
+ 0000D6 8900 0019      00019         117          SLL   R0,25             PREP TO DIVIDE                         58500018
+ 0000DA 1E00                         118 NGLOOP   ALR   R0,R0              ADD EXP TO ITSELF - IF NO CARRY       59000018
+ 0000DC 47C0 F0B6      000EC         119        BC    12,NODIV          THAT BIT NOT ON - DON'T DIVIDE           59500018
+ 0000E0 7901 0000      00000         120          CE    FR0,0(R1)           TEST FOR TOO SMALL                   60000018
+ 0000E4 4740 F0F4      0012A         121        BC    4,TOOWEE          YEP, TOO SMALL                           60500018
+ 0000E8 6D02 0000      00000         122          DD    FR0,0(R2)           DIVIDE BY APPROP POWER-OF-10         61000018
+ 0000EC 4111 0004      00004         123 NODIV    LA    R1,4(R1)           INCREMENT TABLE                       61500018
+ 0000F0 4122 0008      00008         124          LA    R2,8(R2)            POINTERS                             62000018
+ 0000F4 5920 F16A      001A0         125          C     R2,TBLEND         TEST END OF TABLE                      62500018
+ 0000F8 4770 F0A4      000DA         126        BC    7,NGLOOP          NO - REPEAT                              63000018
+ 0000FC 9101 D0A0      000A0         127 FINAL    TM    SIGNSW(R13),1     TEST MANTISSA SIGN                     63500018
+ 000100 4780 F0DA      00110         128        BC    8,EXIT           POS - EXIT                                64000018
+ 000104 2100                         129          LNDR  FR0,FR0              NEG - CONVERT                       64500018
+ 000106 47F0 F0DA      00110         130        BC    15,EXIT          EXIT                                      65000018
+ 00010A 6800 F182      001B8         131 TOOBIG   LD    FR0,MAXFLT         SET FP RESULT TO MAX SIZE             65500018
+ 00010E 1BFF                         132          SR    R15,R15            CLEAR R15 - ERROR CODE                66000018
+ 000110 9101 D0A2      000A2         133 EXIT     TM    BIIFSW(R13),1     TEST EXIT SW                           66500018
+ 000114 078E                         134          BCR   8,R14             RETURN TO CALLING SUBROUTINE           67000018
+ 000116 682D 00B0      000B0         135          LD    FR2,SVFPRG+8(R13)   RESTORE                              67500018
+ 00011A 684D 00B8      000B8         136          LD    FR4,SVFPRG+16(R13)   FP                                  68000018
+ 00011E 686D 00C0      000C0         137          LD    FR6,SVFPRG+24(R13)    REGS                               68500018
+ 000122 9812 D0C8      000C8         138          LM    R1,R2,SVWRD1(R13)   RESTORE REGS 1 AND 2                 69000018
+ 000126 47FE 0002      00002         139          BC    15,2(R14)         RETURN TO IN- LINE CALL                69500018
+ 00012A 2B00                         140 TOOWEE   SDR   FR0,FR0              SET FP RESULT TO ZERO               70000018
+ 00012C 47F0 F0DA      00110         141        BC    15,EXIT          EXIT                                      70500018
+                                     142 *                                                                       71000018
+                                     143 * TABLES                                                                71500018
+                                     144 *                                                                       72000018
+ 000130 4AA7A358                     145 PLSTBL DC    E'7.2E11'                                                  72500018
+ 000134 6533A850                     146        DC    E'7.2E43'                                                  73000018
+ 000138 7272B3DF                     147        DC    E'7.2E59'                                                  73500018
+ 00013C 792ABAE5                     148        DC    E'7.2E67'                                                  74000018
+ 000140 7C685249                     149        DC    E'7.2E71'                                                  74500018
+ 000144 7E28C024                     150        DC    E'7.2E73'                                                  75000018
+ 000148 7F197817                     151        DC    E'7.2E74'                                                  75500018
+                                     152 *                                                                       76000018
+ 00014C 351851C7                     153 NEGTBL DC    E'5.4E-15'                                                 76500018
+ 000150 1A4EEBCC                     154        DC    E'5.4E-47'                                                 77000018
+ 000154 0D238AFB                     155        DC    E'5.4E-63'                                                 77500018
+ 000158 065F68E5                     156        DC    E'5.4E-71'                                                 78000018
+ 00015C 03271470                     157        DC    E'5.4E-75'                                                 78500018
+ 000160 01640B5C                     158        DC    E'5.4E-77'                                                 79000018
+ 000164 00A0122C                     159        DC    E'5.4E-78'                                                 79500018
+                                     160 *                                                                       80000018
+ 000168 76184F03E93FF9F5             161 PWRTBL DC    D'1E64'                                                    80500018
+ 000170 5B4EE2D6D415B85B             162        DC    D'1E32'                                                    81000018
+ 000178 4E2386F26FC10000             163        DC    D'1E16'                                                    81500018
+ 000180 475F5E1000000000             164        DC    D'1E8'                                                     82000018
+ 000188 4427100000000000             165        DC    D'1E4'                                                     82500018
+ 000190 4264000000000000             166        DC    D'1E2'                                                     83000018
+ 000198 41A0000000000000             167        DC    D'1E1'                                                     83500018
+1BII0     ILBOBII0                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    168 *                                                                       84000018
+                                     169 * CONSTANTS                                                             84500018
+                                     170 *                                                                       85000018
+ 0001A0 000001A0                     171 TBLEND DC    A(PWRTBL+56)                                               85500018
+                             000A0   172 SIGNSW EQU   160                                                        86000018
+                             000A1   173 FLTEXP EQU   161                                                        86500018
+                             000A2   174 BIIFSW EQU   162                                                        87000018
+                             000C8   175 SVWRD1 EQU   200                                                        87500018
+                             00060   176 WORKA  EQU   96                                                         88000018
+                             000A8   177 SVFPRG EQU   168                                                        88500018
+ 0001A4 00000001                     178 F1     DC    F'1'                                                       89000018
+ 0001A8 FFFFFFFF                     179 ALLFF  DC    F'-1'                                                      89500018
+ 0001AC 01000000                     180 TWOP24 DC    F'16777216'                                                90000018
+ 0001B0 4110000000000000             181 FLTONE DC    D'1'                                                       90500018
+ 0001B8 7FFFFFFFFFFFFFFF             182 MAXFLT DC    X'7FFFFFFFFFFFFFFF'                                        91000018
+                                     183        END                                                              91500018
+1BII0                                              RELOCATION DICTIONARY                                        PAGE    7
+-POS.ID   REL.ID   FLAGS   ADDRESS                                                                ASM 0201 11.03 02/14/15
+0 0001     0001      0C     0001A0
+
+1BII0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    8
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        184
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                        11
+ TOTAL RECORDS PRINTED                       214

@@ -1,0 +1,439 @@
+1SCH0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOSCH0  SD  0001 000000 0002DC
+1SCH0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOSCH0                                                         00200018
+1SCH0     ILBOSCH0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      3 * TITLE:  ILBOSCH0                                                    * 00600018
+                                       4 *                                                                     * 00800018
+                                       5 *                                                                     * 01000018
+                                       6 * STATUS CHANGE LEVEL: 000                                            * 01200018
+                                       7 *                                                                     * 01400018
+                                       8 * FUNCTION/OPERATION: THE SUBROUTINE DOES A BINARY SEARCH OF A        * 01600018
+                                       9 *      TABLE TO FIND AN ENTRY WHOSE KEYS MATCH A GIVEN SEARCH         * 01800018
+                                      10 *      ARGUMENT, AND RETURNS THE ADDRESS OF THE ENTRY IN REGISTER 0.  * 02000018
+                                      11 *      IF THE DESIRED ENTRY IS NOT FOUND, THE SUBROUTINNE BRANCHES    * 02200018
+                                      12 *      TO AN ATEND ADDRESS PASSED TO IT BY THE CALLING ROUTINE.       * 02400018
+                                      13 *      THE SUBROUTINE FIRST CHECKS THE KEYS OF THE SEARCH ARGUMENT,   * 02600018
+                                      14 *      CONVERTING EACH IN TURN AND CONCATENATING THEM IN AN ADJACENT  * 02800018
+                                      15 *      FIELD. WHEN ALL KEYS HAVE BEEN CHECKED AND CONVERTED, THE      * 03000018
+                                      16 *      FIRST CONCATENATED FIELD IS REPLACED BY THE SECOND. NEXT, THE  * 03200018
+                                      17 *      SUBROUTINE CALCULATES THE BEGINNING AND ENDING ADDRESSES OF    * 03400018
+                                      18 *      THE TABLE, FINDS THE MIDPOINT ENTRY AND PROCEEDS TO TEST EACH  * 03600018
+                                      19 *      KEY IN TURN, PLACING IT INTO THE SECOND CONCATENATED FIELD.    * 03800018
+                                      20 *      THIS IS THE SAME ROUTINE AS WAS USED FOR THE SEARCH ARGUMENT,  * 04000018
+                                      21 *      EXCEPT THAT WHEN ALL THE KEYS HAVE BEEN CONVERTED AND MOVED    * 04200018
+                                      22 *      A LOGICAL COMPARE IS MADE BETWEEN THE TWO FIELDS. THE SUB-     * 04400018
+                                      23 *      ROUTINE EITHER RETURNS THE ADDRESS OF THE ENTRY (IF THE        * 04600018
+                                      24 *      SEARCH ARGUMENT AND TABLE ARGUMENTS ARE EQUAL) OR CONTINUES    * 04800018
+                                      25 *      THE BINARY SEARCH OF THE TABLE UNTIL THE DESIRED ENTRY IS      * 05000018
+                                      26 *      FOUND, OR THE TABLE IS EXHAUSTED.                              * 05200018
+                                      27 *                                                                     * 05400018
+                                      28 * ENTRY POINTS: ILBOSCH0, ILBOSCH0                                    * 05600018
+                                      29 *                                                                     * 05800018
+                                      30 * CALLING SEQUENCE: MVC TS2,SEARCH ARGUMENT                           * 06000018
+                                      31 *                   MVC TS4,TABLE DESCRIPTOR                          * 06200018
+                                      32 *                   LA  0,TS2                                         * 06400018
+                                      33 *                   LA 1,TS4                                          * 06600018
+                                      34 *                   CNOP 2,4                                          * 06800018
+                                      35 *                   L   15,V(SCH0)                                    * 07000018
+                                      36 *                   BALR 14,15                                        * 07200018
+                                      37 *                   DC   X'NN'     TYPE OF FIRST KEY                  * 07400018
+                                      38 *                   DC   X'NN'     LENGTH OF FIRST KEY                * 07600018
+                                      39 *                   DC   X'NNNN'   OFFSET OF FIRST KEY                * 07800018
+                                      40 *                   DC   ...       SAME INFO FOR OTHER KEYS           * 08000018
+                                      41 *                                                                     * 08200018
+                                      42 * INPUT: KEY INFO AS DESCRIBED ABOVE                                  * 08400018
+                                      43 *        TABLE DESCRIPTOR-WORD1-ADDR OF TABLE AT FIRST OCCURRENCE     * 08600018
+                                      44 *                               OF LEVEL BEING SEARCHED               * 08800018
+                                      45 *                         WORD2-NUMBER OF TABLE ENTRIES               * 09000018
+                                      46 *                         WORD3-AT END ADDRESS                        * 09200018
+                                      47 *                         WORD4-BYTE1-NUMBER OF KEYS                  * 09400018
+                                      48 *                               BYTES3,4-LENGTH OF A TABLE ENTRY      * 09600018
+                                      49 *        SEARCH ARGUMENT IN TEMP STORAGE2                             * 09800018
+                                      50 *                                                                     * 10000018
+                                      51 * OUTPUT:  THE SUBROUTINE RETURNS THE ADDRESS OF THE TABLE ENTRY      * 10200018
+                                      52 *     (IF IT EXISTS) IN THE REGISTER 0.  OTHERWISE IT BRANCHES TO THE * 10400018
+                                      53 *     AT END ADDRESS INDICATED IN THE TABLE DESCRIPTOR.               * 10600018
+                                      54 *                                                                     * 10800018
+                                      55 * EXTERNAL ROUTINES: NONE                                             * 11000018
+                                      56 *                                                                     * 11200018
+                                      57 * EXITS - NORMAL:  THE SUBROUTINE RETURNS CONTROL TO THE INSTRU-      * 11400018
+1SCH0     ILBOSCH0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                     58 *      CTION AFTER THE TABLE DESCRIPTOR IN THE CALLING ROUTINE        * 11600018
+                                      59 *      AFTER IT HAS FOUND THE TABLE ENTRY AND PLACED ITS ADDRESS IN   * 11800018
+                                      60 *      REGISTER 0; OR IT BRANCHES DIRECTLY TO THE ATEND ADDRESS, IF   * 12000018
+                                      61 *     THE DESIRED ENTRY IS NOT FOUND. BOTH EXIT ADDRESSES ARE IN      * 12200018
+                                      62 *     REGISTER 14. THESE ARE THE ONLY EXITS.                          * 12400018
+                                      63 *                                                                     * 12600018
+                                      64 * TABLES/WORK AREAS: THE SEARCH ARGUMENT WILL HAVE BEEN PLACED INTO   * 12800018
+                                      65 *      A CONCATENATED FIELD STARTING AT THE BEGINNING OF THE WORKING  * 13000018
+                                      66 *      CELL AREA IN THE TGT. THE BYTE FOLLOWING THIS FIELD CON-       * 13200018
+                                      67 *     TAINS X'FF' WITH A SECOND CONCATENATED FIELD OF EQUAL SIZE      * 13400018
+                                      68 *     FOLLOWING IT.  THIS SECOND CONCATENATED FIELD IS THE ONE        * 13600018
+                                      69 *     EMPLOYED: U TO CONVERT ALL THE KEYS OF THE SEARCH ARGUMENT      * 13800018
+                                      70 *     ACCORDING TO THEIR TYPES, WHICH ARE THEN REPLACED IN THEIR ORIGI* 14000018
+                                      71 *     NAL FIELD; I TO CONTAIN THE CONCATENATED AND CONVERTED KEYS OF  * 14200018
+                                      72 *     THE TABLE ENTRY, TO ENABLE A LOGICAL COMPARE BETWEEN THESE 2    * 14400018
+                                      73 *     FIELDS.  THE X'FF' IS GENERATED THROUGH THE SECOND FIELD TO EN- * 14600018
+                                      74 *     ABLE INVERSION OF BITS WHERE NECESSARY.  NO OTHER STORAGE IS    * 14800018
+                                      75 *     USED, ALL OTHER WORK IS DONE THROUGH THE USE OF REGISTERS.      * 15000018
+                                      76 *                                                                     * 15200018
+                                      77 * ATTRIBUTES: REENTRANT                                               * 15400018
+                                      78 *                                                                     * 15600018
+                                      79 * NOTES: NONE                                                         * 15800018
+                                      80 *                                                                     * 16000018
+                                      81 *********************************************************************** 16200018
+ 000000                               82 ILBOSCH0  CSECT                                                         16400018
+                             00004    83 CONLEN   EQU       4              STORAGE OFFSET FOR CON. FIELD LENGTH  16600018
+                             00008    84 KEY#     EQU       8              STORAGE OFFSET FOR NO. OF KEYS        16800018
+                             0000C    85 ENTLEN   EQU       12             OFFSET FOR ENTRY LENGTH               17000018
+                             00010    86 SW       EQU       16             STORAGE OFFSET FOR SEARCH ARG.SEITCH  17200018
+                             00004    87 SAV3   EQU   4                                                          17400018
+                             00008    88 SRCHARG  EQU   8                                                        17600018
+                             0000C    89 SAV2   EQU   12                                                         17800018
+                             00060    90 COMP   EQU     96                                                       18000018
+                                      91 * REGISTERS USED IN THE SEARCH SUBROUTINE                             * 18200018
+                             00000    92 MIDPT    EQU       0                                                    18400018
+                             00001    93 PARAM    EQU       1              ADDRESS OF TABLE DESCRIPTOR           18600018
+                             00002    94 F        EQU       2              ADDRESS OF 'FF' BYTE                  18800018
+                             00003    95 CON      EQU       3              POINTER TO CONCATENATED FIELD         19000018
+                             00004    96 LEN      EQU       4              ENTRY LENGTH                          19200018
+                             00004    97 NK       EQU       4              NUMBER OF KEYS                        19400018
+                             00005    98 ENTRY    EQU       5              POINTER TO ENTRY KEY                  19600018
+                             00006    99 R6       EQU       6              WORK REGISTER STORES KEY LENGTH       19800018
+                             00007   100 END      EQU       7              END ADDRESS OF TABLE                  20000018
+                             00008   101 W8       EQU       8              WORK REGISTER                         20200018
+                             00008   102 T        EQU       8              POINTS TO TABLE DEXCRIPTOR WORD       20400018
+                             00008   103 R8       EQU       8              USED IN BINARY SEARCH ROUTINE         20600018
+                             00009   104 R9       EQU       9              USED IN BINARY SEARCH ROUTINE         20800018
+                             00009   105 L        EQU       9              KEY LENGTH                            21000018
+                             0000A   106 PT       EQU       10             POINTER TO STORAGE AREA               21200018
+                             0000B   107 W11      EQU       11             WORK REGISTER                         21400018
+                             0000C   108 TABAD    EQU       12             TABLE ADDRESS                         21600018
+                             0000D   109 SAVE     EQU       13             POINTER TO SAVE AREA                  21800018
+                             0000E   110 KEYREG   EQU   14                 POINTS TO FIRST KEY ENTRY             22000018
+                             0000F   111 BASE     EQU       15                                                   22200018
+                             00000   112          USING     *,15                                                 22400018
+1SCH0     ILBOSCH0                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000000 90EC F2A0      002A0         113          STM   14,12,SCHSAVE      SAVE REGS OF CALLING PROGRAM          22600018
+                                     114 *   ROUTINE TO CALCULATE TOTAL KEY LENGTHS AND SET POINTER TO 'FF'    * 22800018
+                                     115 *********************************************************************** 23000018
+                                     116 *                                                                     * 23200018
+                                     117 * THE KEY LENGTHS GIVEN IN THE TABLE DESCRIPTOR ARE ADDED UP TO GIVE  * 23400018
+                                     118 * THE TOTAL LENGTH OF THE CONCATENATED FIELD.  A BYTE CONTAINING X'FF'* 23600018
+                                     119 * IS PLACED FOLLOWING THE LAST BYTE OF THE FIELD.  THIS X'FF' IS USED * 23800018
+                                     120 * TO GENERATE X'FF' THROUGH THE SECOND CONCATENATED FIELD FOR THE PUR-* 24000018
+                                     121 * POSE OF INVERTING BITS.  'ENTRY' POINTS AT THE BEGINNING OF THE 1ST * 24200018
+                                     122 * CONCATENATED FIELD WHICH CONTAINS THE SEARCH ARGUMENT.  'CON' POINTS* 24400018
+                                     123 * AT THE SECOND CONCATENATED FIELD9                                   * 24600018
+                                     124 *                                                                     * 24800018
+                                     125 *********************************************************************** 25000018
+ 000004 1BBB                         126 FIRST    SR        W11,W11        ZERO OUT REGISTER.                    25200018
+ 000006 5841 000C      0000C         127          L         NK,12(PARAM)   WORD WITH # OF KEYS.                  25400018
+ 00000A 8840 0018      00018         128          SRL       NK,24          SHIFT OUT GARBAGE                     25600018
+ 00000E 182E                         129          LR    F,KEYREG           GET FIRST KEY ENTRY                   25800018
+ 000010 5882 0000      00000         130 LOOP     L     W8,0(F)            CURRENT KEY WORD                      26000018
+ 000014 8980 0008      00008         131          SLL       W8,8                                                 26200018
+ 000018 8880 0018      00018         132          SRL       W8,24                                                26400018
+ 00001C 1AB8                         133          AR        W11,W8         SUM OF KEY LENGTHS                    26600018
+ 00001E 4122 0004      00004         134          LA    F,4(F)             GET NEXT KEY ENTRY                    26800018
+ 000022 4640 F010      00010         135          BCT       NK,LOOP                                              27000018
+ 000026 412D 0060      00060         136          LA  F,COMP(SAVE)         ADDRESS OF 'F'BYTE                    27200018
+ 00002A 4132 0001      00001         137          LA        CON,1(F)       ADDRESS OF CON,FIELD                  27400018
+ 00002E 92FF 2000      00000         138          MVI       0(F),X'FF'     MOVE IN 'FF'                          27600018
+ 000032 18AB                         139           LR        PT,W11                                              27800018
+ 000034 1AA3                         140          AR        PT,CON         CHECK IF BYTE AFTER CON. FIELD IS     28000018
+ 000036 88A0 0002      00002         141          SRL       PT,2             ON WORD BOUNDARY.                   28200018
+ 00003A 89A0 0002      00002         142          SLL       PT,2                                                 28400018
+ 00003E 06B0                         143          BCTR      W11,0          STORE KEY LENGTH -1 IN NEXT WORD      28600018
+ 000040 50BA 0004      00004         144          ST        W11,CONLEN(PT)                                       28800018
+ 000044 44B0 F272      00272         145          EX        W11,PROP       GENERATE 'FF'                         29000018
+ 000048 5850 F2A8      002A8         146          L     ENTRY,SCHSAVE+SRCHARG  GET ADDR OF SRCH ARG. FIELD       29200018
+ 00004C 5841 000C      0000C         147          L     NK,12(PARAM)       GET NUMBER OF KEYS                    29400018
+ 000050 8840 0018      00018         148          SRL       NK,24             IN REGISTER FOR BCT.               29600018
+ 000054 504A 0008      00008         149          ST        NK,KEY#(PT)    STORE NO. OF KEYS                     29800018
+ 000058 9200 A010      00010         150          MVI       SW(PT),X'00'   SET SWITCH FOR SERACH ARGUMENT        30000018
+ 00005C 188E                         151          LR    T,KEYREG           BEGIN WITH FIRST KEY                  30200018
+ 00005E 47F0 F0C4      000C4         152          BC        15,TEST                                              30400018
+ 000062 4640 F25A      0025A         153 SRFIELD  BCT       NK,INCRE       DEC                                   30600018
+ 000066 4132 0001      00001         154           LA       CON,1(F)                                             30800018
+ 00006A 5880 F2A8      002A8         155          L     W8,SCHSAVE+SRCHARG                                       31000018
+ 00006E 58BA 0004      00004         156          L         W11,CONLEN(PT) LOAD LENGTH OF CON. FIELD -1.         31200018
+ 000072 44B0 F266      00266         157          EX        W11,REPLAC     PLACE CONVERTED FIELD BACK IN SRCHARG 31400018
+ 000076 9201 A010      00010         158          MVI       SW(PT),X'01'   SET SWITCH FOR TABLE ENTRY ROUTINE    31600018
+                                     159 *   ROUTINE FOR CHECKING KEYS OF TABLE ENTRY                            31800018
+                                     160 *********************************************************************** 32000018
+                                     161 *                                                                     * 32200018
+                                     162 * THE TABLE ADDRESS IS PASSED IN THE TABLE DESCRIPTOR, AND IS THE     * 32400018
+                                     163 * ADDRESS OF THE FIRST ENTRY IN THE TABLE.  THE ADDRESS OF THE LAST   * 32600018
+                                     164 * ENTRY IS CALCULATED BY MULTIPLYING THE QUANTITY, NUMBER OF TABLE    * 32800018
+                                     165 * ENTRIES MINUS ONE, BY THE LENGTH OF THE TABLE ENTRY AND ADDING THIS * 33000018
+                                     166 * PRODUCT TO THE TABLE ADDRESS.  THE BEGINNING AND ENDING ADDRESS OF  * 33200018
+                                     167 * THE TABLE HAVING BEEN FOUND, THE PROGRAM THEN PROCEEDS TO FIND THE  * 33400018
+1SCH0     ILBOSCH0                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    168 * MIDPOINT ENTRY.                                                     * 33600018
+                                     169 *                                                                     * 33800018
+                                     170 *********************************************************************** 34000018
+ 00007A 58C1 0000      00000         171 SECOND   L         TABAD,0(PARAM) LOAD TABLE ADDRESS (BEGIN)            34200018
+ 00007E 5871 0004      00004         172 NOPTR    L         END,4(PARAM)     LOAD # OF ENTRIES                   34400018
+ 000082 1897                         173 REDUCE   LR        L,END          STORE IN REG FOR GETTIN MIDPT         34600018
+ 000084 0670                         174          BCTR      END,0          REDUCE BY 1                           34800018
+ 000086 4841 000E      0000E         175          LH    LEN,14(PARAM)      PICK UP ENTRY LENGTH                  35000018
+ 00008A 504A 000C      0000C         176          ST        LEN,ENTLEN(PT) STORE ENTRY LENGTH                    35200018
+ 00008E 1C64                         177          MR        R6,LEN                                               35400018
+ 000090 1A7C                         178          AR        END,TABAD      END ADDRESS OF TABLE                  35600018
+                                     179 *********************************************************************** 35800018
+                                     180 *                                                                     * 36000018
+                                     181 * THIS ROUTINE FOR FINDING THE MIDPOINT OF THE TABLE IS USED AFTER    * 36200018
+                                     182 * EACH TIME THAT A NEW BEGINNING OR ENDING ADDRESS HAS BEEN FOUND FOR * 36400018
+                                     183 * THE TABLE AS A RESULT OF AN UNEQUAL COMPARE, AND TO FIND THE        * 36600018
+                                     184 * INITIAL MIDPOINT THE FIRST TIME INTO THE TABLE.                     * 36800018
+                                     185 *     THIS SECTION OF CODE DETERMINES WHETHER THE NUMBER OF UNCHECKED * 37000018
+                                     186 * ENTRIES IS AN ODD OR EVEN NUMBER AND, BASED ON THIS INFORMATION,    * 37200018
+                                     187 * SELECTS THE ENTRY TO BE SCANNED. THE NUMBER OF "UNCHECKED" ENTRIES  * 37400018
+                                     188 * IS DEFINED AS THE NUMBER OF ENTRIES NOT ELIMINATED FROM CONSIDER-   * 37600018
+                                     189 * ATION BY PREVIOUS BINARY SEARCHES.                                  * 37800018
+                                     190 *                                                                     * 38000018
+                                     191 *********************************************************************** 38200018
+                                     192 *                                                                     * 38400018
+                                     193 * TEST FOR ODD OR EVEN: LOAD ANOTHER REGISTER WITH NUMBER.      (A)   * 38600018
+                                     194 *                       SHIFT OUT LOW ORDER (1) BIT, IF ON.     (B)   * 38800018
+                                     195 *                       SHIFT BACK NUMBER. IT IS NOW DIFFERENT IF     * 39000018
+                                     196 *                            1-BIT WAS ON.                      (C)   * 39200018
+                                     197 *                       COMPARE WITH ORIGINAL.                  (D)   * 39400018
+                                     198 *                       IF EQUAL, NUMBER OF ENTRIES IS EVEN.          * 39600018
+                                     199 *                                                                     * 39800018
+                                     200 *********************************************************************** 40000018
+ 000092 1889                         201 GETMID   LR   W8,L           A                                          40200018
+ 000094 8880 0001      00001         202          SRL  W8,1           B                                          40400018
+ 000098 8980 0001      00001         203          SLL  W8,1           C                                          40600018
+ 00009C 1589                         204          CLR  W8,L           D                                          40800018
+ 00009E 1807                         205          LR   MIDPT,END      TRANSFER END ADDRESS FOR MANIPU-           41000018
+                                     206 *                                 LATION                                41200018
+ 0000A0 4770 F0A6      000A6         207          BNE  ODD                 IF ODD, SKIP NEXT INSTRUCTION         41400018
+                                     208 *                                                                     * 41600018
+ 0000A4 1B04                         209          SR   MIDPT,LEN      E                                          41800018
+                                     210 *                                                                     * 42000018
+                                     211 *********************************************************************** 42200018
+                                     212 *                                                                     * 42400018
+                                     213 * FOR EVEN NUMBERS, SUBTRACT 1 ENTRY LENGTH FROM END ADDRESS (E);     * 42600018
+                                     214 * ADD BEGIN ADDRESS TO RESULT (F); DIVIDE BY 2, YIELDING NEW MID-     * 42800018
+                                     215 * POINT (G). FOR ODD NUMBER OF ENTRIES, ENTRY LENGTH (E) IS NOT       * 43000018
+                                     216 * SUBTRACTED. PURPOSE IS TO HAVE AN ADDRESS VALUE WHICH, WHEN DIVIDED * 43200018
+                                     217 * BY 2, YIELDS A VALID ENTRY ADDRESS.                                 * 43400018
+                                     218 *                                                                     * 43600018
+                                     219 *********************************************************************** 43800018
+ 0000A6 1A0C                         220 ODD      AR   MIDPT,TABAD    F                                          44000018
+ 0000A8 8800 0001      00001         221          SRL  MIDPT,1        G    NEW MIDPOINT                          44200018
+ 0000AC 584A 0008      00008         222          L         NK,KEY#(PT)    LOAD NO. OF KEYS                      44400018
+1SCH0     ILBOSCH0                                                                                              PAGE    7
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    223 *   GENERATE FIELD OF 'FF'                                            * 44600018
+ 0000B0 44B0 F272      00272         224          EX        W11,PROP                                             44800018
+ 0000B4 188E                         225          LR    T,KEYREG           BEGIN WITH FIRST KEY                  45000018
+ 0000B6 47F0 F0BE      000BE         226          B     CONT                                                     45200018
+                                     227 *   CHECK NEXT KEY                                                      45400018
+ 0000BA 4188 0004      00004         228 NEWKEY   LA        T,4(T)         INCREMENT KEY WORD POINTER            45600018
+ 0000BE 4858 0002      00002         229 CONT     LH    ENTRY,2(T)         LOAD OFFSET OF KEY                    45800018
+ 0000C2 1A50                         230          AR        ENTRY,MIDPT    CALCULATE KEY ADDRESS IN ENTRY        46000018
+                                     231 *********************************************************************** 46200018
+                                     232 *                                                                     * 46400018
+                                     233 * THIS IS THE TEST ROUTINE FOR THE KEY TYPE.  A BRANCH IS MADE TO THE * 46600018
+                                     234 * APPROPRIATE ROUTINE IN ACCORDANCE WITH THE RESULTS OF THE TEST.     * 46800018
+                                     235 * EACH KEY TYPE HAS ITS OWN ROUTINE SEPARATE FROM THE LTHERS.  THESE  * 47000018
+                                     236 * SEPARATE ROUTINES HOWEVER ALL BRANCH BACK TO THE SAME POINT WHERE   * 47200018
+                                     237 * TESTS ARE MADE FOR THE REMAINING NUMBER OF KEYS YET TO BE CONVERTED.M 47400018
+                                     238 * AT THIS POINT ALSO TERE ARE TWO SEPARATE ROUTINES IN ACCORDANCE TO  * 47600018
+                                     239 * WHETHER THE SEARCH ARGUMENT OR A TABLE ENTRY IS BEING CONCATENATED  * 47800018
+                                     240 * FOR THE COMPARE INSTRUCTION.                                        * 48000018
+                                     241 *                                                                     * 48200018
+                                     242 *********************************************************************** 48400018
+ 0000C4 4898 0000      00000         243 TEST     LH        L,0(T)         LOAD TABLE DESR,WORD                  48600018
+ 0000C8 8990 0018      00018         244          SLL       L,24                                                 48800018
+ 0000CC 8890 0018      00018         245          SRL       L,24            GET KEY LENGTH                       49000018
+ 0000D0 1869                         246          LR        R6,L           STORE KEY LENGTH IN ANOTHER REG       49200018
+ 0000D2 0690                         247          BCTR      L,0            DECREMENT KEY LENGTH FO EX INST.      49400018
+ 0000D4 9588 8000      00000         248          CLI       0(T),X'88'     TEST KEY TYPE: AAN?                   49600018
+ 0000D8 4780 F110      00110         249          BC        8,PUTIN        YES,AAN.                              49800018
+ 0000DC 4720 F0F8      000F8         250          BC        2,L1           NO                                    50000018
+ 0000E0 9520 8000      00000         251          CLI       0(T),X'20'     IS KEY DPD?                           50200018
+ 0000E4 4780 F118      00118         252          BC        8,DPD          YES, DPD                              50400018
+ 0000E8 4720 F1FC      001FC         253          BC        2,DB           NO, IT IS DB                          50600018
+ 0000EC 9510 8000      00000         254          CLI       0(T),X'10'     NO: IS IT DZD?                        50800018
+ 0000F0 4780 F168      00168         255          BC        8,DZD          YES DZD                               51000018
+ 0000F4 4740 F186      00186         256          BC        4,INVRT        NO: DAN                               51200018
+ 0000F8 95A0 8000      00000         257 L1       CLI       0(T),X'A0'     NO: IS IT APD?                        51400018
+ 0000FC 4780 F18E      0018E         258          BC        8,APD          YES                                   51600018
+ 000100 4740 F1E2      001E2         259          BC        4,AZD          NO: AZD                               51800018
+                                     260 *   ASCENDING BINARY KEY ROUTINE                                      * 52000018
+ 000104 4490 F278      00278         261          EX        L,MOVE         MOVE ASCEND BIN KEY INTO CON FIELD    52200018
+ 000108 9780 3000      00000         262          XI        0(CON),X'80'   INVERT SIGN BIT                       52400018
+ 00010C 47F0 F204      00204         263          B         SWTEST         GET NEXT KEY                          52600018
+                                     264 *   ASCENDING ALPHANUMERIC                                            * 52800018
+ 000110 4490 F278      00278         265 PUTIN    EX        L,MOVE         MOVE KEY INTO CON FIELD               53000018
+ 000114 47F0 F204      00204         266          B         SWTEST         AND GET NEXT KEY                      53200018
+                                     267 *   DESCENDING PACKED DECIMAL                                         * 53400018
+ 000118 18B9                         268 DPD      LR        W11,L          PUT L-1 INTO ANOTHER REG AND ADD      53600018
+ 00011A 1AB5                         269          AR        W11,ENTRY      ENTRY KEY ADDR: REG PTS TO LAST BYTE  53800018
+ 00011C 9103 B000      00000         270          TM        0(W11),X'03'   OF DPD #. IS IT +                     54000018
+ 000120 4740 F146      00146         271          BC        4,NEG          IF MIXED IT IS -                      54200018
+ 000124 4490 F28A      0028A         272          EX        L,EXOR         OTHERWISE +. EXCL OR INTO CON FIELD   54400018
+ 000128 18B9                         273          LR        W11,L          SET UP REG L TO CONTAIN KEY LENGTH    54600018
+ 00012A 4199 0001      00001         274          LA        L,1(L)         AND KEY LEN-1 IN LAST BYTE FOR THE    54800018
+ 00012E 8990 0004      00004         275          SLL       L,4            EXECUTE INSTRUCTION                   55000018
+ 000132 1A9B                         276          AR        L,W11          WHICH ACCOMPLISHES MVO: THIS PLACES   55200018
+ 000134 4490 F284      00284         277          EX        L,XMOVOFF      SIGN IN FRONT OF NEW PD NO.           55400018
+1SCH0     ILBOSCH0                                                                                              PAGE    8
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000138 1AB3                         278          AR        W11,CON        REPLACE 'FF' BYTE IN CON.             55600018
+ 00013A 41BB 0001      00001         279          LA        W11,1(W11)        FIELD BEHIND NEWLY ADDED           55800018
+ 00013E 96FF B000      00000         280          OI        0(W11),X'FF'         PACKED DECIMAL #                56000018
+ 000142 47F0 F204      00204         281          B         SWTEST         GET NEXT KEY                          56200018
+                                     282 *   NEGATIVE DESCENDING PACKED DECIMAL                                * 56400018
+ 000146 18B9                         283 NEG      LR        W11,L          SET UP REG L TO CONTAIN KEY LEN       56600018
+ 000148 4199 0001      00001         284          LA        L,1(L)         AND LEY LEN-1 IN LAST BYTE FOR THE    56800018
+ 00014C 8990 0004      00004         285          SLL       L,4            EX INSTRUCTION FOR THE MVO.           57000018
+ 000150 1A9B                         286          AR        L,W11                                                57200018
+ 000152 4490 F27E      0027E         287          EX        L,MOVOFF       THIS ACCOMPLISHES PLACING THE SIGN    57400018
+ 000156 96D0 3000      00000         288          OI        0(CON),X'D0'   ZONE IN FRONT OF THE PD #             57600018
+ 00015A 1AB3                         289          AR        W11,CON        REPLACE 'FF' BYTE IN CON.             57800018
+ 00015C 41BB 0001      00001         290          LA        W11,1(W11)        FIELD BEHIND NEWLY ADDED           58000018
+ 000160 96FF B000      00000         291          OI        0(W11),X'FF'         PACKED DECIMAL #                58200018
+ 000164 47F0 F204      00204         292          B         SWTEST         GET NEXT KEY                          58400018
+                                     293 *   DESCENDING ZONED DECIMAL                                          * 58600018
+ 000168 18B9                         294 DZD      LR        W11,L          SET REG W11 TO POINT TO LAST BYTE     58800018
+ 00016A 1AB5                         295          AR        W11,ENTRY      OF DZD KEY                            59000018
+ 00016C 9130 B000      00000         296          TM        0(W11),X'30'   IS IT +?                              59200018
+ 000170 4740 F110      00110         297          BC        4,PUTIN        IF MIXED, IT IS.                      59400018
+ 000174 4710 F186      00186         298          BC        1,INVRT        IF SIGN ZONE = F JUST INVERTF BUT     59600018
+ 000178 4490 F28A      0028A         299          EX        L,EXOR         IF = C, INVERT BITS AND PLACE IN      59800018
+ 00017C 1A93                         300          AR        L,CON          CONC FIELD. LET L POINT AT LAST       60000018
+ 00017E 9730 9000      00000         301          XI        0(L),X'30'     BYTE OF # IN CONC. CHANGE SIGN TO     60200018
+ 000182 47F0 F204      00204         302          B         SWTEST         INVERTED F AND GET NEXT KEY.          60400018
+ 000186 4490 F28A      0028A         303 INVRT    EX        L,EXOR         EXCLUSIVE OR KEY INTO CONC FIELD.     60600018
+ 00018A 47F0 F204      00204         304          B         SWTEST         GET NEXT KEY                          60800018
+                                     305 *   ASCENDING PACKED DECIMAL                                          * 61000018
+ 00018E 18B9                         306 APD      LR        W11,L          SET REG W11 TO POINT AT LAST BYTE     61200018
+ 000190 1AB5                         307          AR        W11,ENTRY      OF APD KEY                            61400018
+ 000192 9103 B000      00000         308          TM        0(W11),X'03'   IS KEY +?                             61600018
+ 000196 4740 F1BC      001BC         309          BC        4,LESS         NO                                    61800018
+                                     310 *   POSITIVE ASCENDING PACKED DECIMAL                                 * 62000018
+ 00019A 18B9                         311          LR        W11,L          SET REG L TO CONTAIN KEY LEN AND      62200018
+ 00019C 4199 0001      00001         312          LA        L,1(L)         KEY LEN-1 IN LAST BYTE FOR THE        62400018
+ 0001A0 8990 0004      00004         313          SLL       L,4            EX INSTRUCTION FOR THE MVO.           62600018
+ 0001A4 1A9B                         314          AR        L,W11                                                62800018
+ 0001A6 4490 F27E      0027E         315          EX        L,MOVOFF       THIS PLACES THE SIGN ZONE             63000018
+ 0001AA 96F0 3000      00000         316          OI        0(CON),X'F0'   IN FRON T OF APD #.                   63200018
+ 0001AE 1AB3                         317          AR        W11,CON        REPLACE 'FF' BYTE IN CON.             63400018
+ 0001B0 41BB 0001      00001         318          LA        W11,1(W11)        FIELD BEHIND NEWLY ADDED           63600018
+ 0001B4 96FF B000      00000         319          OI        0(W11),X'FF'         PACKED DECIMAL #                63800018
+ 0001B8 47F0 F204      00204         320          B         SWTEST         GET NEXT KEY                          64000018
+                                     321 *   NEGATIVE ASCENDING PACKED DECIMAL                                 * 64200018
+ 0001BC 4490 F28A      0028A         322 LESS     EX        L,EXOR         INVERT ALL BITS                       64400018
+ 0001C0 18B9                         323          LR        W11,L          FOLLOWS SAME LOGIC AS DPD '+' NO.     64600018
+ 0001C2 4199 0001      00001         324          LA        L,1(L)                                               64800018
+ 0001C6 8990 0004      00004         325          SLL       L,4                                                  65000018
+ 0001CA 1A9B                         326          AR        L,W11                                                65200018
+ 0001CC 4490 F284      00284         327          EX        L,XMOVOFF                                            65400018
+ 0001D0 9620 3000      00000         328          OI        0(CON),X'20'                                         65600018
+ 0001D4 1AB3                         329          AR        W11,CON                                              65800018
+ 0001D6 41BB 0001      00001         330          LA        W11,1(W11)                                           66000018
+ 0001DA 96FF B000      00000         331          OI        0(W11),X'FF'                                         66200018
+ 0001DE 47F0 F204      00204         332          B         SWTEST                                               66400018
+1SCH0     ILBOSCH0                                                                                              PAGE    9
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    333 *   ASCENDING ZONED DECIMAL                                           * 66600018
+ 0001E2 18B9                         334 AZD      LR        W11,L          FOLLOWS SAME LOGIC AS DZD WITH        66800018
+ 0001E4 1AB5                         335          AR        W11,ENTRY          SIGNS REVERSED.                   67000018
+ 0001E6 9130 B000      00000         336          TM        0(W11),X'30'                                         67200018
+ 0001EA 4740 F186      00186         337          BC        4,INVRT                                              67400018
+ 0001EE 4490 F278      00278         338          EX        L,MOVE                                               67600018
+ 0001F2 1A93                         339          AR        L,CON                                                67800018
+ 0001F4 96F0 9000      00000         340          OI        0(L),X'F0'                                           68000018
+ 0001F8 47F0 F204      00204         341          B         SWTEST                                               68200018
+                                     342 *   DESCENDING BINARY                                                 * 68400018
+ 0001FC 4490 F28A      0028A         343 DB       EX        L,EXOR         INVERT BITS.                          68600018
+ 000200 9780 3000      00000         344          XI        0(CON),X'80'         EXCEPT SIGN BIT.                68800018
+ 000204 9101 A010      00010         345 SWTEST   TM        SW(PT),X'01'   KEYS BEING PROCESSED ARE...           69000018
+ 000208 4780 F062      00062         346          BC        8,SRFIELD      SEARCH ARGUMENT KEYS                  69200018
+ 00020C 4640 F24C      0024C         347          BCT       NK,UPDATE      TABLE KEYS                            69400018
+                                     348 *********************************************************************** 69600018
+                                     349 *                                                                     * 69800018
+                                     350 * AFTER THE SEARCH ARGUMENT AND THE MIDPOINT ENTRY HAVE BEEN CONVERTED* 70000018
+                                     351 * AND PLACED IN THEIR RESPECTIVE CONCATENATED FIELDS, A LOGICAL COM-  * 70200018
+                                     352 * PARE IS MADE ON THE TWO FIELDS.  IF THEY ARE EQUAL, THE ADDRESS OF  * 70400018
+                                     353 * THE TABLE ENTRY IS RETURNED IN REGISTER 0.  IF THEY ARE UNEQUAL, THE* 70600018
+                                     354 * ENDOR BEGIN ADDRESS OF THE TABLE IS ADJUSTED IN ACCORCANCE WITH THE * 70800018
+                                     355 * METHODS USED BY A BINARY SEARCH.                                    * 71000018
+                                     356 *                                                                     * 71200018
+                                     357 *********************************************************************** 71400018
+ 000210 4132 0001      00001         358 BGNBSRCH LA   CON,1(F)                                                  71600018
+ 000214 5890 F2A8      002A8         359          L     L,SCHSAVE+SRCHARG                                        71800018
+ 000218 58BA 0004      00004         360          L         W11,CONLEN(PT) LOAD LENGTH OF CON. FIELD -1          72000018
+ 00021C 44B0 F26C      0026C         361          EX        W11,COMPARE    COMPARES SEARCH ARGUMENT WITH         72200018
+ 000220 4780 F290      00290         362          BC   8,RETURN            CONCATENATED FIELD BRANCH ON EQUAL    72400018
+                                     363 *                                                                     * 72600018
+ 000224 584A 000C      0000C         364          L         LEN,ENTLEN(PT) LOAD ENTRY LENGTH                     72800018
+ 000228 4720 F234      00234         365          BC   2,PLUS              BRANCH IF FIELD VALUE SMALLER         73000018
+ 00022C 1B04                         366          SR   MIDPT,LEN           ELSE IT IS LARGER: NEW END ADDRESS    73200018
+ 00022E 1870                         367          LR   END,MIDPT           IS ENTRY ABOVE OLD MIDPOINT           73400018
+ 000230 47F0 F238      00238         368          B    OFFTAB              CHECK FOR END OF TABLE                73600018
+ 000234 1A04                         369 PLUS     AR   MIDPT,LEN           NEW BEGIN ADDRESS IS ENTRY            73800018
+ 000236 18C0                         370          LR   TABAD,MIDPT         BELOW OLD MIDPOINT                    74000018
+ 000238 15C7                         371 OFFTAB   CLR  TABAD,END           IF BEGIN > END THEN ENTRY             74200018
+ 00023A 4720 F252      00252         372          BC   2,TOEND             NOT IN TABLE                          74400018
+                                     373 *                                                                     * 74600018
+ 00023E 1894                         374          LR   R9,LEN              ROUTINE TO CALCULATE NEW MIDPOINT     74800018
+ 000240 1A97                         375          AR   R9,END              GET NUMBER OF ENTRIES LEFT:           75000018
+ 000242 1B9C                         376          SR   R9,TABAD            NUMBER OF ENTRIES=LENGTH OF           75200018
+ 000244 1B88                         377          SR   R8,R8               REMAINING TABLE/LENGTH OF AN          75400018
+ 000246 1D84                         378          DR   R8,LEN              ENTRY                                 75600018
+ 000248 47F0 F092      00092         379          B         GETMID                                               75800018
+ 00024C 1A36                         380 UPDATE   AR        CON,R6                                               76000018
+ 00024E 47F0 F0BA      000BA         381          B         NEWKEY                                               76200018
+ 000252 58E1 0008      00008         382 TOEND    L     KEYREG,8(PARAM)    PICK UP AT END ADDR                   76400018
+ 000256 47F0 F294      00294         383          BC        15,ATENDRET                                          76600018
+ 00025A 1A56                         384 INCRE    AR        ENTRY,R6       INCREMENT POINTER                     76800018
+ 00025C 1A36                         385          AR        CON,R6         INCREMENT POINT5R                     77000018
+ 00025E 4188 0004      00004         386          LA        T,4(T)         INCREMENT KEY WORD POINTER            77200018
+                                     387 * BRANCHES TO THE TEST ROUTINE FOR THE KEY TYPE                       * 77400018
+1SCH0     ILBOSCH0                                                                                              PAGE   10
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000262 47F0 F0C4      000C4         388          BC        15,TEST                                              77600018
+                                     389 *********************************************************************** 77800018
+                                     390 *                                                                     * 78000018
+                                     391 * INSTRUCTIONS USED IN CONJUNCTION WITH EXECUTE INSTRUCTIONS.         * 78200018
+                                     392 *                                                                     * 78400018
+                                     393 *********************************************************************** 78600018
+ 000266 D200 8000 3000 00000 00000   394 REPLAC   MVC   0(0,W8),0(CON)                                           78800018
+ 00026C D500 9000 3000 00000 00000   395 COMPARE  CLC   0(0,L),0(CON)                                            79000018
+ 000272 D200 3000 2000 00000 00000   396 PROP     MVC       0(0,CON),0(F)                                        79200018
+ 000278 D200 3000 5000 00000 00000   397 MOVE     MVC       0(0,CON),0(ENTRY)                                    79400018
+ 00027E F100 3000 5000 00000 00000   398 MOVOFF   MVO       0(0,CON),0(0,ENTRY)                                  79600018
+ 000284 F100 3000 3000 00000 00000   399 XMOVOFF  MVO       0(0,CON),0(0,CON)                                    79800018
+ 00028A D700 3000 5000 00000 00000   400 EXOR     XC        0(0,CON),0(ENTRY)                                    80000018
+ 000290 41E8 0004      00004         401 RETURN   LA    KEYREG,4(T)        POINT TO INSTR AFTER LAST KEY         80200018
+ 000294 58F0 F2A4      002A4         402 ATENDRET L     15,SCHSAVE+SAV3                                          80400018
+ 000298 981C F2AC      002AC         403           LM   1,12,SCHSAVE+SAV2                                        80600018
+ 00029C 07FE                         404          BCR   15,KEYREG          RETURN                                80800018
+ 0002A0                              405 SCHSAVE  DS    15F                                                      81000018
+                                     406          END                                                            81200018
+1SCH0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE   11
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        406
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                        14
+ TOTAL RECORDS PRINTED                       439

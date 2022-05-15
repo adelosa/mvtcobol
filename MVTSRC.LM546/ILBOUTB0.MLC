@@ -1,0 +1,60 @@
+*//    ILBOUTB0                                                         01000018
+UTB0     TITLE     'ILBOUTB0'                                           02000018
+*        ILBOUTB0   CALLING SEQ... L    15,V(ILBOUTB0)                  03000018
+*                                                                       04000018
+* FUNCTION--ID UNSIGNED TABLE FOR CLASS TEST                            05000018
+*                                                                       06000018
+ILBOUTB0 START 0                                                        07000018
+UTBL     EQU   *                                                        08000018
+         DC    16X'01010101010101010101010101010101'                    09000018
+*                                                                       10000018
+*        OVERLAY AREAS OF TABLE CORRESPONDING TO VALID BYTES            11000018
+*        OF PACKED DECIMAL WITH X'00'                                   12000018
+*                                                                       13000018
+*                                                                       14000018
+*                                                                       15000018
+         ORG   UTBL                                                     16000018
+         DC    10X'00'        00 THRU 09                                17000018
+         ORG   UTBL+16                                                  18000018
+         DC    10X'00'        10 THRU 19                                19000018
+         ORG   UTBL+32                                                  20000018
+         DC    10X'00'        20 THRU 29                                21000018
+         ORG   UTBL+48                                                  22000018
+         DC    10X'00'        30 THRU 39                                23000018
+         ORG   UTBL+64                                                  24000018
+         DC    10X'00'        40 THRU 49                                25000018
+         ORG   UTBL+80                                                  26000018
+         DC    10X'00'        50 THRU 59                                27000018
+         ORG   UTBL+96                                                  28000018
+         DC    10X'00'        60 THRU 69                                29000018
+         ORG   UTBL+112                                                 30000018
+         DC    10X'00'        70 THRU 79                                31000018
+         ORG   UTBL+128                                                 32000018
+         DC    10X'00'        80 THRU 89                                33000018
+         ORG   UTBL+144                                                 34000018
+         DC    10X'00'        90 THRU 99                                35000018
+*                                                                       36000018
+*        OVERLAY AREAS OF TABLE CORRESPONDING TO VALID LOW-ORDER        37000018
+*        UNSIGNED BYTE  WITH X'80'                                      38000018
+*                                                                       39000018
+         ORG   UTBL+X'0F'                                               40000018
+         DC    X'80'                                                    41000018
+         ORG   UTBL+X'1F'                                               42000018
+         DC    X'80'                                                    43000018
+         ORG   UTBL+X'2F'                                               44000018
+         DC    X'80'                                                    45000018
+         ORG   UTBL+X'3F'                                               46000018
+         DC    X'80'                                                    47000018
+         ORG   UTBL+X'4F'                                               48000018
+         DC    X'80'                                                    49000018
+         ORG   UTBL+X'5F'                                               50000018
+         DC    X'80'                                                    51000018
+         ORG   UTBL+X'6F'                                               52000018
+         DC    X'80'                                                    53000018
+         ORG   UTBL+X'7F'                                               54000018
+         DC    X'80'                                                    55000018
+         ORG   UTBL+X'8F'                                               56000018
+         DC    X'80'                                                    57000018
+         ORG   UTBL+X'9F'                                               58000018
+         DC    X'80'                                                    59000018
+         END                                                            60000018

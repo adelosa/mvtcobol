@@ -1,0 +1,150 @@
+*$MODULE       ILBODTE0                                                 00600020
+*//    ILBODTE0                                                         01200020
+DTE0     TITLE     'ILBODTE0'                                           01800020
+ILBODTE0 CSECT                                                          02400020
+         ENTRY ILBODTE1                                                 03000020
+         SPACE 3                                                        03600020
+**                                                                   ** 04200020
+**  CALLING SEQUENCE     LA    0,RECFLD                              ** 04800020
+**                       L     15,V(ILBODTEX)  X=0=CURRENT-DATE      ** 05400020
+**                       BALR  14,15           X=1=TIME-OF-DAY       ** 06000020
+         EJECT                                                          06600020
+R0       EQU   0                                                        07200020
+R1       EQU   1                                                        07800020
+R2       EQU   2                                                        08400020
+R3       EQU   3                                                        09000020
+R4       EQU   4                                                        09600020
+R5       EQU   5                                                        10200020
+R6       EQU   6                                                        10800020
+R7       EQU   7                                                        11400020
+R8       EQU   8                                                        12000020
+R9       EQU   9                                                        12600020
+R10      EQU   10                                                       13200020
+R11      EQU   11                                                       13800020
+R12      EQU   12                                                       14400020
+R13      EQU   13                                                       15000020
+R14      EQU   14                                                       15600020
+R15      EQU   15                                                       16200020
+SAVE     EQU   96                                                       16800020
+DX0      EQU   0                                                        17400020
+DX1      EQU   1                                                        18000020
+DX2      EQU   2                                                        18600020
+DX4      EQU   4                                                        19200020
+DX5      EQU   5                                                        19800020
+DX6      EQU   6                                                        20400020
+DX7      EQU   7                                                        21000020
+DX8      EQU   8                                                        21600020
+DX16     EQU   16                                                       22200020
+LX1      EQU   1                                                        22800020
+LX2      EQU   2                                                        23400020
+XX01     EQU   X'01'                                                    24000020
+XX02     EQU   X'02'                                                    24600020
+SLASH    EQU   X'61'                                                    25200020
+         USING *,R15                                                    25800020
+         STM   R14,R12,SAVE(R13)                                        26400020
+         SR    R3,R3                                                    27000020
+         BAL   R15,COMMON          SET UP ADDRESSABILITY                27600020
+         SPACE 1                                                        28200020
+         USING *,R15                                                    28800020
+ILBODTE1 DS    0H                                                       29400020
+         STM   R14,R12,SAVE(R13)                                        30000020
+         LA    R3,DX1                                                   30600020
+         SPACE 1                                                        31200020
+COMMON   DS    0H                                                       31800020
+         LR    R2,R0                                                    32400020
+       LR      R6,R15              SAVE R15(BASE) OVER AN SVC           33000020
+         TIME  DEC                                                      33600020
+         LR    R15,R6              RESTORE R15 DESTROYED BY SVC         34200020
+         LTR   R3,R3               IS DATE REQUESTED                    34800020
+         BNZ   NODATE              TIME-OF-DAY ONLY                     35400020
+*                                                                       36000020
+*    GENERATE DATE : MM/DD/YY                                           36600020
+*                                                                       37200020
+         LA    R6,DX7(R2)                                               37800020
+         SR    R0,R0                                                    38400020
+         SLDL  R0,DX16                                                  39000020
+         BAL   R8,UNPACK           CONVERT YEAR                         39600020
+         BAL   R8,UNPACK                                                40200020
+         BCTR  R6,0                REDUCE POINTER(FROM LEFT TO RIGHT)   40800020
+         SRL   R1,20                                                    41400020
+         TM    DX7(R2),XX01        IS THIS A LEAP YEAR                  42000020
+         BO    NOLEAP              NO,BR                                42600020
+         TM    DX6(R2),XX01        IS THIS DECADE ODD                   43200020
+         BO    DECODD              YES,BR                               43800020
+         TM    DX7(R2),XX02        IS THIS A LEAP YEAR                  44400020
+         BO    NOLEAP              NO,BR                                45000020
+         B     LEAP                YES,BR                               45600020
+DECODD   DS    0H                                                       46200020
+         TM    DX7(R2),XX02        IS THIS A LEAP YEAR                  46800020
+         BZ    NOLEAP              NO,BR                                47400020
+LEAP     DS    0H                                                       48000020
+         LA    R3,DX1                                                   48600020
+NOLEAP   SLL   R1,4                                                     49200020
+         LA    R1,12(R1)           GENERATE SIGN                        49800020
+         STH   R1,DX2(R2)                                               50400020
+         ZAP   DX0(LX2,R2),ONE(LX1)                                     51000020
+         LA    R9,TABLE            INITIALIZE POINTER                   51600020
+         LA    R10,12              INITIALIZE LOOP CTRL REG             52200020
+DATEA    DS    0H                                                       52800020
+         MVC   DX4(LX2,R2),DX0(R9)                                      53400020
+         CP    DX0(LX2,R2),TWO(LX1)     IS THIS FEBRUARY                54000020
+         BNE   DATEC                    NO                              54600020
+         LTR   R3,R3                    YES, IS THIS A LEAP YEAR        55200020
+         BZ    DATEC                    NO                              55800020
+         AP    DX4(LX2,R2),ONE(LX1)                                     56400020
+DATEC    DS    0H                                                       57000020
+         CP    DX2(LX2,R2),DX4(LX2,R2)  IS THIS CORRECT MONTH           57600020
+         BNH   DATEB               YES,BR                               58200020
+         SP    DX2(LX2,R2),DX4(LX2,R2)                                  58800020
+         AP    DX0(LX2,R2),ONE(LX1)                                     59400020
+         LA    R9,2(R9)            BUMP POINTER                         60000020
+         BCT   R10,DATEA           LOOP                                 60600020
+DATEB    DS    0H                                                       61200020
+         LH    R0,DX2(R2)                                               61800020
+         SRL   R0,DX4                                                   62400020
+         BAL   R8,UNPACK           CONVERT DAY                          63000020
+         BAL   R8,UNPACK                                                63600020
+         BCTR  R6,0                REDUCE POINTER                       64200020
+         LH    R0,DX0(R2)                                               64800020
+         SRL   R0,DX4                                                   65400020
+         BAL   R8,UNPACK           CONVERT MONTH                        66000020
+         BAL   R8,UNPACK                                                66600020
+         MVI   DX5(R2),SLASH                                            67200020
+         MVI   DX2(R2),SLASH                                            67800020
+         B     EXIT                RETURN TO CALLER                     68400020
+*                                                                       69000020
+*    GENERATE TIME OF DAY                                               69600020
+*                                                                       70200020
+NODATE   DS    0H                                                       70800020
+         SRL   R0,DX8                                                   71400020
+         LA    R6,DX5(R2)                                               72000020
+         LA    R10,6               LOOP CTRL REG                        72600020
+TLOOP    BAL   R8,UNPACK           UNPACK TIME OF DAY                   73200020
+         BCT   R10,TLOOP                                                73800020
+********************************************************************    74400020
+EXIT     DS    0H                                                       75000020
+         LM    14,12,96(13)        RESTORE                              75600020
+         BR    R14                 RETURN TO CALLER                     76200020
+********************************************************************    76800020
+UNPACK   DS    0H                                                       77400020
+         STC   R0,DX0(R6)                                               78000020
+         SRL   R0,DX4                                                   78600020
+         OI    0(R6),X'F0'         GENERATE ZONE                        79200020
+         BCTR  R6,0                REDUCE POINTER                       79800020
+         BR    R8                  RETURN TO CALLER                     80400020
+*********************************************************************** 81000020
+ONE      DC    X'1C'                                                    81600020
+TWO      DC    X'2C'                                                    82200020
+TABLE    DC    X'031C'             JAN                                  82800020
+         DC    X'028C'             FEB                                  83400020
+         DC    X'031C'             MAR                                  84000020
+         DC    X'030C'             APR                                  84600020
+         DC    X'031C'             MAY                                  85200020
+         DC    X'030C'             JUNE                                 85800020
+         DC    X'031C'             JULY                                 86400020
+         DC    X'031C'             AUG                                  87000020
+         DC    X'030C'             SEPT                                 87600020
+         DC    X'031C'             OCT                                  88200020
+         DC    X'030C'             NOV                                  88800020
+         DC    X'031C'             DEC                                  89400020
+         END                                                            90000020

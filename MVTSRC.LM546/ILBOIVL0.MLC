@@ -1,0 +1,59 @@
+*//    ILBOIVL0                                                         01000018
+IVL0     TITLE     'ILBOIVL0'                                           02000018
+* TITLE- ILBOIVL0                                                       03000018
+* ALIAS- ILBOIVL0                                                       04000018
+*        ILBOIVL0   CALLING SEQ... L    15,V(ILBOIVL0)                  05000018
+*                                                                       06000018
+* FUNCTION- THIS ROUTINE COMPARES A   DATA  NAME    OPERAND AND A       07000018
+*           FIGURATIVE CONSTANT OF MORE THAN ONE CHARACTER. THE         08000018
+*           FIGCON IS ALWAYS THE SECOND OPERAND.                        09000018
+*                                                                       10000018
+* ENTRY POINTS- ILBOIVL0, ILBOIVL0                                      11000018
+*                                                                       12000018
+* CALLING SEQUENCE-  MVC PARAM CELL-1, FIGCON                           13000018
+*                    L   R0,=LENGTH OF FIGCON                           14000018
+*                    L   R1,=LENGTH OF DATA NAME OPERAND                15000018
+*                    LA  R2,PARAMETER CELL 1                            16000018
+*                    LA  R3,DATA NAME                                   17000018
+*                    L   15,V(ILBOIVL0)                                 18000018
+*                    BALR 14,15                                         19000018
+* INPUT- AS ABOVE                                                       20000018
+*                                                                       21000018
+* OUTPUT- CONDITION CODE SET TO INDICATE WHETHER DATA NAME              22000018
+*           OPERAND IS LESS THAN, EQUAL TO, OR GREATER THAN THE FIGCON. 23000018
+*                                                                       24000018
+* EXTERNAL ROUTINES- NONE                                               25000018
+*                                                                       26000018
+* EXIT- NORMAL-BCR 15,14                                                27000018
+*      ERROR- NONE                                                      28000018
+*                                                                       29000018
+* ATTRIBUTES- REENTRANT                                                 30000018
+ILBOIVL0 START 0                                                        31000018
+R0     EQU   0                    LENGTH OF FIGCON                      32000018
+R1     EQU   1                    LENGTH OF DATA NAME OPD               33000018
+R2     EQU   2                    ADDR OF FIGCON (PARAM CELL 1)         34000018
+R3     EQU   3                    ADDR OF DATA NAME OPD                 35000018
+R5     EQU   5                                                          36000018
+SAVE   EQU   96                   DISPL OFF R13 TO REG SAVE AREA        37000018
+       USING *,15                                                       38000018
+       STM   14,12,SAVE(13)       SAVE CALLING REGS                     39000018
+       LA    R5,0                                                       40000018
+       CR    R1,R5                IS VARIABLE LENGTH ZERO...            41000018
+       BE    EXIT                 YES, EXIT WITH COND CODE OF EQUAL     42000018
+TEST   CR    R1,R0                                                      43000018
+       BNH   VLLOEQ               DATA NM OP LESS THAN/EQ FIGCON        44000018
+       LR    R5,R0                LEN OF DATA NAM OP GREATER THAN LEN   45000018
+*                                 OF FIGCON. USE LEN FIGCON IN COMPARE. 46000018
+       BCTR  R5,R0                SHORTEN LENGTH FOR EXECUTE INSTR      47000018
+       EX    R5,COMP                                                    48000018
+       BC    7,EXIT               UNEQUAL COMPARE, RETURN WITH CC SET   49000018
+       AR    R3,R0                INCR ADDR OF DATA NAM OP BY LENGTH    50000018
+*                                 OF COMPARE                            51000018
+       SR    R1,R0                SHORTEN AMOUNT LEFT TO BE COMPARED    52000018
+       B     TEST                                                       53000018
+COMP   CLC   0(0,R3),0(R2)        COMPARE DATA NAM OP TO FIGCON         54000018
+VLLOEQ BCTR  R1,R0                USE LENGTH OF DATA NAM OP FOR COMPARE 55000018
+       EX    R1,COMP                                                    56000018
+EXIT   LM    14,12,SAVE(13)        RELOAD REGS                          57000018
+       BCR   15,14                                                      58000018
+       END                                                              59000018

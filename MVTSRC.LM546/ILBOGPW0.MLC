@@ -1,0 +1,64 @@
+*//    ILBOGPW0                                                         01000018
+GPW0     TITLE     'ILBOGPW0'                                           02000018
+*        ILBOGPW0   CALLING SEQ... L    15,V(ILBOGPW0)                  03000018
+*                                                                       04000018
+*        LEVEL  180     09/14/66                                        05000018
+*                                                                       06000018
+*FUNCTION 0 THIS ROUTINE EXPONENTIATES A DOUBLE PRECISION FLOATING      07000018
+*   POINT NUMBER TO A BINARY EXPONENT.                                  08000018
+*ENTRY POINT 0 ILBOGPWR ,CALLING SEQUENCE IS 0-                         09000018
+*                            LD   0,BASE   OR  SDR  0,0                 10000018
+*                                              LE   0,BASE              11000018
+*                            L    0,EXPONENT                            12000018
+*                            L    15,V(ILBOGPWR)                        13000018
+*                            BALR 14,15                                 14000018
+*INPUT 0 DOUBLE PRECISION FLOATING POINT BASE, BINARY EXPONENT.         15000018
+*        REG 13 IS INITIALIZED BY CALLER TO POINT TO TGT.               16000018
+*OUTPUT 0 RESULT IS LEFT IN FLOATING REGISTER 0.                        17000018
+*EXTERNAL ROUTINES 0 NONE                                               18000018
+*EXIT -NORMAL 0 BY   BCR  15,14                                         19000018
+*      ERROR  0 NO CHECKING FOR EXPONENT OVERFLOW OR UNDERFLOW IS DONE. 20000018
+*WORK AREAS 0 BYTES 96-107  OF TGT.                                     21000018
+*ATTRIBUTES 0 SERIALLY REUSABLE.                                        22000018
+       SPACE 2                                                          23000018
+ILBOGPW0 START 0                                                        24000018
+WORK1  EQU   96                                                         25000018
+WORK2  EQU   104                                                        26000018
+XRSUB  EQU   14                                                         27000018
+XR13   EQU   13                                                         28000018
+FPR0   EQU   0                                                          29000018
+FPR2   EQU   2                                                          30000018
+UNCON  EQU   15                                                         31000018
+XR0    EQU   0                                                          32000018
+R0     EQU  0                                                           33000018
+XR2    EQU   2                                                          34000018
+XNOEQ  EQU   7                                                          35000018
+XZERO  EQU   8                                                          36000018
+XTWO   EQU   2                                                          37000018
+XR15   EQU   15                                                         38000018
+       USING *,XR15                                                     39000018
+GPOWER   STD  FPR2,WORK1(R0,XR13)       SAVE REG.                       40000018
+         ST   XR2,WORK2(R0,XR13)                                        41000018
+       LTR   XR0,XR0                                                    42000018
+       BC    XNOEQ,GPW01                                                43000018
+       LD    FPR0,FPONE            EXPONENT IS 0  SET RESULT TO ONE.    44000018
+       BC    15,GPW02                                                   45000018
+GPW01  LPR   XR2,XR0                                                    46000018
+       BCTR  XR2,0                                                      47000018
+       LTR   XR2,XR2                                                    48000018
+       BC    XZERO,GPW03           EXPONENT IS +1 OR -1  NO MULTIPLY.   49000018
+       LDR   FPR2,FPR0                                                  50000018
+GPW04  MDR   FPR0,FPR2             MULTIPLY IN A LOOP.                  51000018
+       BCT   XR2,GPW04                                                  52000018
+GPW03  LTR   XR0,XR0                                                    53000018
+       BC    XTWO,GPW02            EXPONENT WAS + .                     54000018
+       LD    FPR2,FPONE                                                 55000018
+       DDR   FPR2,FPR0             EXPONENT WAS -  DIVIDE INTO 1.       56000018
+       LDR   FPR0,FPR2             RESULT IN 0.                         57000018
+GPW02  L     FPR2,WORK1(0,XR13)    RESTORE REG.                         58000018
+       L     XR2,WORK2(0,XR13)                                          59000018
+       BCR   UNCON,XRSUB           EXIT                                 60000018
+       DS    0D                                                         61000018
+FPONE  DC    X'4110000000000000'                                        62000018
+       END                                                              63000018
+         EJECT                                                          64000018

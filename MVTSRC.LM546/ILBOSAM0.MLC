@@ -1,0 +1,567 @@
+*$MODULE       ILBOSAM0                                                 00100021
+*                                                                       00200021
+*TITLE   ILBOSAM0                                                       00300021
+*                                                                       00400021
+*STATUS  CHANGE LEVEL 0                                                 00500021
+*                                                                       00600021
+*FUNCTION      (1) FOR BSAM WRITE: WRITES DATA RECORD AND PRECEDING     00700021
+*              DUMMY OR CAPACITY RECORDS AS NECESSARY.                  00800021
+*              (2) FOR BSAM CLOSE: WRITES DUMMY OR CAPACITY RECORDS     00900021
+*              TO COMPLETE THE CURRENT TRACK OR TO COMPLETE THE NUMBER  01000021
+*              OF TRACKS SPECIFIED IN THE TRACK-LIMIT CLAUSE IF         01100021
+*              SPECIFIED, WHICHEVER IS LARGER.                          01200021
+*              (3) FOR CLOSE REEL: WRITES DUMMY OR CAPACITY RECORDS     01300021
+*              TO COMPLETE THE CURRENT EXTENT AND ISSUES AN FEOV.       01400021
+*              (4) FOR BDAM OPEN OUTPUT: CONVERTS BDAM DCB TO BSAM      01500021
+*              AND OPENS IT. IF TRACK-LIMIT CLAUSE IS SPECIFIED, THAT   01600021
+*              MANY TRACKS ARE FORMATTED WITH DUMMY OR CAPACITY         01700021
+*              RECORDS WITHOUT ISSUING AN FEOV. IF A TRACK-LIMIT        01800021
+*              CLAUSE IS NOT SPECIFIED, THE PRIMARY EXTENT IS           01900021
+*              FORMATTED ON THE FIRST VOLUME AND THE SECONDARY EXTENT   02000021
+*              IS FORMATTED ON THE SECOND AND SUCCEEDING VOLUMES        02100021
+*              FOR AS MANY VOLUMES AS ARE SPECIFIED IN THE VOLUME       02200021
+*              COUNT OR VOLUME SERIAL NUMBERS FIELD ON THE DD CARD.     02300021
+*              AN FEOV IS ISSUED AFTER FORMATTING EACH EXTENT. AFTER    02400021
+*              ALL FORMATTING HAS BEEN DONE, THE FILE IS CLOSED,        02500021
+*              AND IS OPENED I/O.                                       02600021
+*              (5) SPECIAL PROCESSING IS DONE FOR USER LABELS.          02700021
+*              IN-LINE REGISTERS ARE LOADED BEFORE BSAM CLOSE           02800021
+*              SO THAT THE LABEL DECLARATIVE WILL HAVE THE PROPER       02900021
+*              REGISTERS SHOULD DATA MANAGEMENT PASS CONTROL TO IT.     03000021
+*              FOR BDAM OUTPUT THE ABOVE IS TRUE FOR HEADER LABELS.     03100021
+*              FOR TRAILER LABELS THE SUBROUTINE WRITES EIGHT LABELS    03200021
+*              (THE MAXIMUM) ITSELF. EOV HEADER AND TRAILER LABELS      03300021
+*              ARE NOT PERMITTED BY DATA MANAGEMENT.                    03400021
+*                                                                       03500021
+*INPUT   NONE                                                           03600021
+*                                                                       03700021
+*OUTPUT  NONE                                                           03800021
+*                                                                       03900021
+*EXTERNAL ROUTINES NONE                                                 04000021
+*                                                                       04100021
+*EXITS         FOR BSAM WRITE, CLOSE OR CLOSE REEL CONTROL IS RETURNED  04200021
+*              TO THE NEXT SEQUENTIAL INSTRUCTION IF THE FILE HAS NOT   04300021
+*              BEEN OPENED. FOR OPEN BDAM OUTPUT CONTROL IS RETURNED TO 04400021
+*              THE NEXT SEQUENTIAL INSTRUCTION IF THE FILE HAS ALREADY  04500021
+*              BEEN OPENED OR IF THE SUBROUTINE CANNOT OPEN IT.         04600021
+*                                                                       04700021
+*TABLES/WORKAREAS  STORAGE AREA IS 200 BYTES BEGINNING AT TGT+96        04800021
+*                                                                       04900021
+*ATTRIBUTES REENTRANT                                                   05000021
+*                                                                       05100021
+*NOTES NONE                                                             05200021
+*                                                                       05300021
+*CALLING SEQUENCE      LH    2,RCDLNGTH  (FOR U OR V TYPE RCDS)         05400021
+*                      L     0,DECBADR                                  05500021
+*                      LA    5,KEY                                      05600021
+*                      L     15,=V(ILBOSAM0)                            05700021
+*                      BALR  14,15                                      05800021
+*                      DC    X'NNNN'                                    05900021
+*              WHERE NNNN IS A 16 BIT PARAMETER USED TO PASS            06000021
+*              INFORMATION TO THE SUBROUTINE. THE BITS HAVE THE         06100021
+*              FOLLOWING MEANING:                                       06200021
+*        BIT   MEANING                                                  06300021
+*        -------------                                                  06400021
+*        0-3   NOT USED                                                 06500021
+*        4     USER LABELS HAVE BEEN SPECIFIED FOR THIS FILE.           06600021
+*        5     A KEY HAS BEEN SPECIFIED FOR THIS FILE.                  06700021
+*        6     ORGANIZATION IS RELATIVE RECORD.                         06800021
+*        7     ORGANIZATION IS RELATIVE TRACK.                          06900021
+*        8     RECORD FORMAT IS S.                                      07000021
+*        9     RECORD FORMAT IS U.                                      07100021
+*        10    RECORD FORMAT IS V.                                      07200021
+*        11    RECORD FORMAT IS F.                                      07300021
+*        12    CLOSE REEL WAS REQUESTED.                                07400021
+*        13    WRITE WAS REQUESTED.                                     07500021
+*        14    OPEN WAS REQUESTED.                                      07600021
+*        15    CLOSE WAS REQUESTED.                                     07700021
+*                                                                       07800021
+*ENTRY POINTS  ILBOSAM0 IS THE ONLY ENTRY POINT.                        07900021
+*********************************************************************** 08000021
+ILBOSAM0 CSECT                                                          08100021
+         USING *,BASEREG                                                08200021
+         USING TGTSAVE,R13             THIS PROGRAM USES THE TGT AS SA  08300021
+         STM   R14,R12,SAVE            SAVE REGISTERS                   08400021
+         LR    BASEREG,R15             LOAD BASE REGISTER FOR ADDRESING 08500021
+         LR    DECB,R0                 SAVE DECB ADRESS IN ITS REGISTER 08600021
+         L     DCB,8(DECB)             PICK UP DCB ADDRESS FROM DECB    08700021
+         MVC   OPTION,0(R14)           MOVE OPTIONS FROM INLINE TO SAVE 08800021
+         MVI   WRITETYP,X'20'      ASSUME NOT SPANNED                   08900021
+         TM    OPTION+1,MSTYPE     SPANNED RECORD?                      09000021
+         BNO   INIT1                NO                                  09100021
+         MVI   WRITETYP,X'21'      CHANGE WRITE TYPE FOR D-M            09200021
+         XI    OPTION+1,X'A0'      CHANGE OPTION FROM SPAN TO VAR       09300021
+INIT1    DS    0H                                                       09400021
+         LH    TKLIM,98(DCB)           PICK UP TRACK LIMIT              09500021
+         SR    SPACE,SPACE             CLEAR REGISTER                   09600021
+         IC    SPACE,88(DCB)           SPACE COND FROM LAST WRITE       09700021
+         BAL   R14,LOADTRK0        GET LAST TRACK VALUE           48509 09800021
+*                                      OR NEXT UNFILLED TRACK NUMBER    09900021
+         L     KEYADR,KYPTR            R4 HAS ADDRESS OF KEY IF ONE     10000021
+         TM    OPTION,MDIRECT          DIRECT FILE?                     10100021
+         BO    INIT5                   YES                              10200021
+         L     KEYADR,20(DECB)         PICK UP FROM DECB IF RELATIVE    10300021
+INIT5    DS    0H                                                       10400021
+         SR    RECADR,RECADR                                            10500021
+         TM    OPTION+1,MOPEN          IS THIS AN OPEN REQUEST?         10600021
+         BO    INIT6                   YES, SKIP INCREMENTING BY KEYLEN 10700021
+         IC    RECADR,16(DCB)          INSERT KEYLENGTH FROM DCB        10800021
+         TM    48(DCB),X'10'       HAS FILE BEEN OPENED                 10900021
+         BNO   BSEXIT1              NO                                  11000021
+         TM    OPENFLAG(DCB),OUTPUT    OUTPUT FILE?                     11100021
+         BO    INIT6                    YES                             11200021
+         TM    OPTION+ONE,MFEOV        CLOSE REEL?                      11300021
+         BO    FEOV1               YES FORCE END OF FILE                11400021
+         B     BSEXIT1             OTHERWISE JUST RETURN                11500021
+INIT6    DS    0H                                                       11600021
+         A     RECADR,12(DECB)         PICK UP ADDRESS OF BEGIN OF BUFF 11700021
+         TM    OPTION+1,MFTYPE         F TYPE RECORDS?                  11800021
+         BO    INIT3                   YES                              11900021
+         L     WKREG,RLEN              RCDLNGTH FROM R2 FOR V,U TYPE    12000021
+         TM    OPTION+1,MVTYPE         V TYPE RECORDS?                  12100021
+         BNO   INIT4                   NO                               12200021
+         LA    WKREG,4(WKREG)          YES, INCREMENT RCDLNGTH FOR      12300021
+*                                      CONTROL FIELD                    12400021
+         STH   WKREG,4(RECADR)         INIT RECLNGTH FIELD IN BUFFER    12500021
+         LA    WKREG2,4(WKREG)         LNGTH OF BLOCK                   12600021
+         STH   WKREG2,0(RECADR)        INIT BLKSZE FIELD IN BUFFER      12700021
+         LA    RECADR,8(RECADR)        INCREMENT RECORD ADDRESS PTR BY8 12800021
+         B     INIT4                                                    12900021
+INIT3    EQU   *                                                        13000021
+         LH    WKREG,82(DCB)           LRECL FOR F TYPE                 13100021
+INIT4    EQU   *                                                        13200021
+         ST    WKREG,RCDLNGTH          SAVE LENGTH OF RECORD            13300021
+         MVC   FIRSTBYT,0(RECADR)      SAVE FIRST BYTE OF RECORD        13400021
+         TM    OPTION+1,MOPEN          IS THIS AN OPEN REQUEST?         13500021
+         BO    OPENVCT                 YES                              13600021
+         TM    48(DCB),X'10'            FILE OPENED                     13700021
+         BNO   BSEXIT1                                                  13800021
+         TM    OPTION+1,MFEOV                                           13900021
+         BO    FEOVVCT                                                  14000021
+         TM    48(DCB),X'80'            OUTPUT                          14100021
+       BNO   BSEXIT1                                                    14200021
+         TM    OPTION+1,MCLOSE         IS THIS A CLOSE REQUEST?         14300021
+         BO    CLOSEVCT                YES                              14400021
+         B     WRITEVCT                MUST BE WRITE                    14500021
+OPENVCT  EQU   *                                                        14600021
+         TM    48(DCB),X'10'           IS FILE OPEN?                    14700021
+         BO    BSEXIT1                 YES, RETURN                      14800021
+         MVC   DCBSAVE1(6),98(DCB)     SAVE SEG AREA ADDR & TRK-LIM.    14900021
+         MVI   20(DCB),X'00'                                            15000021
+         MVC   DCBSAVE(2),82(DCB)      SAVE PARTS BEING OVERLAYED       15100021
+         MVC   DCBSAVE+2(2),50(DCB)    SAVE MACRFIELD                   15200021
+         MVC   82(2,DCB),OPNLRECL+2    INIT LRECL FIELD IN BSAM DCB     15300021
+         MVI   26(DCB),X'40'           DSORG=PS                         15400021
+         MVC   50(2,DCB),MACRCON       INITIALIZE MACR FIELD IN DCB     15500021
+         L     WKREG,12(DECB)          ADDRESS OF BUFFER                15600021
+         ST    WKREG,DECBAREA          SAVE ADDRESS                     15700021
+         SR    WKREG2,WKREG2                                            15800021
+         IC    WKREG2,16(DCB)          PICK UP KEYLENGTH                15900021
+         SR    WKREG,WKREG2            BACK UP BY LENGTH OF KEY         16000021
+         ST    WKREG,12(DECB)          MAKE ROOM FOR KEY IN BUFFER      16100021
+         ST    DCB,PARAM               STORE DCB ADR INTO PARAMETER LST 16200021
+         MVI   PARAM,X'9F'             OPEN OPTIONS ARE OUTPUT/REREAD   16300021
+         LA    R1,PARAM                POINT TO PARAMETER LIST          16400021
+         STM   R1,R12,ULABLSAV         SAVE REGISTERS                   16500021
+         LM    R6,R12,SAVE+32          LOAD BL'S FOR INLINE LABEL PROC  16600021
+         SVC   19                      OPEN                             16700021
+         LM    R1,R12,ULABLSAV         RESTORE REGISTERS                16800021
+         TM    48(DCB),X'10'           DCB OPENED?                      16900021
+         BNO   BADOPEN             NO, PUT OUT MSG AND RETURN     47962 17000021
+         BAL   R14,SETTYPE             INIT DECBTYPE FIELD TO DUMMY     17100021
+*                                      OR CAPACITY RECORDS              17200021
+         LTR   TKLIM,TKLIM             CLAUSE                           17300021
+         BZ    NOTRACKL                NO                               17400021
+         LA    TKLIM,1(TKLIM)          INCREMENT TRACK LIMIT BY 1       17500021
+OPEN02   EQU   *                                                        17600021
+         BAL   R14,FRMTTRCK            FORMAT ONE TRACK                 17700021
+         BCT   TKLIM,OPEN02            FORMAT TKLIM+1 TRACKS            17800021
+OPENEND  EQU   *                                                        17900021
+         MVC   12(4,DECB),DECBAREA     RESTORE ORIGINAL BUFFER ADDRESS  18000021
+         MVI   PARAM,X'90'             CLOSE OPTION IS REREAD           18100021
+         LA    R1,PARAM                POINT TO DCB IN PARAMETER LIST   18200021
+         TM    OPTION,MLABELS          USER LABELS?                     18300021
+         BNO   NOUTL                   NO                               18400021
+         L     WKREG,36(DCB)           ADDRESS OF EXITLIST              18500021
+         TM    11(WKREG),1             VALID ADDRESS IN EXITLIST?       18600021
+         BO    NOUTL                   NO                               18700021
+         MVC   4(4,WKREG),AWRITUTL     MOVE IN SAM0'S ADDRESS           18800021
+         SR    WKREG2,WKREG2           SET LABEL COUNT TO 0             18900021
+NOUTL    DS    0H                                                       19000021
+         SVC   20                      CLOSE                            19100021
+         TM    OPTION,MLABELS          USER LABELS?                     19200021
+         BNO   NOUTL1                  NO                               19300021
+         L     WKREG,36(DCB)           ADDRESS OF EXITLIST              19400021
+         NI    4(WKREG),X'80'      INACTIVATE SAM0S EXLST ENTRY         19500021
+         NI    0(WKREG),X'80'          INACT EXITLIST ENTRY FOR UHL     19600021
+         MVI   37(WKREG),8             SET RETURN CODE FOR I/O          19700021
+         TM    11(WKREG),1             VALID ADDRESS OF USERS UTL RTN?  19800021
+         BO    NOUTL1                  NO-DONT ACTIVATE EXITLIST ENTRY  19900021
+         MVI   120(DCB),X'03'      SET CODE FOR I/O IN DCBX             20000021
+NOUTL1   DS    0H                                                       20100021
+         MVC   82(2,DCB),DCBSAVE       RESTORE DCB                      20200021
+         MVC   50(2,DCB),DCBSAVE+2     RESTORE DCB                      20300021
+         MVI   26(DCB),X'20'           DSORG=DA                         20400021
+         XC    88(16,DCB),88(DCB)      ZERO OUT BSAM DCB EXTENSION      20500021
+*                                      BECAUSE ITS WITHIN THE BDAM DCB  20600021
+         MVC    98(6,DCB),DCBSAVE1 RESTORE SEGMENT ADDRESS IF ANY       20700021
+         MVI   20(DCB),X'01'                                            20800021
+         B     BSEXIT1A                RETURN                           20900021
+NOTRACKL DS    0H                                                       21000021
+         L     WKREG,36(DCB)           ADDR OF EXITLIST                 21100021
+         MVC   20(4,WKREG),NTLADCON    08 ENTRY FOR B37 CONDITION       21200021
+         MVC   SYNADSAV,59(DCB)           SAVE LAST BYTE                21300021
+         MVI   59(DCB),X'00'           ZERO OUT LAST BYTE               21400021
+NTL1     DS    0H                                                       21500021
+         BAL   R14,FRMTXT              FORMAT ONE EXTENT                21600021
+         LR    R1,DCB                  POINT TO DCB                     21700021
+         SVC   31                      FEOV                             21800021
+         LTR   R15,R15                 IS FEOV SUCCESSFUL?              21900021
+         BZ    NTL1                                                     22000021
+         MVC   59(1,DCB),SYNADSAV                                       22100021
+         B     OPENEND                                                  22200021
+FEOVVCT  EQU   *                                                        22300021
+         TM    48(DCB),X'80'            OUTPUT                          22400021
+         BNO   FEOV1                    NO...DO FEOV                    22500021
+         BAL   R14,SETTYPE             INIT DECBTYPE FIELD TO DUMMY OR  22600021
+*                                      CAPACITY RECORDS                 22700021
+         BAL   R14,FRMTXT              FORMAT ONE EXTENT                22800021
+         STC   SPACE,88(DCB)           SAVE SPACE CONDITION             22900021
+         BAL   R14,RETKEY              RETURN KEY IF SPECIFIED          23000021
+FEOV1    DS    0H                                                       23100021
+         LR    1,DCB                   DCB ADDRESS INOT REGISTER 1      23200021
+         SVC   31                      FEOV                             23300021
+         BAL   R14,STORTRK0        GET LAST TRACK VALUE           48509 23400021
+         B     BSEXIT1       RETURN                                     23500021
+CLOSEVCT EQU   *                                                        23600021
+         BAL   R14,SETTYPE             INIT DECBTYPE FIELD TO DUMMY OR  23700021
+*                                      CAPACITY RECORDS                 23800021
+         LTR   TKLIM,TKLIM             IS THERE A TRACK LIMIT CLAUSE?   23900021
+         BZ    NTLCLOSE                NO                               24000021
+CLOSE2   EQU   *                                                        24100021
+         CR    TKLIM,LASTKEY           HAVE ALL TRACKS SPECIFIED IN     24200021
+*                                  TRACK LIMIT CLAUSE BEEN FORMATTED?   24300021
+         BL    NTLCLOSE                YES, EXCEPT MAYBE THE LAST ONE   24400021
+         BAL   R14,FRMTTRCK            FORMAT ONE TRACK                 24500021
+         B     CLOSE2                  GO BACK AND TRY AGAIN            24600021
+NTLCLOSE EQU   *                                                        24700021
+         LTR   SPACE,SPACE             IS THE CURRENT TRACK FINISHED?   24800021
+         BH    CLOSE1                  YES FINISH UP AND RETURN         24900021
+         BAL   R14,FRMTTRCK            FORMAT ONE TRACK                 25000021
+CLOSE1   EQU   *                                                        25100021
+         BAL   R14,RETKEY              RETURN KEY IF SPECIFIED          25200021
+         B     BSEXIT                  RETURN                           25300021
+WRITEVCT EQU   *                                                        25400021
+         BAL   R14,SETTYPE             INIT DECBTYPE FIELD TO DUMMY OR  25500021
+*                                      CAPACITY RECORDS                 25600021
+         TM    OPTION,MKEY             HAS A KEY BEEN SPECIFIED?        25700021
+         BNO   WRITERCD                NO                               25800021
+         TM    OPTION,MDIRECT          DIRECT FILE                      25900021
+         BNO   WRITEREL                NO                               26000021
+WRITE1   EQU   *                                                        26100021
+         ST    LASTKEY,TEMP                                             26200021
+         CLC   TEMP,0(KEYADR)          MUST WE FORMAT BEFORE WRITING?   26300021
+*                                      INFORMATION RECORD?              26400021
+         BNL   WRITERCD                NO-THE REQUEST IS FOR CURRNT TRK 26500021
+         BAL   R14,FRMTTRCK            FORMAT ONE TRACK                 26600021
+         B     WRITE1                  GO BACK AND TRY AGAIN            26700021
+WRITEREL EQU   *                                                        26800021
+         MVC   5(1,DECB),WRITETYP  INFORMATION RECORD                   26900021
+         MVI   0(RECADR),X'FF'         WRITE DUMMY RCD                  27000021
+WRITE2   EQU   *                                                        27100021
+         ST    LASTKEY,TEMP                                             27200021
+         CLC   TEMP,0(KEYADR)          DOES KEY = NEXT AVAILABLE KEY?   27300021
+         BNL   WRITERCD                YES, WRITE INFO RECORD           27400021
+         BAL   R14,WRITECHK            WRITE AND CHECK ONE RCD          27500021
+         CH    SPACE,XTNTFUL       DATA SET FULL...               32781 27600021
+         BNE   WRITE3              NO - STILL ROOM                32781 27700021
+         BAL   R14,D37WRITE        PREVENT D37 ABEND IF POSSIBLE  32781 27800021
+WRITE3   DS    0H                                                 32781 27900021
+         B     WRITE2                  WE JUST WROTE A DUMMY RCD, NOW   28000021
+*                                      GO BACK AND TRY AGAIN            28100021
+WRITERCD EQU   *                                                        28200021
+         MVC   5(1,DECB),WRITETYP  INFORMATION RECORD                   28300021
+         MVC   0(1,RECADR),FIRSTBYT    RESTORE FIRST BYTE OF RCD        28400021
+         BAL   R14,MOVEKEY             MOVE SYM PART OF KEY TO BUFFER   28500021
+         TM    OPTION+1,MFTYPE         F TYPE RECORDS?                  28600021
+         BO    WRRCD1                  YES                              28700021
+         TM    OPTION+1,MVTYPE         V TYPE RECORDS?                  28800021
+         BO    WRRCD2                  YES                              28900021
+         MVI   4(DECB),0               MUST BE U TYPE RECORDS           29000021
+         MVC   6(2,DECB),RCDLNGTH+2    INIT RCDLNGTH FIELD IN DECB      29100021
+         B     WRRCD1                  GO WRITE THE INFO RECORD         29200021
+WRRCD2   EQU   *                                                        29300021
+         MVI   4(DECB),X'80'           SET S BIT ON-TAKE LNGTH FROM DCB 29400021
+WRRCD1   EQU   *                                                        29500021
+         BAL   R14,WRITECHK            WRITE ONE RECORD AND CHECK       29600021
+         STC   SPACE,88(DCB)           SAVE SPACE CONDITION             29700021
+         BAL   R14,RETKEY              RETURN VALUE OF LAST KEY         29800021
+BSEXIT   EQU   *                                                        29900021
+         BAL   R14,STORTRK0        GET LAST TRACK VALUE           48509 30000021
+BSEXIT1A DS    0H                                                       30100021
+         MVC   0(1,RECADR),FIRSTBYT    RESTORE FIRST BYTE OF RECORD     30200021
+BSEXIT1  EQU   *                                                        30300021
+         LM    R14,R12,SAVE            RESTORE REGISTERS                30400021
+         B     2(R14)                  RETURN TO MAIN PROGRAM           30500021
+WRITECHK EQU   *                       THIS RTN WRITES AND CHECKS 1 RCD 30600021
+         ST    R14,SAVE1               SAVE RETURN REGISTER             30700021
+         LR    R1,DECB                 DECB ADDRESS IN REGISTER 1       30800021
+         L     R15,48(DCB)             WRITE                            30900021
+         BALR  R14,R15                                                  31000021
+         LR    SPACE,R15               SAVE SPACE CONDITION             31100021
+         CH    SPACE,HW4               SPACE CONDITION=4?               31200021
+         BNE   CHK1                    NO                               31300021
+         TM    OPTION,MDIRECT          DIRECT FILE?                     31400021
+         BNO   CHK1                    NO                               31500021
+         TM    OPTION+1,MFTYPE         F TYPE RECORDS?                  31600021
+         BO    CHK1                    YES                              31700021
+*     TH IS ME ANS WE HAVE TRIED TO WRITE A RECORD FOR U OR V DIRECT    31800021
+*     FI LE AN D THE SYSTEM HAS TOLD US TO WRITE A CAPACITY RECORD      31900021
+*     AN D THE N WRITE THE INFORMATION RECORD ON THE NEXT TRACK         32000021
+         MVC   SAVE4,SAVE1             SAVE RETURN ADDRESS              32100021
+         MVI   5(DECB),X'04'           CAPACITY RECORD REQUEST          32200021
+         BAL   R14,WRITECHK            WRITE AND CHECK CAPACITY RCD     32300021
+         BAL   R14,MOVEKEY             MOVE SYM PART OF KEY TO BUFFER   32400021
+         MVC   5(1,DECB),WRITETYP  INFORMATION RECORD                   32500021
+         BAL   R14,WRITECHK            WRITE AND CHECK INFO RCD         32600021
+         L     R14,SAVE4               RESTORE ORIGINAL RETURN ADDRESS  32700021
+         BR    R14                     RETURN                           32800021
+CHK1     DS    0H                                                       32900021
+         L     R15,52(DCB)             CHECK                            33000021
+         BALR  R14,R15                                                  33100021
+         TM    OPTION,MRELATVE+MKEY    RELATIVE ORGAINIZATION AND KEY?  33200021
+         BNO   WTCK2                   NOT RELATIVE WITH KEY            33300021
+         LA    LASTKEY,1(LASTKEY)      INCREMENT RECORD COUNT           33400021
+WTCK1    EQU   *                                                        33500021
+         L     R14,SAVE1               RESTORE RETURN ADDRESS           33600021
+         BR    R14                     RETURN                           33700021
+WTCK2    DS    0H                                                       33800021
+         CLI   5(DECB),X'04'           DID WE JUST WRITE A CAPAC RCD?   33900021
+         BNE   WTCK3                   NO                               34000021
+         LTR   SPACE,SPACE             END OF EXTENT?  (SPACE=8)        34100021
+         BNZ   WTCK3                   YES                              34200021
+         LA    SPACE,4                 FORCE END OF TRACK INDICATION    34300021
+WTCK3    DS    0H                                                       34400021
+         LTR   SPACE,SPACE             MORE SPACE ON CURRENT TRACK?     34500021
+         BZ    WTCK1                   YES                              34600021
+         LA    LASTKEY,1(LASTKEY)      NO, INCREMENT TRACK COUNT        34700021
+         B     WTCK1                                                    34800021
+FRMTTRCK EQU   *                       THIS RTN FORMATS ONE TRACK       34900021
+*                  OR ANY REMAINING PART OF 1 TRACK                     35000021
+         ST    R14,SAVE2               SAVE RETURN ADDRESS              35100021
+FMTK1    EQU   *                                                        35200021
+         TM    OPTION,MRELATVE         RELATIVE ORGANIZATION?           35300021
+         BNO   FMTK2                   NO                               35400021
+         MVI   0(RECADR),X'FF'         DUMMY RCD                        35500021
+         MVC   5(1,DECB),WRITETYP  INFORMATION RECORD                   35600021
+FMTK2    DS    0H                                                       35700021
+         BAL   R14,WRITECHK            WRITE ONE RECORD AND CHECK       35800021
+         TM    OPTION+1,MUTYPE+MVTYPE  U OR V TYPE RECORDS?             35900021
+         BNZ   FMTKEND                 YES, RETURN                      36000021
+         LTR   SPACE,SPACE             MORE SPACE ON THIS TRACK?        36100021
+         BZ    FMTK1                   YES, GO BACK AND TRY AGAIN       36200021
+FMTKEND  EQU   *                                                        36300021
+         L     R14,SAVE2               RESTORE RETURN ADDRESS           36400021
+         BR    R14                     RETURN                           36500021
+SETTYPE  EQU   *                                                        36600021
+         MVI   5(DECB),X'10'           DUMMY RCD                        36700021
+         TM    OPTION+1,MFTYPE         F TYPE RECORDS?                  36800021
+         BCR   ONES,R14                YES, RETURN                      36900021
+         MVI   5(DECB),X'04'           CAPACITY RCD                     37000021
+         BR    R14                     RETURN                           37100021
+RETKEY   EQU   *                                                        37200021
+         TM    OPTION,MKEY             HAS A KEY BEEN SPECIFIED?        37300021
+         BCR   NOTONE,R14              NO, RETURN                       37400021
+         LR    WKREG,LASTKEY           THIS IS NEXT AVAILABLE KEY       37500021
+         TM    OPTION,MDIRECT          DIRECT FILE?                     37600021
+         BZ    RETKEY1                 NO                               37700021
+         LTR   SPACE,SPACE             HAVE WE FINISHED A TRACK?        37800021
+         BZ    RETKEY2                 NO, DO NOT DECREMENT TRACK CNT   37900021
+RETKEY1  DS    0H                                                       38000021
+         BCTR  WKREG,0                 DECREMENT TRACK COUNT            38100021
+RETKEY2  DS    0H                                                       38200021
+         TM    WRITETYP,X'21'      SPANNED?                             38300021
+         BNO   RETKEY3              NO                                  38400021
+         ST    R14,SAVE5          SAVE OVER TRACK-SAVE ROUTINE          38500021
+         BAL   R14,LOADTRK0        GET LAST TRACK VALUE           48509 38600021
+         L     R14,SAVE5           RESTORE 14                           38700021
+         LR    WKREG,LASTKEY                                      48509 38800021
+RETKEY3  DS    0H                                                       38900021
+         ST    WKREG,SAVE1             STORE INTO FULLWORD BOUNDARY     39000021
+         MVC   0(4,KEYADR),SAVE1       MOVE TRACK COUNT TO ACTUAL KEY   39100021
+         BR    R14                     RETURN                           39200021
+FRMTXT   EQU   *                       THIS RTN FORMATS UP TO END OF XT 39300021
+         ST    R14,SAVE3               SAVE RETURN ADDRESS              39400021
+FMXT1    EQU   *                                                        39500021
+         BAL   R14,FRMTTRCK            FORMAT ONE TRACK                 39600021
+         CH    SPACE,XTNTFUL           IS THIS END OF EXTENT?           39700021
+         BNE   FMXT1                   NO, GO BACK AND TRY AGAIN        39800021
+         L     R14,SAVE3               RESTORE RETURN ADDRESS           39900021
+         BR    R14                     RETURN                           40000021
+MOVEKEY  DS    0H                                                       40100021
+         TM    OPTION,MDIRECT+MKEY     DIRECT FILE WITH KEY?            40200021
+         BCR   NOTONE,R14              NO, DO NOT MOVE KEY TO BUFFER    40300021
+         L     WKREG,12(DECB)          ADDRESS OF BEGINNING OF BUFFER   40400021
+         SR    WKREG2,WKREG2                                            40500021
+         IC    WKREG2,16(DCB)          PICK UP LENGTH OF KEY            40600021
+         BCTR  WKREG2,0                SUBTRACT 1                       40700021
+         EX    WKREG2,MOVESYMK         MOVE KEY TO BUFFER               40800021
+         BR    R14                                                      40900021
+WRITEUTL DS    0H                      THIS CODE WILL WRITE 8 DUMMY UTL 41000021
+         CLC   1(3,R1),ZEROES          IS BUFFER ADDRESS ZERO?          41100021
+         BCR   EQ,R14                  YES, ERROR, RETURN               41200021
+         TM    8(R1),X'80'             I/O ERROR?                       41300021
+         BCR   ONES,R14                YES, RETURN                      41400021
+         L     WKREG,0(R1)             BUFFER ADDRESS                   41500021
+         MVC   0(3,WKREG),UTLCON       MOVE 'UTL' TO BUFFER             41600021
+         LA    WKREG2,1(WKREG2)        ADD 1 TO LABEL COUNT             41700021
+         STC   WKREG2,3(WKREG)         STORE RCD NUMBER IN BUFFER       41800021
+         LA    R15,8                   WRITE A LABEL AND RETURN         41900021
+         BR    R14                     RETURN                           42000021
+MOVESYMK MVC   0(0,WKREG),4(KEYADR)    **  EXECUTED INSTRUCTION  **     42100021
+NOSPACE  DS    0H                      ENTER HERE FROM DATA MANAGEMENT  42200021
+         LA    R15,1                   RETURN CODE MEANS GO TO SYNAD    42300021
+         BR    R14                     RETURN TO DATA MANAGEMENT        42400021
+HW4      DC    H'4'                                                     42500021
+HW8      DC    H'8'                                                     42600021
+AWRITUTL DC    AL1(4)                  EXITLIST CODE FOR UTL OUTPUT     42700021
+         DC    AL3(WRITEUTL)           ADDRESS OF SAM0'S UTL ROUTINE    42800021
+NTLADCON DC    AL1(8)                  CODE FOR 'B37' EXIT              42900021
+         DC    AL3(NOSPACE)            ADDR OF 'B37' EXIT ROUTINE       43000021
+         SPACE 3                                                  32781 43100021
+         SPACE 2                                                  48509 43200021
+LOADTRK0 DS    0H                                                 48509 43300021
+*                                                                 48509 43400021
+*        THIS ROUTINE LOADS REGISTER LASTKEY WITH THE VALUE OF    48509 43500021
+*        THE LAST TRACK OR RECORD WRITTEN.                        48509 43600021
+*                                                                 48509 43700021
+         TM    OPTION,MDIRECT      DIRECT FILE...                 48509 43800021
+         BO    LOADTRK1            YES                            48509 43900021
+*        RELATIVE FILE                                            48509 44000021
+         L     LASTKEY,24(DECB)         INSERT FROM EXTENSION     48509 44100021
+         BR    R14                 RETURN TO CALLER               48509 44200021
+LOADTRK1 DS    0H                       DIRECT FILE               48509 44300021
+         SR    LASTKEY,LASTKEY          CLEAR REGISTER            48509 44400021
+         IC    LASTKEY,26(DECB)                                   48509 44500021
+         SLL   LASTKEY,8           PREPARE FOR SECOND BYTE.       48509 44600021
+         IC    LASTKEY,27(DECB)                                   48509 44700021
+         BR    R14                 RETURN TO CALLER               48509 44800021
+         SPACE 2                                                  48509 44900021
+STORTRK0 DS    0H                                                 48509 45000021
+*                                                                 48509 45100021
+*        THIS ROUTINE SAVES THE VALUE OF THE CURRENT TRACK OR     48509 45200021
+*        RECORD NUMBER IN THE DECB EXTENSION.                     48509 45300021
+*                                                                 48509 45400021
+         TM    OPTION,MDIRECT      DIRECT FILE...                 48509 45500021
+         BO    STORTRK1            YES                            48509 45600021
+*        RELATIVE FILE                                            48509 45700021
+         ST    LASTKEY,24(DECB)         SAVE IN EXTENSION         48509 45800021
+         BR    R14                 RETURN TO CALLER               48509 45900021
+STORTRK1 DS    0H                       DIRECT FILE               48509 46000021
+         STH   LASTKEY,26(DECB)         SAVE IN EXTENSION         48509 46100021
+         BR    R14                 RETURN TO CALLER               48509 46200021
+         SPACE 2                                                  48509 46300021
+D37WRITE DS    0H                                                 32781 46400021
+*        THIS ROUTINE ATTEMPTS TO PREVENT A D37 ABEND, AND PASSES 32781 46500021
+*        CONTROL TO THE USERS INVALID KEY ROUTINE WHEN THE DATA   32781 46600021
+*        SET IS FULL, INDICATED BY A X'08' CONDITION AFTER A      32781 46700021
+*        WRITE. THIS HOLDS FOR RELATIVE BLOCK BSAM (CREATE BDAM)  32781 46800021
+*        ONLY                                                     32781 46900021
+         L     WKREG,EXLST(DCB)    ADDRESS OF EXIT LIST           32781 47000021
+         TM    27(WKREG),1         INVALID KEY RTN PRESENT...     32781 47100021
+         BO    D37RETRN            NO, RETURN TO INLINE SAM0      32781 47200021
+         MVC   SAVE(4),24(WKREG)   INSERT ADDRESS OF INVALID KEY  32781 47300021
+*        ROUTINE INTO SAVE AREA IN TGT.                           32781 47400021
+         STC   SPACE,BSMXTNSN(DCB) SAVE SPACE CONDITION           32781 47500021
+         LM    14,12,SAVE          RESTORE COBOL REGS             32781 47600021
+D37RETRN DS    0H                                                 32781 47700021
+         BR    14                  RETURN TO INLINE COBOL OR SAM0 32781 47800021
+         SPACE 3                                                  32781 47900021
+BADOPEN  DS    0H                                                 47962 48000021
+*                                                                 47962 48100021
+*        THIS ROUTINE GETS CONTROL WHEN AN OPEN FOR A BDAM OUTPUT 47962 48200021
+*        DATA SET HAS BEEN UNSUCCESSFUL. A WTO MESSAGE IS WRITTEN 47962 48300021
+*        TO THAT EFFECT, AND A RETURN IS MADE TO THE CALLER.      47962 48400021
+*                                                                 47962 48500021
+         MVC   MSGDDNAM(8),DDNMOFST(DCB)     INSERT DDNAME        47962 48600021
+         SPACE 1                                                  47962 48700021
+         WTO       MF=(E,MSGLIST)                                 47962 48800021
+         SPACE 1                                                  47962 48900021
+         B     BSEXIT1             EXIT FROM SUBROUTINE           47962 49000021
+         SPACE 2                                                  47962 49100021
+MSGLIST  WTO       'IKF999I UNSUCCESSFUL OPEN FOR          ',DESC=6,   *49200021
+               ROUTCDE=(2,11),MF=L                                47962 49300021
+* ROUTING CODES: MASTER CONSOLE, PROGRAMMER                       47962 49400021
+* DESCRIPTOR CODE:  JOB STATUS                                    47962 49500021
+         SPACE 1                                                  47962 49600021
+MSGEND   EQU   *                                                  47962 49700021
+MSGDDNAM EQU   MSGLIST+(MSGEND-MSGLIST-13)                        47962 49800021
+DDNMOFST EQU    40                      OFFSET OF DDNAME INTO DCB 47962 49900021
+         SPACE 3                                                  47962 50000021
+UTLCON   DC    C'UTL'                                                   50100021
+ZEROES   DC    X'000000'                                                50200021
+MACRCON  DC    X'0028'                                                  50300021
+WRITETYP DC    X'00'                                                    50400021
+SAVE5    DS    1F                  SAVE AREA FOR TRACK-SAVE RTN         50500021
+OPENFLAG EQU   48            DISPLACEMENT IN DCB                        50600021
+OUTPUT   EQU   X'80' FLAG INDICATING OPENED OUTPUT 48(DCB)              50700021
+ONE      EQU   X'01'                   A ONE                            50800021
+XTNTFUL  EQU   HW8                                                      50900021
+DCB      EQU   2                                                        51000021
+DECB     EQU   3                                                        51100021
+SPACE    EQU   4                                                        51200021
+TKLIM    EQU   5                                                        51300021
+BASEREG  EQU   6                                                        51400021
+KEYADR   EQU   7                                                        51500021
+RECADR   EQU   8                                                        51600021
+LASTKEY  EQU   9                                                        51700021
+R12      EQU   12                                                       51800021
+R13      EQU   13                                                       51900021
+R14      EQU   14                                                       52000021
+R15      EQU   15                                                       52100021
+R0       EQU   0                                                        52200021
+R1       EQU   1                                                        52300021
+R6       EQU   6                                                        52400021
+WKREG    EQU   10                                                       52500021
+WKREG2   EQU   11                                                       52600021
+ONES     EQU   1                                                        52700021
+NOTONE   EQU   14                                                       52800021
+EQ       EQU   8                                                        52900021
+MFTYPE   EQU   X'10'                                                    53000021
+MVTYPE   EQU   X'20'                                                    53100021
+MUTYPE   EQU   X'40'                                                    53200021
+MSTYPE   EQU   X'80'                                                    53300021
+DCBSAVE1 DS    6C                                                       53400021
+MCLOSE   EQU   1                                                        53500021
+MOPEN    EQU   2                                                        53600021
+MWRITE   EQU   4                                                        53700021
+MFEOV    EQU   8                                                        53800021
+MDIRECT  EQU   1                                                        53900021
+MRELATVE EQU   2                                                        54000021
+MKEY     EQU   4                                                        54100021
+MLABELS  EQU   8                                                        54200021
+BSMXTNSN EQU   88                  START OF COBOL BSAM DCB        32781 54300021
+*                                  EXTENSION.                     32781 54400021
+EXLST    EQU   36                  OFFSET OF EXITLIST IN DCB      32781 54500021
+TGTSAVE  DSECT                                                          54600021
+         DS    24F                                                      54700021
+SAVE     DS    4F                      R14 THRU R1                      54800021
+RLEN     DS    F                       R2                               54900021
+OPNLRECL DS    F                       R3                               55000021
+         DS    F                       R4                               55100021
+KYPTR    DS    F                       R5                               55200021
+         DS    7F                      R6 THRU R12                      55300021
+SAVE1    DS    F                                                        55400021
+SAVE2    DS    F                                                        55500021
+SAVE3    DS    F                                                        55600021
+SAVE4    DS    F                                                        55700021
+RCDLNGTH DS    F                                                        55800021
+PARAM    DS    F                                                        55900021
+TEMP     DS    F                                                        56000021
+ULABLSAV DS    15F                     USER LABEL SAVE AREA FOR REGS    56100021
+DECBAREA DS    F                       SAVEAREA FOR DECB BUFFER ADDRESS 56200021
+OPTION   DS    H                                                        56300021
+DCBSAVE  DS    CL4                                                      56400021
+FIRSTBYT DS    C                                                        56500021
+SYNADSAV DS    C                                                        56600021
+         END   ILBOSAM0                                                 56700021

@@ -1,0 +1,39 @@
+1CKP0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOCKP0  SD  0001 000000 000074
+1CKP0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOCKP0                                                         04000018
+1CKP0     ILBOCKP0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000000                                3 ILBOCKP0 CSECT                                                          12000018
+ 000000 90EC D060      00060           4          STM   14,12,96(13)            SAVE REGS                        16000018
+ 000004 0520                           5          BALR  2,0                                                      20000018
+                             00006     6          USING *,2                                                      24000018
+ 000006 50D0 202A      00030           7          ST    13,SAVE+4                                                28000018
+ 00000A 41D0 2026      0002C           8          LA    13,SAVE                                                  32000018
+ 00000E 5010 2022      00028           9          ST    1,PARM                                                   36000018
+ 000012 9280 2022      00028          10          MVI   PARM,X'80'                                               40000018
+ 000016 4110 2022      00028          11          LA    1,PARM                                                   44000018
+ 00001A 0A3F                          12          SVC   63                                                       48000018
+ 00001C 58D0 202A      00030          13          L     13,SAVE+4                                                52000018
+ 000020 98EC D060      00060          14          LM    14,12,96(13)            RESTORE REGS                     56000018
+ 000024 07FE                          15          BCR   15,14                                                    60000018
+                                      16 *                                                                       64000018
+ 000026 0000
+ 000028 00000000                      17 PARM     DC    F'0'                                                     68000018
+ 00002C 0000000000000000              18 SAVE     DC    18F'0'                                                   72000018
+                                      19          END                                                            76000018
+1CKP0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    4
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT         19
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                         5
+ TOTAL RECORDS PRINTED                        39

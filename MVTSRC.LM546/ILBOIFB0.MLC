@@ -1,0 +1,141 @@
+*//    ILBOIFB0                                                         00700018
+IFB0     TITLE     'ILBOIFB0'                                           01400018
+*        ILBOIFB0   CALLING SEQ... L    15,V(ILBOIFB0)                  02100018
+*                                                                       02800018
+*        LEVEL  180     09/14/66                                        03500018
+*                                                                       04200018
+*FUNCTION 0 THIS ROUTINE CONVERTS A DOUBLE PRECISION FLOATING POINT     04900018
+*   NUMBER INTO EITHER A BINARY NUMBER IN REGISTER 0 AND 1 OR INTO A    05600018
+*   BINARY NUMBER IN REGISTER 0,1 AND A POWER-OF-10 EXPONENT IN REG 2.  06300018
+*ENTRY POINTS 0 ILBOIFBD, ILBOIFBX, ILBOIFBI                            07000018
+*INPUT 0 THE INTERNAL FLOATING POINT NUMBER IS PUT INTO FP/REGISTER 0.  07700018
+*        REG 13 IS INITIALIZED BY THE CALLER TO POINT TO THE TGT.       08400018
+*OUTPUT 0 BINARY NUMBER IN REGISTER 0,1   OR                            09100018
+*         BINARY NUMBER IN REGISTER 0,1 AND A POWER-OF-10 EXPONENT IN   09800018
+*         REGISTER 2.                                                   10500018
+*EXTERNAL ROUTINES 0 NONE                                               11200018
+*EXITS-NORMAL 0  BY   BCR    15,14    IF ENTERED AT ILBOIFBX,ILBOIFBD   11900018
+*                BY   BCR    15,8(14) IF ENTERED AT ILBOIFBI            12600018
+*      ERROR  0 IF INTERNAL FLOATING POINT NUMBER IS TOO BIG,BINARY     13300018
+*               OUTPUT IS SET TO MAXIMUN.                               14000018
+*               IF INTERNAL FLOATING POINT NUMBER IS TOO SMALL, BINARY  14700018
+*               NUMBER IS SET TO MINIMUM.                               15400018
+*               NO ERROR INDICATION GIVEN, AND NORMAL EXITS ARE TAKEN.  16100018
+*WORK AREA 0 BYTES 96 -200 OF TGT.                                      16800018
+*ATTRIBUTES 0 REENTRANT CODING.  NO CHARACTER DEPENDENCY.               17500018
+*                                                                       18200018
+ILBOIFB0 START 0                                                        18900018
+         ENTRY ILBOIFB1                                                 19600018
+         ENTRY ILBOIFB2                                                 20300018
+*                                                                       21000018
+R0     EQU  0                                                           21700018
+R1     EQU   1                                                          22400018
+R2     EQU   2                                                          23100018
+R3     EQU   3                                                          23800018
+R4     EQU   4                                                          24500018
+R5     EQU   5                                                          25200018
+R6     EQU   6                                                          25900018
+R7     EQU   7                                                          26600018
+R8     EQU   8                                                          27300018
+R9     EQU   9                                                          28000018
+R10    EQU   10                                                         28700018
+R11    EQU   11                                                         29400018
+R12    EQU   12                                                         30100018
+R13    EQU   13                                                         30800018
+R14    EQU   14                                                         31500018
+R15    EQU   15                                                         32200018
+FR0    EQU   0                                                          32900018
+FR2    EQU   2                                                          33600018
+FR4    EQU   4                                                          34300018
+FR6    EQU   6                                                          35000018
+         USING *,R15                                                    35700018
+         LA    R15,24(R15)       ADJUST BASE REG                        36400018
+       BC    15,IFBISB-24     GO TO IFBISB                              37100018
+         USING *,R15                                                    37800018
+ILBOIFB1 STD   FR2,SVFPRG+8(R13)  SAVE                                  38500018
+         STD   FR4,SVFPRG+16(R13)   FP                                  39200018
+         STD   FR6,SVFPRG+24(R13)    REGS                               39900018
+         BAL   R15,IFBINT        GO CONV TO BINARY INTEGER              40600018
+         USING *,R15                                                    41300018
+*  ENTRY POINT FOR IF TO BI CALLED BY IF TO EF                          42000018
+ILBOIFB2 NI    EXITSW(R13),0    TURN OFF EXIT SWITCH                    42700018
+         LTDR  FR0,FR0              TEST FOR ZERO                       43400018
+       BC    8,COMMON          YES - TEST FOR COMMON                    44100018
+         STE   FR0,SVWORD(R13)                                          44800018
+         LPDR  FR0,FR0              MAKE SIGN PLUS                      45500018
+         SR    R2,R2              CLEAR GEN REG 2 FOR POWER-10 EXP      46200018
+         LD    FR6,FLTEN          LOAD FP 10                            46900018
+         LDR   FR2,FR4              PUT UPPER LIMIT IN FPR2             47600018
+         DDR   FR2,FR6              DIVIDE BY 10 GIVING LOWER LIMIT     48300018
+TSTUP    CDR   FR0,FR4              COMP TO UPPER LIMIT                 49000018
+       BC    10,DECR          TOO HIGN - GO DIVIDE BY 10                49700018
+TSTLO    CDR   FR0,FR2              COMP TO LOWER LIMIT                 50400018
+       BC    10,COMMON        WITHIN LIMITS - GO TO COMMON COVERSION    51100018
+         MDR   FR0,FR6              MULTIPLY BY 10                      51800018
+         BCT   R2,TSTLO          SUBTR 1 FROM EXP REG- GO TST IF HI ENU 52500018
+DECR     DDR   FR0,FR6              DIVIDE BY 10                        53200018
+         LA    R2,1(R2)           ADD 1 TO EXP REG                      53900018
+       BC    15,TSTUP         GO TEST IF LOW ENUF                       54600018
+*                                                                       55300018
+*                                                                       56000018
+*  CONVERT TO BINARY USING SCALE FACTOR IN FP REG 2                     56700018
+*                                                                       57400018
+* ENTRY POINT FOR IF TO BI DIRECT CALL                                  58100018
+IFBINT   OI    EXITSW(R13),1     TURN ON EXIT SWITCH                    58800018
+         LD    FR2,0(R14)          LOAD DECIMALS DESIRED IN BINARY NUMB 59500018
+       BC    15,*+8                                                     60200018
+* ENTRY POINT FOR IF TO BI CALLED BY IF TO ID                           60900018
+IFBISB   NI    EXITSW(R13),0     TURN OFF EXIT SWITCH                   61600018
+         STE   FR0,SVWORD(R13)     SAVE SIGN                            62300018
+         LPDR  FR0,FR0              MAKE SIGN PLUS                      63000018
+         LD    FR4,FPONE          LOAD ONE                              63700018
+         DDR   FR4,FR2              FIND RECIPROCAL OF DEC OR P FACTOR  64400018
+         DD    FR4,FPTEN          DIVIDE BY 10                          65100018
+         MD    FR4,FPFIVE         MULT BY 5 GIVING ROUND OFF FACTOR     65800018
+         ADR   FR0,FR4              ADD IN ROUND OFF FACTOR             66500018
+         MDR   FR0,FR2              MULT BY 10 ** X, X IS DECIMALS DESI 67200018
+         CD    FR0,TNPW18         COMP TO 10 ** 18                      67900018
+       BC    10,TOOBIG        FP NUMBER IS GREATER THAN 10 ** 18        68600018
+*                                                                       69300018
+* COMMON ROUTINE TO CONVERT IFP NO TO SIGNED BINARY                     70000018
+*                                                                       70700018
+COMMON   AW    FR0,UNFLT          SHIFT RIGHT TO ELIMINATE FRACTIONAL D 71400018
+         STD   FR0,WORKA(R13)      STORE IN WORK AREA                   72100018
+         LM    R0,R1,WORKA(R13)    LOAD INTO GEN REGS                   72800018
+         N     R0,EXPMSK         CLEAR HI ORDER 8 BITS                  73500018
+         TM    WORKA(R13),X'01'  THIS BIT ON IF NUMB GRETER THAN 2 ** 5 74200018
+       BC    8,*+8             LESS THAN 2  56                          74900018
+         SLDL  R0,4               GRTR 2 ** 56, SHIFT LEFT 1 HEX DIGIT  75600018
+         TM    SVWORD(R13),X'80' TEST SIGN                              76300018
+       BC    8,EXIT            IF PLUS, EXIT                            77000018
+         X     R0,ALLFS          COMPLEMENT RO                          77700018
+         X     R1,ALLFS          COMPLEMENT R1                          78400018
+         AL    R1,ONE            ADD LOGICAL 1                          79100018
+       BC    12,EXIT          IF NO CARRY EXIT                          79800018
+         AL    R0,ONE             ELSE ADD 1                            80500018
+       BC    15,EXIT          EXIT                                      81200018
+*ERROR ROUTINE IF IFP NO IS TOO BIG - SET BINARY NO TO MAX              81900018
+TOOBIG   LM    R0,R1,ALL9                                               82600018
+         SR    R15,R15            ZERO R15 AS ERROR CODE                83300018
+EXIT     TM    EXITSW(R13),1     TEST EXIT                              84000018
+         BCR   8,R14             RETURN TO IFEF OF IFID                 84700018
+         LD    FR2,SVFPRG+8(R13)   RESTORE                              85400018
+         LD    FR4,SVFPRG+16(R13)   FP                                  86100018
+         LD    FR6,SVFPRG+24(R13)    REGS                               86800018
+         BC    15,8(R14)         RETURN TO DIRECT CALL                  87500018
+*                                                                       88200018
+SVWORD EQU   160                                                        88900018
+WORKA  EQU   96                                                         89600018
+EXITSW EQU   165                                                        90300018
+SVFPRG EQU   168                                                        91000018
+ONE    DC    F'1'                                                       91700018
+FLTEN  DC    D'10'                                                      92400018
+TNPW18 DC    D'1E18'                                                    93100018
+UNFLT  DC    X'4E00000000000000'                                        93800018
+FPONE  DC    X'4110000000000000'                                        94500018
+FPFIVE DC    X'4150000000000000'                                        95200018
+FPTEN  DC    X'41A0000000000000'                                        95900018
+EXPMSK DC    X'00FFFFFF'                                                96600018
+ALLFS  DC    X'FFFFFFFF'                                                97300018
+ALL9   DC    X'0DE0B6B3A763FFFF'                                        98000018
+       END                                                              98700018

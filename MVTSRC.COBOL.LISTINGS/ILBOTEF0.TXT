@@ -1,0 +1,324 @@
+1TEF0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOTEF0  SD  0001 000000 000248
+ ILBOTEF1  LD       00000E        0001
+ ILBOTEF2  LD       000048        0001
+ ILBOTEF3  LD       0000C0        0001
+ ILBOBIE1  ER  0002
+ ILBOIFB2  ER  0003
+1TEF0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOTEF0                                                         00300018
+1TEF0     ILBOTEF0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      3 *                                                                       00900018
+                                       4 *        LEVEL  180     09/14/66                                        01200018
+                                       5 *                                                                       01500018
+                                       6 *FUNCTION 0 THIS ROUTINE CONVERTS BINARY,INTERNAL DECIMAL,OR FLOATING   01800018
+                                       7 *   POINT NUMBERS TO EXTERNAL FLOATING POINT.                           02100018
+                                       8 *ENTRY POINTS 0 ILBOTEFP - SINGLE PREC BINARY TO EXT. FLOATING POINT    02400018
+                                       9 *               ILBOBIFL - DOUBLE PREC BINARY TO EXT. FLOATING POINT    02700018
+                                      10 *               CALLING SEQUENCE IS 0  L   0,BINARY NO.                 03000018
+                                      11 *                                      L    15,V(ILBOTEFP)     SINGLE   03300018
+                                      12 *                                        OR                             03600018
+                                      13 *                                      L    UK,V(ILBOTEFP)     SINGLE   03900018
+                                      14 *                                        OR                             04200018
+                                      15 *                                      L    15,V(ILBOBIFL)              04500018
+                                      16 *                                      LM   0,1,BINARY NO.     DOUBLE   04800018
+                                      17 *                                      BALR 14,15                       05100018
+                                      18 *                                      DC   XL1'DECIMALS IN EF MANTISSA 05400018
+                                      19 *                                      DC   XL1'TOTAL LGN OF EF NUMBER' 05700018
+                                      20 *                                      DC   XL1'EF PARAMETER CODE'      06000018
+                                      21 *                                      DC   XL1'DECIMALS IN BINARY NO'  06300018
+                                      22 *               ILBOIDEF - INTERNAL DECIMAL TO EXT. FLOATING POINT      06600018
+                                      23 *               CALLING SEQUENCE IS 0  ZAP  96(16,13),ID-FIELD          06900018
+                                      24 *                                      L    15,V(ILBOIDEF)              07200018
+                                      25 *                                      BALR 14,15                       07500018
+                                      26 *                                      DC   XL1'DECIMALS IN EF MANTISSA 07800018
+                                      27 *                                      DC   XL1'TOTAL LGN OF EF NUMBER' 08100018
+                                      28 *                                      DC   XL1'EF PARAMETER CODE'      08400018
+                                      29 *                                      DC   XL1'DECIMALS IN ID NUMBER'  08700018
+                                      30 *               ILBOIFEF - INTERNAL FLT. POINT TO EXT. FLOATING PT.     09000018
+                                      31 *               CALLING SEQUENCE IS 0  LD   0,FP-NUMBER                 09300018
+                                      32 *                                         OR                            09600018
+                                      33 *                                      SRD  0,0                         09900018
+                                      34 *                                      LE   0,FP-NUMBER                 10200018
+                                      35 *                                      L    15,V(ILBOIFEF)              10500018
+                                      36 *                                      CNOP 2,8                         10800018
+                                      37 *                                      BALR 14,15                       11100018
+                                      38 *                                      DC   XL1'DECIMAL IN EF MANTISSA' 11400018
+                                      39 *                                      DC   XL1'TOTAL LGN OF EF NUMBER' 11700018
+                                      40 *                                      DC   XL1'EF PARAMETER CODE'      12000018
+                                      41 *                                      DC   XL1'SLACK BYTE'             12300018
+                                      42 *                                      DC   XL1'FLOATING POINT NO' OF   12600018
+                                      43 *                                           THE FORM 10**X WHERE X IS   12900018
+                                      44 *                                           THE NO OF DIGITS IN THE     13200018
+                                      45 *                                           EF MANTISSA .               13500018
+                                      46 *   WHERE  'EF PARAMETER'CODE BITS ARE 1-5  NOT USED                    13800018
+                                      47 *                                        6  MANTISSA PICTURE SIGN NEG   14100018
+                                      48 *                                        7 EXPONENT PICTURE SIGN NEG    14400018
+                                      49 *                                        8  EF (UMBER HAS A REAL DEC PT 14700018
+                                      50 *OUTPUT 0 THE EXT FLT POINT RESULT IS IN 120(L,13) OF TGT. 13 IS        15000018
+                                      51 *   INITIALIZED TO POINT TO TGT BY THE CALLER.                          15300018
+                                      52 *EXTERNAL ROUTINES 0 ILBOBIED - CONVERSION FROM BINARY TO EXT. DECIMAL  15600018
+                                      53 *                    ILBOIFBX - CONVERSION FROM INT. FLT PT TO BINARY   15900018
+                                      54 *EXITS-NORMAL 0 BY  BC   15,12(14)   IF ENTERED FROM ILBOIFEF           16200018
+                                      55 *                   BC   15,4(14)    ALL OTHERS                         16500018
+                                      56 *      ERROR  0 NONE                                                    16800018
+                                      57 *WORK AREAS 0 BYTES 96-204 OF TGT.                                      17100018
+1TEF0     ILBOTEF0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                     58 *ATTRIBUTES 0 REENTRANT CODE.                                           17400018
+                                      59 *             DECIMAL POINT IS EITHER . OR , AS INDICATED BY            17700018
+                                      60 *             COMPILER AT LOCATION 75 OF TGT.                           18000018
+                                      61 *                                                                       18300018
+                                      62 *                                                                       18600018
+ 000000                               63 ILBOTEF0 START 0                                                        18900018
+                                      64          ENTRY ILBOTEF1                                                 19200018
+                                      65          ENTRY ILBOTEF2                                                 19500018
+                                      66          ENTRY ILBOTEF3                                                 19800018
+                                      67          EXTRN ILBOBIE1                                                 20100018
+                                      68          EXTRN ILBOIFB2                                                 20400018
+                                      69 *                                                                       20700018
+                             00000    70 R0     EQU   0                                                          21000018
+                             00001    71 R1     EQU   1                                                          21300018
+                             00002    72 R2     EQU   2                                                          21600018
+                             00003    73 R3     EQU   3                                                          21900018
+                             00004    74 R4     EQU   4                                                          22200018
+                             00005    75 R5     EQU   5                                                          22500018
+                             00006    76 R6     EQU   6                                                          22800018
+                             00007    77 R7     EQU   7                                                          23100018
+                             00008    78 R8     EQU   8                                                          23400018
+                             00009    79 R9     EQU   9                                                          23700018
+                             0000A    80 R10    EQU   10                                                         24000018
+                             0000B    81 R11    EQU   11                                                         24300018
+                             0000C    82 R12    EQU   12                                                         24600018
+                             0000D    83 R13    EQU   13                                                         24900018
+                             0000E    84 R14    EQU   14                                                         25200018
+                             0000F    85 R15    EQU   15                                                         25500018
+                             00000    86 FR0    EQU   0                                                          25800018
+                             00002    87 FR2    EQU   2                                                          26100018
+                             00004    88 FR4    EQU   4                                                          26400018
+                             00006    89 FR6    EQU   6                                                          26700018
+                                      90 *                                                                       27000018
+                                      91 * SHORT PRECISION BINARY NO. ENTRY                                      27300018
+                                      92 *                                                                       27600018
+                             00000    93          USING *,R10                                                    27900018
+ 000000 90EC D00C      0000C          94          STM   R14,R12,SAVE(R13)    SAVE CALLING REGS                   28200018
+ 000004 18AF                          95          LR    R10,R15            USE REG 10 AS BASE                    28500018
+ 000006 8E00 0020      00020          96          SRDA  R0,32             PROPOGATE  SIGN                        28800018
+ 00000A 45A0 A014      00014          97          BAL   R10,BIEFL1        GO TO COMMON PART OF BINARY ROUTINE    29100018
+                                      98 *                                                                       29400018
+                                      99 * LONG PRECISION BINARY NO. ENTRY                                       29700018
+                                     100 *                                                                       30000018
+                             0000E   101          USING *,R10                                                    30300018
+ 00000E 90EC D00C      0000C         102 ILBOTEF1 STM   R14,R12,SAVE(R13)        SAVE  CALLING REGS              30600018
+ 000012 18AF                         103          LR    R10,R15            BASE REG 10                           30900018
+ 000014 58F0 A232      00240         104 BIEFL1   L     R15,ADBIED        GO CONVERT B1 NO IN R0,R1              31200018
+ 000018 05EF                         105          BALR  R14,R15             TO EXT DEC                           31500018
+ 00001A D200 D0A7 D071 000A7 00071   106          MVC   SVSIGN(1,R13),WORKA+17(R13)  SAVE SIGN OF BIN NO.        31800018
+ 000020 96F0 D071      00071         107          OI    WORKA+17(R13),X'F0'  MAKE SIGN A ZONE                    32100018
+ 000024 D211 D078 D060 00078 00060   108          MVC   WORKB(18,R13),WORKA(R13)   MV 18 DIG ED NO. TO WORKB     32400018
+ 00002A 92F0 D08A      0008A         109          MVI   WORKB+18(R13),X'F0'     MV ZERO TO BYTE AFTER ED NO.     32700018
+ 00002E 4160 0012      00012         110          LA    R6,18             SET WORK REG 6 TO 18                   33000018
+ 000032 95F0 D078      00078         111 ZRLPBI   CLI   WORKB(R13),X'F0'  TEST FOR HI-ORD ZER                    33300018
+ 000036 4770 A036      00044         112        BC    7,EXBIEF          SIGNIF DIG                               33600018
+1TEF0     ILBOTEF0                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000003A D211 D078 D079 00078 00079   113          MVC   WORKB(18,R13),WORKB+1(R13)  SHIFT LEFT 1 BYTE            33900018
+ 000040 4660 A024      00032         114          BCT   R6,ZRLPBI         SUBTR 1 FROM SIG DIG COUNT - REPEAT LO 34200018
+ 000044 45A0 A07A      00088         115 EXBIEF   BAL   R10,EFCOM1        GO TO COMMON                           34500018
+                                     116 *                                                                       34800018
+                                     117 * ENTRY POINT FOR 1D NUMBER                                             35100018
+                                     118 *                                                                       35400018
+                             00048   119          USING *,R10                                                    35700018
+ 000048 90EC D00C      0000C         120 ILBOTEF2 STM   R14,R12,SAVE(R13)   SAVE CALLING REGS                    36000018
+ 00004C 18AF                         121          LR    R10,R15            BASE REG 10                           36300018
+ 00004E F3E7 D087 D068 00087 00068   122          UNPK  WORKB+15(15,R13),WORKA+8(8,R13) CONVERT 16 BYTE 1D NO.   36600018
+ 000054 F187 D060 D060 00060 00060   123          MVO   WORKA(9,R13),WORKA(8,R13)        IN WORKA TO 30 BYTE     36900018
+ 00005A F3E7 D078 D061 00078 00061   124          UNPK  WORKB(15,R13),WORKA+1(8,R13)      ED NO. IN              37200018
+ 000060 96F0 D086      00086         125          OI    WORKB+14(R13),X'F0'               WORKB                  37500018
+ 000064 D200 D0A7 D095 000A7 00095   126          MVC   SVSIGN(1,R13),WORKB+29(R13) SAVE SIGN                    37800018
+ 00006A 96F0 D095      00095         127          OI    WORKB+29(R13),X'F0' MAKE SIGN A ZONE                     38100018
+ 00006E 92F0 D096      00096         128          MVI   WORKB+30(R13),X'F0' MV ZERO TO BYTE AFTER WORKB          38400018
+ 000072 4160 001E      0001E         129          LA    R6,30             SET SIG DIG COUNT TO 30                38700018
+ 000076 95F0 D078      00078         130 ZRLPID   CLI   WORKB(R13),X'F0'  TEST HI-ORD ZERO                       39000018
+ 00007A 4770 A040      00088         131        BC    7,EFCOM1          SIG DIG                                  39300018
+ 00007E D21D D078 D079 00078 00079   132          MVC   WORKB(30,R13),WORKB+1(R13)  SHIFT LEFT 1 BYTE            39600018
+ 000084 4660 A02E      00076         133          BCT   R6,ZRLPID         SUBTR 1 FROM SIG DIG COUNT - REPEAT LO 39900018
+ 000088 58F0 A1FC      00244         134 EFCOM1   L     R15,ADTSTP        GO ANALYZE                             40200018
+ 00008C 05EF                         135          BALR  R14,R15             PARAMETERS                           40500018
+ 00008E 414D 0072      00072         136          LA    R4,WORKA+18(R13)   POINTER TO BYTE AFTER WORKA           40800018
+ 000092 4B4D 00A8      000A8         137          SH    R4,MANLEN(R13)     SUBTR MANT LEN - PNTR AT FIRST BYTE   41100018
+ 000096 483D 00A8      000A8         138          LH    R3,MANLEN(R13)     LOAD LENGTH OF MANT                   41400018
+ 00009A 0630                         139          BCTR  R3,R0              SUBTR 1 TO EX                         41700018
+ 00009C 4430 A05C      000A4         140          EX    R3,MVTOA          MV MANT FROM WORKB TO WORKA            42000018
+ 0000A0 47F0 A062      000AA         141        BC    15,*+10                                                    42300018
+ 0000A4 D200 4000 D078 00000 00078   142 MVTOA    MVC   0(0,R4),WORKB(R13)                                       42600018
+ 0000AA 58ED 000C      0000C         143          L     R14,SAVE(R13)    LOAD RET REG WHICH POINTS TO PARAM      42900018
+ 0000AE 1B22                         144          SR    R2,R2              CLEAR EXP REG                         43200018
+ 0000B0 432E 0003      00003         145          IC    R2,3(R14)          NO OF DECIMALS IN B1 OR 1D NO.        43500018
+ 0000B4 1B62                         146          SR    R6,R2              SUBTR NO. OF DECMALS FROM SIG DIGS    43800018
+ 0000B6 4B6D 00AA      000AA         147          SH    R6,MANINT(R13)     SUBTR MNTISSA INTEGERS                44100018
+ 0000BA 1826                         148          LR    R2,R6               GIVING 'E' POWER OF TEN              44400018
+ 0000BC 45A0 A0DE      00126         149          BAL   R10,EFCOM2        GO TO COMMON ROUTINE                   44700018
+                                     150 *                                                                       45000018
+                                     151 * ENTRY POINT FOR 1FP NUMBERS                                           45300018
+                                     152 *                                                                       45600018
+                             000C0   153          USING *,R10                                                    45900018
+ 0000C0 90EC D00C      0000C         154 ILBOTEF3 STM   R14,R12,SAVE(R13)     SAVE CALLING REGS                  46200018
+ 0000C4 18AF                         155          LR    R10,R15            R10 BASE REG                          46500018
+ 0000C6 600D 00B0      000B0         156          STD   FR0,SVFPRG(R13)     SAVE                                 46800018
+ 0000CA 602D 00B8      000B8         157          STD   FR2,SVFPRG+8(R13)    FLT                                 47100018
+ 0000CE 604D 00C0      000C0         158          STD   FR4,SVFPRG+16(R13)    PNT                                47400018
+ 0000D2 606D 00C8      000C8         159          STD   FR6,SVFPRG+24(R13)     REGS                              47700018
+ 0000D6 D207 D060 E004 00060 00004   160          MVC   WORKA(8,R13),4(R14)   MOVE 10 ** X WHERE X IS DECIMALS   48000018
+ 0000DC 684D 0060      00060         161          LD    FR4,WORKA(R13)       TO ALLIGN - THEN LOAD               48300018
+ 0000E0 58F0 A17C      0023C         162          L     R15,ADIFBI        LOAD ADDR OF 1F-B1 CONV                48600018
+ 0000E4 05EF                         163          BALR  R14,R15            GO CONV                               48900018
+ 0000E6 58F0 A184      00244         164          L     R15,ADTSTP        GO ANALYZE                             49200018
+ 0000EA 05EF                         165          BALR  R14,R15             PARAMETERS                           49500018
+ 0000EC 9680 D0A6      000A6         166          OI    IFSW(R13),X'80'   SET HI BIT FOR 1FP EXIT                49800018
+ 0000F0 9509 D0A9      000A9         167          CLI   MANLEN+1(R13),9   COMP MANTISSA LEN TO 9                 50100018
+1TEF0     ILBOTEF0                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00000F4 4720 A046      00106         168        BC    2,CALLSB         GRETR THAN 9 - CALL B1-ED RT              50400018
+ 0000F8 4E1D 0060      00060         169          CVD   R1,WORKA(R13)      CONV BINARY MANTISSA                  50700018
+ 0000FC F387 D069 D060 00069 00060   170          UNPK  WORKA+9(9,R13),WORKA(8,R13)  TO DECIMAL                  51000018
+ 000102 47F0 A04C      0010C         171        BC    15,MVMAN                                                   51300018
+ 000106 58F0 A180      00240         172 CALLSB   L     R15,ADBIED        LOAD ADDR OF BIED SUBRT                51600018
+ 00010A 05EF                         173          BALR  R14,R15            GO,CONVERT                            51900018
+ 00010C 414D 0071      00071         174 MVMAN    LA    R4,WORKA+17(R13)   R4 POINTS TO MANTISSA SIGN            52200018
+ 000110 D200 D0A7 4000 000A7 00000   175          MVC   SVSIGN(1,R13),0(R4) SAVE SIGN                            52500018
+ 000116 96F0 4000      00000         176          OI    0(R4),X'F0'       MAKE SIGN A ZONE                       52800018
+ 00011A 4B4D 00A8      000A8         177          SH    R4,MANLEN(R13)     SUBTR MANT LENGTH SO                  53100018
+ 00011E 4144 0001      00001         178          LA    R4,1(R4)            R4 POINTS TO FIRST BYTE OF MAN IN WO 53400018
+ 000122 4A2D 00AC      000AC         179          AH    R2,MANDEC(R13)     ADJUST EXP BY MANT DECIMALS           53700018
+                                     180 *                                                                       54000018
+                                     181 * ENTRY POINT FROM DECIMAL AND BINARY ROUTINES                          54300018
+                                     182 *                                                                       54600018
+ 000126 415D 0079      00079         183 EFCOM2   LA    R5,WORKB+1(R13)    LOAD POINTER TO FIRST BYTE OF MANT    54900018
+ 00012A 9101 D0A6      000A6         184          TM    IFSW(R13),1       TEST REAL DEC PT                       55200018
+ 00012E 4710 A08A      0014A         185        BC    1,REALDC          YES                                      55500018
+ 000132 483D 00A8      000A8         186          LH    R3,MANLEN(R13)      NO - IMPLIED-LOAD LENGTH             55800018
+ 000136 0630                         187          BCTR  R3,R0              SUBTR 1 TO EX                         56100018
+ 000138 4430 A084      00144         188          EX    R3,MVTOB          MOVE MANTISSA TO WORK B                56400018
+ 00013C 4A5D 00A8      000A8         189          AH    R5,MANLEN(R13)     WORKB POINTER TO EXP SIGN             56700018
+ 000140 47F0 A0C4      00184         190        BC    15,CNVEXP        GO CONVERT EXPONENT                       57000018
+                                     191 * EXECUTE MOVE FROM WORKA TO WORKB                                      57300018
+ 000144 D200 5000 4000 00000 00000   192 MVTOB    MVC   0(0,R5),0(R4)                                            57600018
+                                     193 *                                                                       57900018
+ 00014A 9500 D0AB      000AB         194 REALDC   CLI   MANINT+1(R13),0   TEST ZERO INTEGERS                     58200018
+ 00014E 4780 A0A4      00164         195        BC    8,MVPNT           YES                                      58500018
+ 000152 483D 00AA      000AA         196          LH    R3,MANINT(R13)     LOAD INT LENG                         58800018
+ 000156 0630                         197          BCTR  R3,R0               SUB 1 TO EX                          59100018
+ 000158 4430 A084      00144         198          EX    R3,MVTOB          MV INTS                                59400018
+ 00015C 4A5D 00AA      000AA         199          AH    R5,MANINT(R13)     WORKB PNTR TO DEC PT                  59700018
+ 000160 4A4D 00AA      000AA         200          AH    R4,MANINT(R13)     WORKA PNTR TO DECIMAL                 60000018
+ 000164 D200 5000 D04B 00000 0004B   201 MVPNT    MVC   0(1,R5),DECPT(R13)  MOVE ACTUAL DECIMAL PT.              60300018
+ 00016A 4155 0001      00001         202          LA    R5,1(R5)           PNTR TO WORKB DECIMALS OR 'EXP SIGN   60600018
+ 00016E 9500 D0AD      000AD         203          CLI   MANDEC+1(R13),0   TEST MANTISSA DECIMALS                 60900018
+ 000172 4780 A0C4      00184         204        BC    8,CNVEXP          NO DECIMALS                              61200018
+ 000176 483D 00AC      000AC         205          LH    R3,MANDEC(R13)      YES-LOAD NO OF DECIMALS              61500018
+ 00017A 0630                         206          BCTR  R3,R0              SUB 1 TO EX                           61800018
+ 00017C 4430 A084      00144         207          EX    R3,MVTOB          MOVE DECIMALS                          62100018
+ 000180 4A5D 00AC      000AC         208          AH    R5,MANDEC(R13)     WORKB PNTR TO EXP SIGN                62400018
+ 000184 4E2D 0060      00060         209 CNVEXP   CVD   R2,WORKA(R13)      CONVERT EXPONENT                      62700018
+ 000188 F317 5002 D060 00002 00060   210          UNPK  2(2,R5),WORKA(8,R13)  UNPACK EXPONENT - LEAVE SIGN       63000018
+ 00018E 92C5 5000      00000         211          MVI   0(R5),X'C5'       INSERT 'E'                             63300018
+ 000192 4155 0001      00001         212          LA    R5,1(R5)           POINT TO EXP SIGN                     63600018
+                                     213 *                                                                       63900018
+                                     214 * ROUTINE TO HANDLE SIGNS                                               64200018
+                                     215 *                                                                       64500018
+ 000196 9130 D0A7      000A7         216          TM    SVSIGN(R13),X'30' TEST MANT SIGN                         64800018
+ 00019A 4740 A0F6      001B6         217        BC    4,MANNEG          NEG                                      65100018
+ 00019E 9104 D0A6      000A6         218          TM    IFSW(R13),4       PLUS - TEST PICTURE                    65400018
+ 0001A2 4780 A0EE      001AE         219        BC    8,MANPLS    GO PUT IN PLUS SIGN                            65700018
+ 0001A6 9240 D078      00078         220          MVI   WORKB(R13),X'40'  MOVE A BLANK                           66000018
+ 0001AA 47F0 A0FA      001BA         221        BC    15,TSTEXP                                                  66300018
+ 0001AE 924E D078      00078         222 MANPLS   MVI   WORKB(R13),X'4E'  MOVE PLUS                              66600018
+1TEF0     ILBOTEF0                                                                                              PAGE    7
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00001B2 47F0 A0FA      001BA         223        BC    15,TSTEXP                                                  66900018
+ 0001B6 9260 D078      00078         224 MANNEG   MVI   WORKB(R13),X'60'  MOVE NEG                               67200018
+ 0001BA 9130 5002      00002         225 TSTEXP   TM    2(R5),X'30'       TEST EXP SIGN                          67500018
+ 0001BE 4740 A11A      001DA         226        BC    4,EXPNEG          NEG                                      67800018
+ 0001C2 9102 D0A6      000A6         227          TM    IFSW(R13),2        PLUS - TEST PICTURE                   68100018
+ 0001C6 4780 A112      001D2         228        BC    8,EXPPLS    GO PUT IN PLUS SIGN                            68400018
+ 0001CA 9240 5000      00000         229          MVI   0(R5),X'40'       MV BLANK SIGN                          68700018
+ 0001CE 47F0 A11E      001DE         230        BC    15,STRIP                                                   69000018
+ 0001D2 924E 5000      00000         231 EXPPLS   MVI   0(R5),X'4E'       MV PLUS SIGN                           69300018
+ 0001D6 47F0 A11E      001DE         232        BC    15,STRIP                                                   69600018
+ 0001DA 9260 5000      00000         233 EXPNEG   MVI   0(R5),X'60'       MV MINUS SIGN                          69900018
+ 0001DE 96F0 5002      00002         234 STRIP    OI    2(R5),X'F0'       STRIP EXP SIGN                         70200018
+ 0001E2 98EC D00C      0000C         235          LM    R14,R12,SAVE(R13)    RESTORE REGS                        70500018
+ 0001E6 9180 D0A6      000A6         236          TM    IFSW(R13),X'80'   DID WE ENTER WITH IFP NUMBER           70800018
+ 0001EA 478E 0004      00004         237          BC    8,4(R14)           NO                                    71100018
+ 0001EE 680D 00B0      000B0         238          LD    FR0,SVFPRG(R13)     RESTORE                              71400018
+ 0001F2 682D 00B8      000B8         239          LD    FR2,SVFPRG+8(R13)     FLT                                71700018
+ 0001F6 684D 00C0      000C0         240          LD    FR4,SVFPRG+16(R13)    PNT                                72000018
+ 0001FA 686D 00C8      000C8         241          LD    FR6,SVFPRG+24(R13)     REGS                              72300018
+ 0001FE 47FE 000C      0000C         242          BC    15,12(R14)        EXIT                                   72600018
+                                     243 *                                                                       72900018
+                                     244 * COMMON PARAMETER ANALYZER ROUTINE                                     73200018
+                                     245 *                                                                       73500018
+                             00202   246          USING *,R15                                                    73800018
+ 000202 584D 000C      0000C         247 TSTPRM   L     R4,SAVE(R13)    LOAD SAVES R14                           74100018
+ 000206 1B33                         248          SR    R3,R3              CLEAR WORK REG                        74400018
+ 000208 4334 0000      00000         249          IC    R3,0(R4)           MANTISSA DECIMALS IN EFP              74700018
+ 00020C 403D 00AC      000AC         250          STH   R3,MANDEC(R13)      STORE                                75000018
+ 000210 4334 0001      00001         251          IC    R3,1(R4)           TOTAL EFP LENGTH                      75300018
+ 000214 403D 00AE      000AE         252          STH   R3,TOTLNG(R13)      STORE                                75600018
+ 000218 D200 D0A6 4002 000A6 00002   253          MVC   IFSW(1,R13),2(R4)  STORE CODE BYTE                       75900018
+ 00021E 4B30 F038      0023A         254          SH    R3,H5             SUBTR 5 FROM TOT LEN GIVING MAN LEN    76200018
+ 000222 9101 D0A6      000A6         255          TM    IFSW(R13),1       TEST REAL DEC PNT                      76500018
+ 000226 4780 F02A      0022C         256        BC    8,*+6             NO                                       76800018
+ 00022A 0630                         257          BCTR  R3,R0               YES - SUBTR 1 MORE                   77100018
+ 00022C 403D 00A8      000A8         258          STH   R3,MANLEN(R13)     STORE MANTISSA LENGTH                 77400018
+ 000230 4B3D 00AC      000AC         259          SH    R3,MANDEC(R13)     SUBTRACT MANT DEC GIVING              77700018
+ 000234 403D 00AA      000AA         260          STH   R3,MANINT(R13)      MANT INTEGERS                        78000018
+ 000238 07FE                         261          BCR   15,R14            RETURN                                 78300018
+                                     262 *                                                                       78600018
+                                     263 * CONSTANTS                                                             78900018
+                                     264 *                                                                       79200018
+ 00023A 0005                         265 H5     DC    H'5'                                                       79500018
+                                     266 *                                                                       79800018
+                                     267 * ADCONS                                                                80100018
+ 00023C 00000000                     268 ADIFBI   DC    A(ILBOIFB2)                                              80400018
+ 000240 00000000                     269 ADBIED   DC    A(ILBOBIE1)                                              80700018
+ 000244 00000202                     270 ADTSTP DC    A(TSTPRM)                                                  81000018
+                                     271 *                                                                       81300018
+                                     272 *                                                                       81600018
+                             0000C   273 SAVE     EQU   12                                                       81900018
+                             0004B   274 DECPT  EQU   75               4TH BYTE OF SWITCH IN TGT.                82200018
+                             000A6   275 IFSW   EQU   166    1 BYTE                                              82500018
+                             000A7   276 SVSIGN EQU   167                                                        82800018
+                             000A8   277 MANLEN EQU   168                                                        83100018
+1TEF0     ILBOTEF0                                                                                              PAGE    8
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                            000AA   278 MANINT EQU   170                                                        83400018
+                             000AC   279 MANDEC EQU   172                                                        83700018
+                             000AE   280 TOTLNG EQU   174                                                        84000018
+                             000B0   281 SVFPRG EQU   176                                                        84300018
+                             00060   282 WORKA  EQU   96               24 BYTES                                  84600018
+                             00078   283 WORKB  EQU   120              31 BYTES                                  84900018
+                                     284        END                                                              85200018
+1TEF0                                              RELOCATION DICTIONARY                                        PAGE    9
+-POS.ID   REL.ID   FLAGS   ADDRESS                                                                ASM 0201 11.03 02/14/15
+0 0001     0001      0C     000244
+  0001     0002      0C     000240
+  0001     0003      0C     00023C
+
+1TEF0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE   10
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        285
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                        15
+ TOTAL RECORDS PRINTED                       324

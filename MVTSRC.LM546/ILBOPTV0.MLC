@@ -1,0 +1,61 @@
+*$MODULE       ILBOPTV0                                                 01000020
+*//    ILBOPTV0                                                         02000020
+PTV0     TITLE     'ILBOPTV0'                                           03000020
+ILBOPTV0 CSECT                                                          04000020
+         ENTRY ILBOPTV1,ILBOPTV2                                        05000020
+ILBOPTV1 DS    0H                                                       06000020
+         USING *,R15                                                    07000020
+         USING TGT,R13                                                  08000020
+         TM    17(DCB),X'48'           IS DEVICE A PRINTER?             09000020
+         BCR   NOTONE,R14              NO, RETURN                       10000020
+         ST    DCB,SAVE                                                 11000020
+         TM    SAVE,X'40'              ARE WE 1 PUTL AHEAD?             12000020
+         BO    HARDWAY                 NO                               13000020
+         NI    44(DCB),X'EF'           TURN OFF CHANNEL 12 BIT          14000020
+HARDWAY  DS    0H                                                       15000020
+         BR    R14                     RETURN                           16000020
+ILBOPTV2 DS    0H                                                       17000020
+         TM    17(DCB),X'48'           IS DEVICE A PRINTER?             18000020
+         BCR   NOTONE,R1               NO, TAKE NO-EOP EXIT             19000020
+         ST    DCB,SAVE                                                 20000020
+         TM    SAVE,X'40'              ARE WE 1 PUTL AHEAD?             21000020
+         BO    HARDER                  NO                               22000020
+TEST     DS    0H                                                       23000020
+         TM    44(DCB),X'10'           CHANNEL 12?                      24000020
+         BCR   NOTONE,R1               BRANCH TO NO-EOP-GN              25000020
+         NI    44(DCB),X'EF'       TURN OFF CHANNEL 12 BIT        34210 26000020
+         LR    R1,R0                                                    27000020
+         BR    R1                      BRANCH TO EOP-GN                 28000020
+HARDER   DS    0H                                                       29000020
+         STM   R14,R12,SAVE            SAVE REGISTERS                   30000020
+         NI    44(DCB),X'EF'           TURN OFF CHANNEL 12 BIT          31000020
+         O     DCB,SIGNAL              SIGNAL TO ILBOERR0 IF I/O ERROR  32000020
+         LR    R1,DCB                                                   33000020
+         L     R15,48(DCB)             ADDRESS OF PUT MODULE            34000020
+         BALR  R14,R15                 PUTL                             35000020
+         TM    36(DCB),X'80'           F OR U TYPE RECORD?              36000020
+         BNO   BCKUPV                  NO                               37000020
+         L     R15,76(DCB)             BACKUP RECADR                    38000020
+         SH    R15,82(DCB)             X                                39000020
+         ST    R15,76(DCB)             X                                40000020
+COMEBACK DS    0H                                                       41000020
+         LM    R14,R12,SAVE            RESTORE REGISTERS                42000020
+         B     TEST                                                     43000020
+BCKUPV   DS    0H                                                       44000020
+         XC    0(2,R1),0(R1)           ZERO OUT CNTRL WORD              45000020
+         B     COMEBACK                                                 46000020
+         DS    0F                                                       47000020
+SIGNAL   DC    X'80000000'                                              48000020
+DCB      EQU   2                                                        49000020
+NOTONE   EQU   14                                                       50000020
+R0       EQU   0                                                        51000020
+R1       EQU   1                                                        52000020
+WK       EQU   5                                                        53000020
+R12      EQU   12                                                       54000020
+R13      EQU   13                                                       55000020
+R14      EQU   14                                                       56000020
+R15      EQU   15                                                       57000020
+TGT      DSECT                                                          58000020
+         DS    96C                                                      59000020
+SAVE     DS    F                                                        60000020
+         END   ILBOPTV0                                                 61000020

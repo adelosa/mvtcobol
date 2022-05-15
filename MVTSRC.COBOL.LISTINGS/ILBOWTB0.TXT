@@ -1,0 +1,35 @@
+1WTB0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOWTB0  SD  0001 000000 000100
+1WTB0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOWTB0                                                         05000018
+1WTB0     ILBOWTB0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      3 *        ILBOWTB0   CALLING SEQ... L    15,V(ILBOWTB0)                  15000018
+                                       4 *                                                                       20000018
+                                       5 * FUNCTION--ED UNSIGNED TABLE FOR CLASS TEST                            25000018
+                                       6 *                                                                       30000018
+ 000000                                7 ILBOWTB0 START 0                                                        35000018
+                                       8 *                                                                       40000018
+                                       9 *        OVERLAY AREAS OF TABLE CORRESPONDING TO VALID BYTES OF         45000018
+                                      10 *        EXTERNAL DECIMAL DATA                                          50000018
+                                      11 *                                                                       55000018
+                             00000    12 WTBL     EQU   *                                                        60000018
+ 000000 0101010101010101              13          DC    16X'01010101010101010101010101010101'                    65000018
+ 000100                      000F0    14          ORG   WTBL+X'F0'                                               70000018
+ 0000F0 0000000000000000              15          DC    10X'00'        F0 THRU F9                                75000018
+                                      16          END                                                            80000018
+1WTB0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    4
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT         16
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                         8
+ TOTAL RECORDS PRINTED                        35

@@ -1,0 +1,102 @@
+1BIE0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOBIE0  SD  0001 000000 000068
+ ILBOBIE1  LD       000020        0001
+ ILBOBIE2  LD       00000C        0001
+1BIE0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOBIE0                                                         01000018
+1BIE0     ILBOBIE0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      3 *                                                                       03000018
+                                       4 *        ILBOBIE0   CALLING SEQ... L    15,V(ILBOBIE0)                  04000018
+                                       5 *                                                                       05000018
+                                       6 *        LEVEL  180     09/14/66                                        06000018
+                                       7 *                                                                       07000018
+                                       8 *FUNCTION0 THIS ROUTINE CONVERTS A DOUBLE PRECISION BINARY NUMBER TO    08000018
+                                       9 *   AN 18-BYTE EXTERNAL DECIMAL NUMBER .                                09000018
+                                      10 *ENTRY POINT - ILBOBIEX, ILBOBIED, ILBOBIX2                             10000018
+                                      11 *INPUT0 THE BINARY NUMBER IS IN REGISTER PAIRS 0,1 OR 2,3 OR 4,5        11000018
+                                      12 *   FOR ENTRY POINTS ILBOBIED, ILBOBIX2 OR ILBOBIEX .                   12000018
+                                      13 *OUTPUT0 18-BYTE EXTERNAL DECIMAL NUMBER STARTING AT WORKA(13) WHERE    13000018
+                                      14 *   13 IS THE REGISTER POINTING TO THE TGT OF COBOL OBJECT PROGRAM.     14000018
+                                      15 *   13 IS INITIALIZED BY THE CALLING ROUTINE.                           15000018
+                                      16 *EXTERNAL ROUTINES0 NONE                                                16000018
+                                      17 *EXITS- NORMAL0 BY BCR  15,14                                           17000018
+                                      18 *       ERROR 0 NONE                                                    18000018
+                                      19 *WORK AREAS 0 BYTES 96-164 OF TGT.                                      19000018
+                                      20 *ATTRIBUTES0 REENTRANT CODING.  NO CHARACTER DEPENDENCY.                20000018
+ 000000                               21 ILBOBIE0 START 0                                                        21000018
+                                      22          ENTRY ILBOBIE1                                                 22000018
+                                      23          ENTRY ILBOBIE2                                                 23000018
+                                      24 *                                                                       24000018
+                             00000    25 R0     EQU   0                                                          25000018
+                             00001    26 R1     EQU   1                                                          26000018
+                             00002    27 R2     EQU   2                                                          27000018
+                             00003    28 R3     EQU   3                                                          28000018
+                             00004    29 R4     EQU   4                                                          29000018
+                             00005    30 R5     EQU   5                                                          30000018
+                             00006    31 R6     EQU   6                                                          31000018
+                             00007    32 R7     EQU   7                                                          32000018
+                             00008    33 R8     EQU   8                                                          33000018
+                             00009    34 R9     EQU   9                                                          34000018
+                             0000A    35 R10    EQU   10                                                         35000018
+                             0000B    36 R11    EQU   11                                                         36000018
+                             0000C    37 R12    EQU   12                                                         37000018
+                             0000D    38 R13    EQU   13                                                         38000018
+                             0000E    39 R14    EQU   14                                                         39000018
+                             0000F    40 R15    EQU   15                                                         40000018
+                             00000    41          USING *,R15                                                    41000018
+ 000000 9001 D098      00098          42          STM   R0,R1,SVWRD1(R13)  SAVE WORK REGS                        42000018
+ 000004 1804                          43          LR    R0,R4              LOAD REG 0                            43000018
+ 000006 1815                          44          LR    R1,R5              LOAD REG 1                            44000018
+ 000008 45F0 F014      00014          45          BAL   R15,SUBCOM                                               45000018
+                             0000C    46          USING *,R15                                                    46000018
+ 00000C 9001 D098      00098          47 ILBOBIE2 STM   R0,R1,SVWRD1(R13)  SAVE WORK REGS                        47000018
+ 000010 1802                          48          LR    R0,R2              LOAD REGS                             48000018
+ 000012 1813                          49          LR    R1,R3                                                    49000018
+ 000014 9400 D0A4      000A4          50 SUBCOM   NI    SWITCH(R13),0     CLEAR EXIT SWITCH                      50000018
+ 000018 9601 D0A4      000A4          51          OI    SWITCH(R13),1     TURN ON EXIT SW                        51000018
+ 00001C 45F0 F018      00024          52          BAL   R15,COMMON                                               52000018
+                             00020    53          USING *,R15                                                    53000018
+ 000020 9400 D0A4      000A4          54 ILBOBIE1 NI    SWITCH(R13),0    TURN OFF EXIT SW                        54000018
+ 000024 1200                          55 COMMON   LTR   R0,R0              TEST FOR NEGATIVE                     55000018
+ 000026 47B0 F00E      0002E          56        BC    11,DIV            NO - POS                                 56000018
+ 00002A 9602 D0A4      000A4          57          OI    SWITCH(R13),2      YES - SET NEG SW                      57000018
+1BIE0     ILBOBIE0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000002E 5D00 F044      00064          58 DIV      D     R0,TNPW9          DIV BY 10 ** 9 - SPLIT IN TWO PARTS    58000018
+ 000032 4E1D 0068      00068          59          CVD   R1,WORKA2(R13)     CONV HI-ORD 9 DIGS                    59000018
+ 000036 4E0D 0070      00070          60          CVD   R0,WORKA3(R13)     CONV LO-ORD 9 DIGS                    60000018
+ 00003A F384 D060 D06B 00060 0006B    61          UNPK  WORKA(9,R13),WORKA2+3(5,R13) UNPACK  HI ORD 9 DIGS       61000018
+ 000040 96F0 D068      00068          62          OI    WORKA2(R13),X'F0'  CHANGE SIGN TO ZONE                   62000018
+ 000044 F384 D069 D073 00069 00073    63          UNPK  WORKA2+1(9,R13),WORKA3+3(5,R13) UNPACK LO ORD 9 DIGS     63000018
+ 00004A 9102 D0A4      000A4          64          TM    SWITCH(R13),2     TEST FOR NEG SW                        64000018
+ 00004E 47E0 F036      00056          65        BC    14,EXIT           NOT NEG                                  65000018
+ 000052 9610 D071      00071          66          OI    WORKA+17(R13),X'10'  MAKE SIGN NEG                       66000018
+ 000056 9101 D0A4      000A4          67 EXIT     TM    SWITCH(R13),1     TEST EXIT SW                           67000018
+ 00005A 078E                          68          BCR   8,R14             SWITCH OFF                             68000018
+ 00005C 9801 D098      00098          69          LM    R0,R1,SVWRD1(R13)   RESTORE                              69000018
+ 000060 07FE                          70          BCR   15,R14                                                   70000018
+                                      71 *                                                                       71000018
+                             00060    72 WORKA  EQU   96                                                         72000018
+                             00068    73 WORKA2 EQU   104                                                        73000018
+                             00070    74 WORKA3 EQU   112                                                        74000018
+                             000A4    75 SWITCH EQU   164                                                        75000018
+                             00098    76 SVWRD1 EQU   152                                                        76000018
+ 000062 0000
+ 000064 3B9ACA00                      77 TNPW9  DC    F'1000000000'                                              77000018
+                                      78        END                                                              78000018
+1BIE0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    5
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT         79
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                         4
+ TOTAL RECORDS PRINTED                       102

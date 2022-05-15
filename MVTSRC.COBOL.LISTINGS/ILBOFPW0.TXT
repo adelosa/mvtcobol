@@ -1,0 +1,283 @@
+1FPW0                                           EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOFPW0  SD  0001 000000 000318
+1FPW0                                                                                                           PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *//    ILBOFPW0                                                         00300018
+1FPW0     ILBOFPW0                                                                                              PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      3 *        ILBOFPW0   CALLING SEQ... L    15,V(ILBOFPW0)                  00900018
+                                       4 *                                                                       01200018
+                                       5 *        LEVEL  180     09/14/66                                        01500018
+                                       6 *                                                                       01800018
+                                       7 *FUNCTION 0 THIS ROUTINE EXPONENTIATES A DOUBLE PRECISION FLOATING      02100018
+                                       8 *   POINT NUMBER TO A DOUBLE PRECISION FLOATING POINT EXPONENT.         02400018
+                                       9 *ENTRY POINT 0 ILBOFPWR, CALLING SEQUENCE IS 0-                         02700018
+                                      10 *                            LD    0,BASE                               03000018
+                                      11 *                            MVC   104(8,13),EXPONENT                   03300018
+                                      12 *                            L     15,=V(ILBOFPWR)                      03600018
+                                      13 *                            BALR  14,15                                03900018
+                                      14 *   WHERE REG 13 IS INITIALIZED BY THE CALLER TO POINT TO START OF TGT. 04200018
+                                      15 *INPUT 0 DOUBLE PRECISION FLOATING POINT BASE AND EXPONENT.             04500018
+                                      16 *OUTPUT 0 RESULT IS LEFT IN FLOATING REGISTER 0.                        04800018
+                                      17 *   NUMBER.  IF BOTH BASE AND EXPONENT ARE NEGATIVE, BASE IS MADE       05100018
+                                      18 *   POSITIVE.                                                           05400018
+                                      19 *   0 ** 0 = 1     , 0 ** +N = 0                                        05700018
+                                      20 *   0 ** -N= LARGEST FLOATING POINT NUMBER                              06000018
+                                      21 *   ANY CONDITION WHICH WOULD CAUSE EXPONENT OVERFLOW RESULTS IN AN     06300018
+                                      22 *   ANSWER = LARGEST FLOATING POINT NUMBER.                             06600018
+                                      23 *   ANY CONDITION WHICH WOULD CAUSE EXPONENT UNDERFLOW RESULTS IN AN    06900018
+                                      24 *   ANSWER = 0.                                                         07200018
+                                      25 *EXTERNAL ROUTINES 0 NONE                                               07500018
+                                      26 *EXITS -NORMAL 0 BY  BCR  15,14                                         07800018
+                                      27 *       ERROR  0 NO ERROR INDICATION IS GIVEN AND EXITS BY  BCR  15,14  08100018
+                                      28 *WORK AREA 0 BYTES 96-144 OF TGT.                                       08400018
+                                      29 *ATTRIBUTES 0 SERIALLY REUSABLE.                                        08700018
+                                      30 *                                                                       09000018
+                                      31 *                                                                     * 09300018
+                                      32 *                                                                       09600018
+ 000000                               33 ILBOFPW0 START 0                                                        09900018
+                             00000    34 R0     EQU   0                                                          10200018
+                             00000    35 FR0    EQU   0                    ANSWER REGISTER                       10500018
+                             00002    36 FR2    EQU   2                    SCRATCH REGISTER                      10800018
+                             00000    37 GR0    EQU   0                                                          11100018
+                             00001    38 GR1    EQU   1                          GENERAL REGISTER 1              11400018
+                             00002    39 GR2    EQU   2                                                          11700018
+                             00003    40 GR3    EQU   3                          GENERAL REGISTER 3              12000018
+                             0000C    41 GR12   EQU   12                         GENERAL REGISTER 12             12300018
+                             0000D    42 GRS    EQU   13                   SAVE AREA POINTER                     12600018
+                             0000D    43 GR13   EQU   13                         GENERAL REGISTER 13             12900018
+                             0000E    44 GRR    EQU   14                   RETURN REGISTER                       13200018
+                             0000E    45 GR14   EQU   14                         GENERAL REGISTER 14             13500018
+                             0000F    46 GRL    EQU   15                   LINK REGISTER                         13800018
+                             0000F    47 GR15   EQU   15                         GENERAL REGISTER 15             14100018
+                             0000F    48 GRB    EQU   15                         BASE REGISTER                   14400018
+                             00060    49 WORK1  EQU   96                         WORK AREA 1 IN GLOBAL TABLE     14700018
+                             00068    50 WORK2  EQU   104                        WORK AREA 2 IN GLOBAL TABLE     15000018
+                             00070    51 WORK3  EQU   112                        WORK AREA 3 IN GLOBAL TABLE     15300018
+                             00090    52 WORK4  EQU   144                                                        15600018
+                             00078    53 BUFF   EQU   120                                                        15900018
+                             00080    54 IPART  EQU   128                                                        16200018
+                             00088    55 SIGN   EQU   136                                                        16500018
+                             0008C    56 FIELDS EQU   SIGN+4                                                     16800018
+                             0000C    57 SAVE     EQU   12                                                       17100018
+1FPW0     ILBOFPW0                                                                                              PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                            00000    58        USING *,GRB                      SPECIFY BASE REGISTER           17400018
+ 000000 90EC D00C      0000C          59 FPOWER   STM   GR14,GR12,SAVE(GR13)   SAVE CALLING REGS                 17700018
+ 000004 6000 D060      00060          60          STD   FR0,WORK1(R0,GRS)                                        18000018
+ 000008 6020 D090      00090          61          STD   FR2,WORK4(R0,GRS)                                        18300018
+ 00000C 2200                          62        LTDR  FR0,FR0                    TEST BASE                       18600018
+ 00000E 4740 F038      00038          63        BC    4,FP001                    BRANCH IF MINUS - MAKE POSITIVE 18900018
+ 000012 4780 F040      00040          64        BC    8,FP002                    BRANCH IF ZERO - TEST EXPONENT  19200018
+ 000016 45E0 F06C      0006C          65 FP005  BAL   GR14,DLOG                 GO TO LOG ROUTINE                19500018
+ 00001A 6C00 D068      00068          66          MD    FR0,WORK2(R0,GRS)           MULTIPLY PRODUCG TIMES EXPON 19800018
+ 00001E 7900 F068      00068          67        CE    FR0,FPMAX                  IS PROD BIGGER THAN 174.6731    20100018
+ 000022 4720 F048      00048          68        BC    2,FP004                    YES, MAKE ANS MAX FP NUMBER     20400018
+ 000026 6000 D060      00060          69          STD   FR0,WORK1(R0,GRS)           PRODUCT TO WORK1             20700018
+ 00002A 45E0 F18C      0018C          70        BAL   GR14,DEXP                  RAISE TO PRODUCT POWER          21000018
+ 00002E 6820 D090      00090          71 FP006    LD    FR2,WORK4(R0,GRS)                                        21300018
+ 000032 98EC D00C      0000C          72          LM    GR14,GR12,SAVE(GR13)    RESTORE REGS                     21600018
+ 000036 07FE                          73        BCR   15,GR14                    RETURN                          21900018
+ 000038 947F D060      00060          74 FP001  NI    WORK1(GRS),X'7F'           MAKE BASE POSITIVE              22200018
+ 00003C 47F0 F016      00016          75 FPRET1 BC    15,FP005                   CONTINUE EXPONENTIATION         22500018
+ 000040 9180 D068      00068          76 FP002  TM    WORK2(GRS),X'80'           IS EXPONENT POSITIVE            22800018
+ 000044 4780 F050      00050          77        BC    8,FP003                    YES - MAKE ANSWER ZERO          23100018
+ 000048 6800 F060      00060          78 FP004  LD    FR0,FPBIG                 MAKE ANSWER LARGEST FP NUMBER    23400018
+ 00004C 47F0 F02E      0002E          79 FPRET2 BC    15,FP006                   EXIT                            23700018
+ 000050 6800 F058      00058          80 FP003  LD    FR0,FPZERO                 MAKE ANSWER ZERO                24000018
+ 000054 47F0 F02E      0002E          81 FPRET3 BC    15,FP006                   EXIT                            24300018
+ 000058                               82        DS    0D                         DOUBLE WORD BOUNDARY            24600018
+ 000058 0000000000000000              83 FPZERO DC    X'0000000000000000'        ZERO                            24900018
+ 000060 7FFFFFFFFFFFFFFF              84 FPBIG  DC    X'7FFFFFFFFFFFFFFF'        MAXIMUM FLOATING POINT NUMBER   25200018
+ 000068 42AEAC4E                      85 FPMAX  DC    X'42AEAC4E'                174.6731                        25500018
+                                      86 *******************************************                             25800018
+                                      87 *** FLOATING POINT LOGARITHM SUBROUTINE ***                             26100018
+                                      88 *******************************************                             26400018
+                                      89 * LOGARITMIC FUNCTION (LONG)                                            26700018
+                                      90 * WRITE X=(16**P)*(2**-Q)*M,Q BETWEEN 0 AND 3, AND                      27000018
+                                      91 * M BETWEEN 1/2 AND 1. DEFINE A=1, B=0 IF M IS GREATER                  27300018
+                                      92 * THAN SQRT2/2, OTHERWISE A=1/2, B=1.                                   27600018
+                                      93 * WRITE Z=(M-A)/(M+A), THEN                                             27900018
+                                      94 * LOG(X)=(4P-Q-B)*LOG(2)+LOG((1+Z)/(1-Z))                               28200018
+ 00006C D207 D080 F118 00080 00118    95 DLOG   MVC   IPART(8,GRS),IPART1                                        28500018
+ 000072 9801 D060      00060          96        LM    GR0,GR1,WORK1(GRS)        PUT ARGUMENT IN REG. 0-1         28800018
+ 000076 1820                          97        LR    GR2,GR0                                                    29100018
+ 000078 8C20 0018      00018          98        SRDL  GR2,24               CHAR IN LOW GR2,1ST DIGIT IN HIGH GR3 29400018
+ 00007C 8920 0002      00002          99        SLL   GR2,2                                                      29700018
+ 000080 402D 0082      00082         100        STH   GR2,IPART+2(GRS)           FLOAT 4* CHAR AND SAVE IT       30000018
+ 000084 1B22                         101        SR    GR2,GR2                                                    30300018
+ 000086 8D20 0004      00004         102        SLDL  GR2,4                1ST DIGIT IN GR2                      30600018
+ 00008A 4322 F120      00120         103        IC    GR2,TABLE(GR2)       NUMBER OF LEADING ZEROS (=Q) IN GR2   30900018
+ 00008E 8D00 2000      00000         104        SLDL  GR0,0(GR2)                                                 31200018
+ 000092 9001 D078      00078         105        STM   GR0,GR1,BUFF(GRS)                                          31500018
+ 000096 9240 D078      00078         106        MVI   BUFF(GRS),X'40'            M#FRACTION*2**Q IN CELL BUFF    31800018
+ 00009A 4110 0008      00008         107        LA    GR1,8                                                      32100018
+ 00009E 680D 0078      00078         108        LD    FR0,BUFF(GRS)              PICK M IN FR0                   32400018
+ 0000A2 7900 F188      00188         109        CE    FR0,LIMIT            IF M GREATER THAN SQRT2/2,GR1=8.      32700018
+ 0000A6 4720 F0B0      000B0         110        BC    2,READY                                                    33000018
+ 0000AA 1B11                         111        SR    GR1,GR1              IF M LESS THAN SQRT2/2,GR1=0          33300018
+ 0000AC 4122 0001      00001         112        LA    GR2,1(GR2)           AND CRANK GR2 BY 1. Q+B IN GR2.       33600018
+1FPW0     ILBOFPW0                                                                                              PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00000B0 2820                         113 READY  LDR   FR2,FR0              COMPUTE Z=(M-A)(M+A),A=1 OR 1/2       33900018
+ 0000B2 6B00 F130      00130         114        SD    FR0,HALF             SUBTRACT A IN 2 STEPS TO PROTECT      34200018
+ 0000B6 6B01 F128      00128         115        SD    FR0,ZERO(GR1)        THE LAST DIGIT.                       34500018
+ 0000BA 6A21 F130      00130         116        AD    FR2,HALF(GR1)        M+A HAS ONLY 53 BITS. NOT SERIOUS     34800018
+ 0000BE 2D02                         117        DDR   FR0,FR2                                                    35100018
+ 0000C0 600D 0078      00078         118        STD   FR0,BUFF(GRS)                                              35400018
+ 0000C4 2C00                         119        MDR   FR0,FR0              COMPUTE LOG((1+Z)/(1-Z))              35700018
+ 0000C6 2820                         120        LDR   FR2,FR0              BY CHEBYSHEV INTERPOLATION            36000018
+ 0000C8 6C20 F140      00140         121        MD    FR2,C7               POLYNOMIAL (IN ZSQ) OF DEGREE 7       36300018
+ 0000CC 6A20 F148      00148         122        AD    FR2,C6                                                     36600018
+ 0000D0 2C20                         123        MDR   FR2,FR0                                                    36900018
+ 0000D2 6A20 F150      00150         124        AD    FR2,C5                                                     37200018
+ 0000D6 2C20                         125        MDR   FR2,FR0                                                    37500018
+ 0000D8 6A20 F158      00158         126        AD    FR2,C4                                                     37800018
+ 0000DC 2C20                         127        MDR   FR2,FR0                                                    38100018
+ 0000DE 6A20 F160      00160         128        AD    FR2,C3                                                     38400018
+ 0000E2 2C20                         129        MDR   FR2,FR0                                                    38700018
+ 0000E4 6A20 F168      00168         130        AD    FR2,C2                                                     39000018
+ 0000E8 2C20                         131        MDR   FR2,FR0                                                    39300018
+ 0000EA 6A20 F170      00170         132        AD    FR2,C1                                                     39600018
+ 0000EE 2C20                         133        MDR   FR2,FR0              F=ZSQ*(C1+ZSQ*(C2+...ZSQ*C7..)        39900018
+ 0000F0 680D 0078      00078         134        LD    FR0,BUFF(GRS)                                              40200018
+ 0000F4 2C20                         135        MDR   FR2,FR0                              =Z+Z+Z*F              40500018
+ 0000F6 2A20                         136        ADR   FR2,FR0              TO GAIN ACCURACY                      40800018
+ 0000F8 2A20                         137        ADR   FR2,FR0                                                    41100018
+ 0000FA 680D 0080      00080         138        LD    FR0,IPART(GRS)             1*CHARACTERISTIC IN FR0         41400018
+ 0000FE 4122 0100      00100         139        LA    GR2,256(GR2)         ADD 4*(BASE CHARAC=64) TO Q+B,        41700018
+ 000102 402D 0082      00082         140        STH   GR2,IPART+2(GRS)           FLOAT AND SUBTRACT FROM FR0     42000018
+ 000106 7B0D 0080      00080         141        SE    FR0,IPART(GRS)             TO OBTAIN 4P-Q-B                42300018
+ 00010A 6C00 F178      00178         142        MD    FR0,LOGE2            MULTIPLY LOG(2) BASE E                42600018
+ 00010E 2A02                         143        ADR   FR0,FR2              AND ADD TO LOG ((1+Z)/(1-Z))          42900018
+ 000110 07FE                         144        BCR   15,GRR               RETURN                                43200018
+ 000112 070007000700                 145        CNOP    0,8                                                      43500018
+ 000118 4600000000000000             146 IPART1 DC    X'4600000000000000'                                        43800018
+ 000120 0303020201010101             147 TABLE  DC    X'0303020201010101'  THESE 4                               44100018
+ 000128 0000000000000000             148 ZERO   DC    X'0000000000000000'  CONSTANTS                             44400018
+ 000130 4080000000000000             149 HALF   DC    X'4080000000000000'  MUST BE                               44700018
+ 000138 4110000000000000             150        DC    X'4110000000000000'  TOGETHER                              45000018
+ 000140 4025E9B17CA9B973             151 C7     DC    X'4025E9B17CA9B973'  .1480971268990510                     45300018
+ 000148 40273337E26DBA7F             152 C6     DC    X'40273337E26DBA7F'  .1531252792171731                     45600018
+ 000150 402E8CD32A425C06             153 C5     DC    X'402E8CD32A425C06'  .1818363168880382                     45900018
+ 000158 4038E38A00083F68             154 C4     DC    X'4038E38A00083F68'  .2222219705656678                     46200018
+ 000160 4049249251450212             155 C3     DC    X'4049249251450212'  .2857142876064318                     46500018
+ 000168 40666666665EBAA3             156 C2     DC    X'40666666665EBAA3'  .3999999999930233                     46800018
+ 000170 40AAAAAAAAAAAD6C             157 C1     DC    X'40AAAAAAAAAAAD6C'  .6666666666666764                     47100018
+ 000178 40B17217F7D1CF7B             158 LOGE2  DC    X'40B17217F7D1CF7B'  LOG2 (BE)+1 IN LAST DIGIT             47400018
+ 000180 406F2DEC549B943A             159 LOGTE  DC    X'406F2DEC549B943A'        LOE  (B10)+1 IN LAST DIGIT      47700018
+ 000188 40B504F3                     160 LIMIT  DC    X'40B504F3'          1/SQRT2                               48000018
+ 00018C                              161        CNOP  0,4                                                        48300018
+                                     162 *********************************************                           48600018
+                                     163 *** FLOATING POINT EXPONENTIAL SUBROUTINE ***                           48900018
+                                     164 *********************************************                           49200018
+                                     165 * EXPONENTIAL FUNCTION (LONG)                                           49500018
+                                     166 * Y=X*LOG2(E)=4A-B-C/16-D, WHERE A,B, AND C ARE INTEGERS,               49800018
+                                     167 * B BETWEEN 0 AND 3, C BETWEEN 0 AND 15.                                50100018
+1FPW0     ILBOFPW0                                                                                              PAGE    6
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                    168 * D IS A FRACTION BETWEEN 0 AND 1/16.                                   50400018
+                                     169 * THEN E**X=2**Y=(16**A)(2**-B)(2**-C/16)(2**-D)                        50700018
+ 00018C 6800 D060      00060         170 DEXP     LD    FR0,WORK1(R0,GRS)          ARGUMENT IN FR0               51000018
+ 000190 7900 F068      00068         171        CE    FR0,FPMAX                 MAX=63*LOG16=174.67309           51300018
+ 000194 4720 F048      00048         172        BC    2,FP004              IF GREATER, ANS = BIGGEST FP NUMBER   51600018
+ 000198 7900 F314      00314         173        CE    FR0,MIN              MIN=-65*LOG16=-180.21867              51900018
+ 00019C 47C0 F050      00050         174        BC    12,FP003              IF LESS, ANS = 0                     52200018
+ 0001A0 6D00 F250      00250         175        DD    FR0,LOGE2A           Y=X*LOG2(E) BY ACCURATE DIVISION      52500018
+ 0001A4 700D 0088      00088         176        STE   FR0,SIGN(GRS)        SAVE SIGN OF Y                        52800018
+ 0001A8 3820                         177        LER   FR2,FR0              DECOMPOSE Y=(-4A'-B'-C'/16)-D'        53100018
+ 0001AA 7E20 F310      00310         178        AU    FR2,SCALER           BY FORCING CHARACTERISTIC OF X'45'    53400018
+ 0001AE 702D 008C      0008C         179        STE   FR2,FIELDS(GRS)      -4A'-B'-C'/16 IN FIELDS,UNNORMALIZED  53700018
+ 0001B2 2B22                         180        SDR   FR2,FR2                                                    54000018
+ 0001B4 7A2D 008C      0008C         181        AE    FR2,FIELDS(GRS)      NORMALIZE THIS AND SUBTRACT IT        54300018
+ 0001B8 2B02                         182        SDR   FR0,FR2              FROM Y TO OBTAIN -D' IN FR0           54600018
+ 0001BA 582D 008C      0008C         183        L     GR2,FIELDS(GRS)                                            54900018
+ 0001BE 9180 D088      00088         184        TM    SIGN(GRS),X'80'            IF Y NEGATIVE SKIP              55200018
+ 0001C2 4710 F1D0      001D0         185        BC    1,READY1             IF Y NON-NEGATIVE,                    55500018
+ 0001C6 6B00 F258      00258         186        SD    FR0,ONO16            -D= /D'/-1/16                         55800018
+ 0001CA 4122 0001      00001         187        LA    GR2,1(GR2)           -4A-B-C/16=-(-4A'-B'-(C'+1)/16)       56100018
+ 0001CE 1322                         188        LCR   GR2,GR2              NOW IN ANY CASE B, C, AND D ARE +     56400018
+ 0001D0 1B33                         189 READY1 SR    GR3,GR3                                                    56700018
+ 0001D2 8C20 0004      00004         190        SRDL  GR2,4                C IN HIGH GR3                         57000018
+ 0001D6 8830 0019      00019         191        SRL   GR3,25                                                     57300018
+ 0001DA 8C20 0002      00002         192        SRDL  GR2,2                B IN HIGH GR3, C IN LOW GR3           57600018
+ 0001DE 8920 0018      00018         193        SLL   GR2,24                                                     57900018
+ 0001E2 1302                         194        LCR   GR0,GR2              A (IN SCALE B7) IN GR0, CHAR MODIFIER 58200018
+ 0001E4 1B22                         195        SR    GR2,GR2                                                    58500018
+ 0001E6 8D20 0002      00002         196        SLDL  GR2,2                B IN GR2, 8*C IN GR3                  58800018
+ 0001EA 2820                         197        LDR   FR2,FR0              COMPUTE 2**-D BY USE OF               59100018
+ 0001EC 7C00 F264      00264         198        ME    FR0,C60              CHEBYSHEV INTERPOLATION               59400018
+ 0001F0 6A00 F268      00268         199        AD    FR0,C50              POLYNOMIAL OF DEGREE 6                59700018
+ 0001F4 2C02                         200        MDR   FR0,FR2                                                    60000018
+ 0001F6 6A00 F270      00270         201        AD    FR0,C40                                                    60300018
+ 0001FA 2C02                         202        MDR   FR0,FR2                                                    60600018
+ 0001FC 6A00 F278      00278         203        AD    FR0,C30                                                    60900018
+ 000200 2C02                         204        MDR   FR0,FR2                                                    61200018
+ 000202 6A00 F280      00280         205        AD    FR0,C20                                                    61500018
+ 000206 2C02                         206        MDR   FR0,FR2                                                    61800018
+ 000208 6A00 F288      00288         207        AD    FR0,C10                                                    62100018
+ 00020C 2C02                         208        MDR   FR0,FR2                                                    62400018
+ 00020E 6A00 F290      00290         209        AD    FR0,C0A              ADD C0 = 1  IN TWO STEPS              62700018
+ 000212 6A00 F290      00290         210        AD    FR0,C0A              TO PROTECT LAST DIGIT                 63000018
+ 000216 1233                         211        LTR   GR3,GR3              MULTIPLY 2**(-C/16)                   63300018
+ 000218 4780 F230      00230         212        BC    8,SKIP2              IN DOING SO AVOID                     63600018
+ 00021C 7900 F260      00260         213        CE    FR0,ONE              MULTIPLICATION BY 1.                  63900018
+ 000220 4740 F22C      0022C         214        BC    4,SKIP1                                                    64200018
+ 000224 6803 F290      00290         215        LD    FR0,MCONST-8(GR3)                                          64500018
+ 000228 47F0 F230      00230         216        BC    15,SKIP2                                                   64800018
+ 00022C 6C03 F290      00290         217 SKIP1  MD    FR0,MCONST-8(GR3)                                          65100018
+ 000230 1222                         218 SKIP2  LTR   GR2,GR2              MULTIPLY 2**(-B)                      65400018
+ 000232 4780 F23C      0023C         219        BC    8,SKIP3              BY HALVING B TIMES.                   65700018
+ 000236 2400                         220        HDR   FR0,FR0                                                    66000018
+ 000238 4620 F236      00236         221        BCT   GR2,*-2                                                    66300018
+ 00023C 600D 0088      00088         222 SKIP3  STD   FR0,SIGN(GRS)        ADD A TO CHARACTERISTIC               66600018
+1FPW0     ILBOFPW0                                                                                              PAGE    7
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0000240 5A0D 0088      00088         223        A     GR0,SIGN(GRS)                                              66900018
+ 000244 500D 0088      00088         224        ST    GR0,SIGN(GRS)                                              67200018
+ 000248 2B00                         225        SDR   FR0,FR0              NORMALIZE THE ANSWER JUST IN CASE     67500018
+ 00024A 6A0D 0088      00088         226        AD    FR0,SIGN(GRS)                                              67800018
+ 00024E 07FE                         227 EXIT   BCR   15,GRR                                                     68100018
+ 000250                              228        CNOP    0,8                                                      68400018
+ 000250 40B17217F7D1CF79             229 LOGE2A DC    X'40B17217F7D1CF79'  LOG 2(BE) TRUNCATED                   68700018
+ 000258 4010000000000000             230 ONO16  DC    X'4010000000000000'                                        69000018
+ 000260 41100000                     231 ONE    DC    X'41100000'                                                69300018
+ 000264 3D9E0F1E                     232 C60    DC    X'3D9E0F1E'          .1507368551403575E-3                  69600018
+ 000268 3E575D42BB7276D4             233 C50    DC    X'3E575D42BB7276D4'  .1333073417706260E-2                  69900018
+ 000270 3F276553A5F9BC94             234 C40    DC    X'3F276553A5F9BC94'  .9618117095313700E-2                  70200018
+ 000278 3FE35846A61AEE7A             235 C30    DC    X'3FE35846A61AEE7A'  .5550410840231345E-1                  70500018
+ 000280 403D7F7BFF0289DE             236 C20    DC    X'403D7F7BFF0289DE'  .2402265069563678                     70800018
+ 000288 40B17217F7D1CC79             237 C10    DC    X'40B17217F7D1CC79'  .6931471805599346                     71100018
+ 000290 4080000000000000             238 C0A    DC    X'4080000000000000'  .5  C0/2                              71400018
+ 000298 40F5257D152486CC             239 MCONST DC    X'40F5257D152486CC'  2**(-1/16)                            71700018
+ 0002A0 40EAC0C6E7DD2439             240        DC    X'40EAC0C6E7DD2439'  2**(-2/16)                            72000018
+ 0002A8 40E0CCDEEC2A94E1             241        DC    X'40E0CCDEEC2A94E1'  2**(-3/16)                            72300018
+ 0002B0 40D744FCCAD69D6B             242        DC    X'40D744FCCAD69D6B'  2**(-1/16)                            72600018
+ 0002B8 40CE248C151F8481             243        DC    X'40CE248C151F8481'  2**(-5/16)                            72900018
+ 0002C0 40C5672A115506DB             244        DC    X'40C5672A115506DB'  2**(-6/16)                            73200018
+ 0002C8 40BD08A39F580C37             245        DC    X'40BD08A39F580C37'  2**(-7/16)                            73500018
+ 0002D0 40B504F333F9DE65             246        DC    X'40B504F333F9DE65'  2**(-8/16)                            73800018
+ 0002D8 40AD583EEA42A14B             247        DC    X'40AD583EEA42A14B'  2**(-9/16)                            74100018
+ 0002E0 40A5FED6A9B15139             248        DC    X'40A5FED6A9B15139'  2**(-10/16)                           74400018
+ 0002E8 409EF5326091A112             249        DC    X'409EF5326091A112'  2**(-11/16)                           74700018
+ 0002F0 409837F0518DB8A9             250        DC    X'409837F0518DB8A9'  2**(-12/16)                           75000018
+ 0002F8 4091C3D373AB11C3             251        DC    X'4091C3D373AB11C3'  2**(-13/16)                           75300018
+ 000300 408B95C1E3EA8BD7             252        DC    X'408B95C1E3EA8BD7'  2**(-14/16)                           75600018
+ 000308 4085AAC367CC487B             253        DC    X'4085AAC367CC487B'  2**(-15/16)                           75900018
+ 000310 45000000                     254 SCALER DC    X'45000000'                                                76200018
+ 000314 C2B437DF                     255 MIN    DC    X'C2B437DF'          -180.2187                             76500018
+                                     256        END                                                              76800018
+1FPW0                                              ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    8
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        257
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                        17
+ TOTAL RECORDS PRINTED                       283

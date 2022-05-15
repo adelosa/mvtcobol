@@ -1,0 +1,16 @@
+*//    ILBOWTB0                                                         05000018
+WTB0     TITLE     'ILBOWTB0'                                           10000018
+*        ILBOWTB0   CALLING SEQ... L    15,V(ILBOWTB0)                  15000018
+*                                                                       20000018
+* FUNCTION--ED UNSIGNED TABLE FOR CLASS TEST                            25000018
+*                                                                       30000018
+ILBOWTB0 START 0                                                        35000018
+*                                                                       40000018
+*        OVERLAY AREAS OF TABLE CORRESPONDING TO VALID BYTES OF         45000018
+*        EXTERNAL DECIMAL DATA                                          50000018
+*                                                                       55000018
+WTBL     EQU   *                                                        60000018
+         DC    16X'01010101010101010101010101010101'                    65000018
+         ORG   WTBL+X'F0'                                               70000018
+         DC    10X'00'        F0 THRU F9                                75000018
+         END                                                            80000018

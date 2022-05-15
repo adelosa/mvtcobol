@@ -1,0 +1,214 @@
+1                                               EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 11.03 02/14/15
+0ILBOSAMR  SD  0001 000000 000142
+1                                                                                                               PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                                      1 *$MODULE       ILBOSAMR                                                 00500000
+                                       2 *TITLE  ILBOSAMR                                                        01000000
+                                       3 *                                                                       01500000
+                                       4 *        SUBROUTINE TO READ SPANNED BSAM RECORDS                        02000000
+                                       5 *                                                                       02500000
+ 000000                                6 ILBOSAMR CSECT                                                          03000000
+                                       7 *                                                                       03500000
+                                       8 *                                                                       04000000
+                                       9 *        CALLING SEQUENCE:                                              04500000
+                                      10 *                                                                       05000000
+                                      11 *                                                                       05500000
+                                      12 *        L     R3,DECBADR                                               06000000
+                                      13 *        L     R5,KEYADR           (NOTE 1)                             06500000
+                                      14 *        L     R15,=V(ILBOSAMR)                                         07000000
+                                      15 *        BALR  R14,R15                                                  07500000
+                                      16 *        DC    XL2'FUNCTION CODE'  (NOTE 2)                             08000000
+                                      17 *                                                                       08500000
+                                      18 *        NOTES:                                                         09000000
+                                      19 *           1. ONLY IF ACTUAL KEY WAS SPECIFIED.                        09500000
+                                      20 *           2. FUNCTION CODE HAS THE FOLLOWING MEANING;                 10000000
+                                      21 *                                                                       10500000
+                                      22 *           BYTE 1;                                                     11000000
+                                      23 *              BIT       MEANING                                        11500000
+                                      24 *                                                                       12000000
+                                      25 *              0-6       NOT USED                                       12500000
+                                      26 *               7        ACTUAL KEY WAS SPECIFIED                       13000000
+                                      27 *                                                                       13500000
+                                      28 *           BYTE 2;                                                     14000000
+                                      29 *              0-7       NOT USED                                       14500000
+                                      30 *                                                                       15000000
+                             00000    31          USING *,BASEREG           BASE REGISTER = R12                  15500000
+                             00000    32          USING TGTSAVE,R13         USES TGT AS SAVE AREA                16000000
+ 000000 90EC D060      00060          33          STM   R14,R12,SAVE        SAVE REGISTERS OF CALLING PROGRAM    16500000
+ 000004 18CF                          34          LR    BASEREG,R15         ESTABLISH ADDRESSABILITY             17000000
+ 000006 1845                          35          LR    KEYADDR,R5          SAVE KEY ADDRESS                     17500000
+ 000008 4144 0004      00004          36          LA    KEYADDR,4(KEYADDR)                                       18000000
+ 00000C 5823 0008      00008          37          L     DCB,8(DECB)         PICK UP DCB ADDRESS FROM DECB = R2   18500000
+ 000010 D200 D09E E000 0009E 00000    38          MVC   OPTION,0(R14)       SAVE OPTION FROM INLINE (FUNCTION)   19000000
+ 000016 5853 000C      0000C          39          L     SEGAREA,12(DECB)    PICK UP ADDRESS OF SEGMENT WORK AREA 19500000
+ 00001A D201 3004 C140 00004 00140    40          MVC   4(2,DECB),X8080                                          20000000
+ 000020 5862 0064      00064          41          L     LOGAREA,100(DCB)    ADDRESS OF LOGICAL RECORD AREA       20500000
+ 000024 9601 C138      00138          42          OI    FIRSTIN,X'01'       TURN ON FIRST READ SWITCH            21000000
+ 000028 1BBB                          43          SR    WORK,WORK                                                21500000
+ 00002A 43B2 0010      00010          44          IC    WORK,16(DCB)        PICK UP KEYLENGTH                    22000000
+ 00002E 1876                          45          LR    RECAREA,LOGAREA     DETERMINE ADDRESS OF 01 RECORD AREA  22500000
+ 000030 1A7B                          46          AR    RECAREA,WORK        ADD KEY LENGTH                       23000000
+ 000032 4177 0008      00008          47          LA    RECAREA,8(RECAREA)  INCREMENT PASSED LENGTH FIELDS       23500000
+ 000036 18A5                          48          LR    SEGPOINT,SEGAREA    POINT TO RECORD IN SEGMENT           24000000
+ 000038 1AAB                          49          AR    SEGPOINT,WORK       ADD KEY LENGTH                       24500000
+ 00003A                               50 FIRSTRD  DS    0H                                                       25000000
+ 00003A 4590 C0B2      000B2          51          BAL   IOLINK,READ         READ ROUTINE                         25500000
+ 00003E 9103 D09C      0009C          52          TM    SEGMENT,COMPLETE    IS SEGMENT COMPLETE LOGICAL RECORD?  26000000
+ 000042 4780 C062      00062          53          BC    ITIS,MOVEIT          YES                                 26500000
+ 000046 9103 D09C      0009C          54          TM    SEGMENT,MULTISEG    INTERMEDIATE SEGMENT?                27000000
+ 00004A 4710 C068      00068          55          BC    YES,LOADLNGH                                             27500000
+1                                                                                                               PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+000004E 9101 D09C      0009C          56          TM    SEGMENT,FIRSTSEG    FIRST SEGMENT OF A MULTI-SEGMENT?    28000000
+ 000052 4710 C066      00066          57          BC    YES,MOVE1            YES                                 28500000
+ 000056 47F0 C05A      0005A          58          B     MOVELAST            MUST BE LAST SEGMENT                 29000000
+ 00005A                               59 MOVELAST DS    0H                                                       29500000
+ 00005A 9601 D09D      0009D          60          OI    LASTIN,X'01'        TURN ON LAST SEGMENT SWITCH          30000000
+ 00005E 47F0 C068      00068          61          B     LOADLNGH                                                 30500000
+ 000062                               62 MOVEIT   DS    0H                                                       31000000
+ 000062 9601 D09D      0009D          63          OI    LASTIN,X'01'        TURN ON LAST SEGMENT SWITCH          31500000
+ 000066                               64 MOVE1    DS    0H                                                       32000000
+ 000066 1847                          65          LR    WORK1,RECAREA       ADDRESS OF DATA PORTION OF LOGICAL   32500000
+ 000068                               66 LOADLNGH DS    0H                                                       33000000
+ 000068 D201 D0A0 A004 000A0 00004    67          MVC   TEMPWK(2),4(SEGPOINT)   SEGMENT LENGTH                   33500000
+ 00006E 48B0 D0A0      000A0          68          LH    WORK,TEMPWK                                              34000000
+ 000072 4BB0 C13A      0013A          69          SH    WORK,FOUR           LENGTH OF SEGMENT CONTROL FIELD      34500000
+ 000076 181A                          70          LR    WORK2,SEGPOINT      POINT TO SEGMENT WORK AREA           35000000
+ 000078 4111 0008      00008          71          LA    WORK2,8(WORK2)      INCREMENT PASSED SDW                 35500000
+ 00007C                               72 COMPARE  DS    0H                                                       36000000
+ 00007C 49B0 C13C      0013C          73          CH    WORK,MAXIMUM        IS LENGTH 255 OR LESS?               36500000
+ 000080 4720 C09A      0009A          74          BH    ITSHIGH              NO                                  37000000
+ 000084 06B0                          75          BCTR  WORK,R0             DECREASE BY 1                        37500000
+ 000086 44B0 C094      00094          76          EX    WORK,MVCINST        MOVE USING WORK AS LENGTH            38000000
+ 00008A 1A4B                          77          AR    WORK1,WORK          POINT TO NEXT PART OF LOGICAL REC    38500000
+ 00008C 4144 0001      00001          78          LA    WORK1,1(WORK1)                                           39000000
+ 000090 47F0 C11E      0011E          79          B     RETURN                                                   39500000
+ 000094 D200 4000 1000 00000 00000    80 MVCINST  MVC   0(0,WORK1),0(WORK2) MOVE FROM SEGMENT TO RECORD          40000000
+ 00009A                               81 ITSHIGH  DS    0H                                                       40500000
+ 00009A 48F0 C13C      0013C          82          LH    R15,MAXIMUM                                              41000000
+ 00009E 44F0 C094      00094          83          EX    R15,MVCINST                                              41500000
+ 0000A2 4BB0 C13E      0013E          84          SH    WORK,MAXIMUM1        DECREASE LENGTH                     42000000
+ 0000A6 4A40 C13E      0013E          85          AH    WORK1,MAXIMUM1      POINT TO NEXT PART OF RECORD         42500000
+ 0000AA 4A10 C13E      0013E          86          AH    WORK2,MAXIMUM1      POINT TO NEXT PART OF SEGMENT        43000000
+ 0000AE 47F0 C07C      0007C          87          B     COMPARE                                                  43500000
+ 0000B2                               88 READ     DS    0H                                                       44000000
+ 0000B2 1813                          89          LR    R1,DECB             DECB ADDRESS IN R1                   44500000
+ 0000B4 58F2 0030      00030          90          L     R15,48(DCB)         READ                                 45000000
+ 0000B8 05EF                          91          BALR  R14,R15                                                  45500000
+ 0000BA 1813                          92          LR    R1,DECB                                                  46000000
+ 0000BC 58F2 0034      00034          93          L     R15,52(DCB)          CHECK ROUTINE                       46500000
+ 0000C0 906C D0B0      000B0          94          STM   R6,R12,MYSAVE      SAVE SAMR'S REGS                      47000000
+ 0000C4 986C D080      00080          95          LM    R6,R12,SAVE32      RESTORE INLINE REGS.                  47500000
+ 0000C8 05EF                          96          BALR  R14,R15                                                  48000000
+ 0000CA 986C D0B0      000B0          97          LM    R6,R12,MYSAVE      RESTORE SAMR'S REGS.                  48500000
+ 0000CE D200 D09C A006 0009C 00006    98          MVC   SEGMENT,6(SEGPOINT)     SEGMENT TYPE INDICATOR           49000000
+ 0000D4 9101 C138      00138          99          TM    FIRSTIN,X'01'       IS THIS THE FIRST RECORD             49500000
+ 0000D8 4710 C0E0      000E0         100          BO    TESTFOR1             YES                                 50000000
+ 0000DC 47F0 C100      00100         101          B     CHECKEY                                                  50500000
+ 0000E0                              102 TESTFOR1 DS    0H                                                       51000000
+ 0000E0 9103 D09C      0009C         103          TM    SEGMENT,COMPLETE    IS SEGMENT COMPLETE                  51500000
+ 0000E4 4780 C0FC      000FC         104          BC    ITIS,OK1ISIN         YES                                 52000000
+ 0000E8 9103 D09C      0009C         105          TM    SEGMENT,MULTISEG    INTERMEDIATE SEGMENT?                52500000
+ 0000EC 4710 C0B2      000B2         106          BC    YES,READ             YES                                 53000000
+ 0000F0 9101 D09C      0009C         107          TM    SEGMENT,FIRSTSEG    FIRST SEGMENT?                       53500000
+ 0000F4 4710 C0FC      000FC         108          BO    OK1ISIN              YES                                 54000000
+ 0000F8 47F0 C0B2      000B2         109          B     READ                                                     54500000
+ 0000FC                              110 OK1ISIN  DS    0H                                                       55000000
+1                                                                                                               PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+00000FC 9400 C138      00138         111          NI    FIRSTIN,X'00'       TURN OFF FIRST READ SWITCH           55500000
+ 000100                              112 CHECKEY  DS    0H                                                       56000000
+ 000100 9101 D09E      0009E         113          TM    OPTION,ANYKEY       WAS A KEY SPECIFIED?                 56500000
+ 000104 4710 C10A      0010A         114          BC    YES,MOVEKEY                                              57000000
+ 000108 07F9                         115 IORETURN BR    IOLINK                                                   57500000
+ 00010A                              116 MOVEKEY  DS    0H                                                       58000000
+ 00010A 06B0                         117          BCTR  WORK,R0             DECREASE BY 1                        58500000
+ 00010C 44B0 C118      00118         118          EX    WORK,MOVEKY                                              59000000
+ 000110 9400 D09E      0009E         119          NI    OPTION,X'00'        TURN OFF OPTIONS                     59500000
+ 000114 47F0 C108      00108         120          B     IORETURN                                                 60000000
+ 000118 D200 4000 5000 00000 00000   121 MOVEKY   MVC   0(0,KEYADDR),0(SEGAREA) MOVE KEY TO USER AREA            60500000
+ 00011E                              122 RETURN   DS    0H                                                       61000000
+ 00011E 9101 D09D      0009D         123          TM    LASTIN,ON                                                61500000
+ 000122 4710 C12A      0012A         124          BC    YES,GOBACK                                               62000000
+ 000126 47F0 C03A      0003A         125          B     FIRSTRD                                                  62500000
+ 00012A                              126 GOBACK   DS    0H                                                       63000000
+ 00012A 9400 D09D      0009D         127          NI    LASTIN,X'00'        TURN OFF LAST SEGMENT SW             63500000
+ 00012E 98EC D060      00060         128          LM    R14,R12,SAVE                                             64000000
+ 000132 41EE 0002      00002         129          LA    R14,2(R14)          INCREMENT PASSED DC                  64500000
+ 000136 07FE                         130          BR    R14                                                      65000000
+                                     131 *                                                                       65500000
+                             00000   132 R0       EQU   0                                                        66000000
+                             00001   133 R1       EQU   1                                                        66500000
+                             00002   134 R2       EQU   2                                                        67000000
+                             00003   135 R3       EQU   3                                                        67500000
+                             00004   136 R4       EQU   4                                                        68000000
+                             00005   137 R5       EQU   5                                                        68500000
+                             00006   138 R6       EQU   6                                                        69000000
+                             00007   139 R7       EQU   7                                                        69500000
+                             00008   140 R8       EQU   8                                                        70000000
+                             00009   141 R9       EQU   9                                                        70500000
+                             0000A   142 R10      EQU   10                                                       71000000
+                             0000B   143 R11      EQU   11                                                       71500000
+                             0000C   144 R12      EQU   12                                                       72000000
+                             0000D   145 R13      EQU   13                                                       72500000
+                             0000E   146 R14      EQU   14                                                       73000000
+                             0000F   147 R15      EQU   15                                                       73500000
+                                     148 *                                                                       74000000
+                             00001   149 WORK2    EQU   R1                                                       74500000
+                             00002   150 DCB      EQU   R2                                                       75000000
+                             00003   151 DECB     EQU   R3                                                       75500000
+                             00004   152 KEYADDR  EQU   R4                                                       76000000
+                             00004   153 WORK1    EQU   R4                                                       76500000
+                             00005   154 SEGAREA  EQU   R5                                                       77000000
+                             00006   155 LOGAREA  EQU   R6                                                       77500000
+                             00007   156 RECAREA  EQU   R7                                                       78000000
+                             00008   157 RECSIZE  EQU   R8                                                       78500000
+                             00009   158 IOLINK   EQU   R9                                                       79000000
+                             0000A   159 SEGPOINT EQU   R10                                                      79500000
+                             0000B   160 KEYLENGH EQU   R11                                                      80000000
+                             0000B   161 WORK     EQU   R11                                                      80500000
+                             0000C   162 BASEREG  EQU   R12                                                      81000000
+                                     163 *                                                                       81500000
+                             00003   164 COMPLETE EQU   X'03'                                                    82000000
+                             00001   165 FIRSTSEG EQU   X'01'                                                    82500000
+1                                                                                                               PAGE    5
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 11.03 02/14/15
+0                            00001   166 ON       EQU   X'01'                                                    83000000
+                             00001   167 ANYKEY   EQU   X'01'                                                    83500000
+                             00002   168 LASTSEG  EQU   X'02'                                                    84000000
+                             00003   169 MULTISEG EQU   X'03'                                                    84500000
+                             00008   170 ITIS    EQU    8                                                        85000000
+                             00001   171 YES      EQU   1                                                        85500000
+                                     172 *                                                                       86000000
+ 000138 00                           173 FIRSTIN  DC    X'00'                                                    86500000
+ 000139 00
+ 00013A 0004                         174 FOUR     DC    H'4'                                                     87000000
+ 00013C 00FF                         175 MAXIMUM  DC    H'255'                                                   87500000
+ 00013E 0100                         176 MAXIMUM1 DC    H'256'                                                   88000000
+                                     177 *                                                                       88500000
+ 000140 8080                         178 X8080    DC    X'8080'            TYPE FOR READ SF.                     89000000
+ 000000                              179 TGTSAVE  DSECT                                                          89500000
+ 000000                              180          DS    24F                                                      90000000
+ 000060                              181 SAVE     DS    15F                                                      90500000
+ 00009C                              182 SEGMENT  DS    C                                                        91000000
+ 00009D                              183 LASTIN   DS    C                                                        91500000
+ 00009E                              184 OPTION   DS    C                                                        92000000
+ 00009F                              185 AVAILABL DS    C                                                        92500000
+ 0000A0                              186 TEMPWK   DS    4F                                                       93000000
+ 0000B0                              187 MYSAVE   DS    7F                 SAMR REGS SAVE AREA                   93500000
+                             00080   188 SAVE32   EQU   SAVE+32            R6 THRU R12                           94000000
+ 000000                              189          END   ILBOSAMR                                                 94500000
+1                                                  ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    6
+-                                                                                                 ASM 0201 11.03 02/14/15
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY
+ HIGHEST SEVERITY WAS    0
+ OPTIONS FOR THIS ASSEMBLY
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, NOXREF(SHORT)
+   SYSPARM()
+ WORK FILE BUFFER SIZE/NUMBER =19066/ 1
+ TOTAL RECORDS READ FROM SYSTEM INPUT        189
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY        0
+ TOTAL RECORDS PUNCHED                         8
+ TOTAL RECORDS PRINTED                       214

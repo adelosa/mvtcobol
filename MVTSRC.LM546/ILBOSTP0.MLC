@@ -1,0 +1,58 @@
+*// ILBOSTP0                                                            01000018
+STP0     TITLE     'ILBOSTP0'                                           02000018
+*TITLE  ILBOSTP0                                                        03000018
+*        ILBOSTP0   CALLING SEQ... L    15,V(ILBOSTP0)                  04000018
+*                                                                       05000018
+*        LEVEL             04/10/68                                     06000018
+*                                                                       07000018
+*FUNCTION- ILBOSTP0 IS ENTERED FROM THE INIT2 ROUTINE. IT DETERMINES    08000018
+*         IF THE CALLING PROGRAM IS A SUB OR A MAIN.                    09000018
+*         FOR SUB - RETURN                                              10000018
+*         FOR MAIN- SAVE R13, RETURN A CODE IN REGISTER 0 INDICATING    11000018
+*         THAT THE CALLING PROGRAM IS A MAIN.                           12000018
+*         ILBOSTP1- IS ENTERED  FOR                                     13000018
+*                 1.STOPRUN-MAIN OR SUB                                 14000018
+*                 2.GOBACK-MAIN                                         15000018
+*                   THE REGISTERS OF THE INVOKER OF THE MAIN PROGRAM    16000018
+*                   ARE RESTORED AND RETURN TO THE INVOKER OF THE MAIN  17000018
+*                   PROGRAM                                             18000018
+*                                                                       19000018
+*ENTRY POINTS- ILBOSTP0, ILBOSTP1                                       20000018
+*INPUT-R13 POINTING TO SAVE AREA OF CALLING PROGRAM                     21000018
+*                                                                       22000018
+*OUTPUT-                                                                23000018
+*      ILBOSTP0- RETURNS A CODE IN REGISTER 0.                          24000018
+*        ILBOSTP1, RETURN-CODE IN R15                                   25000018
+*                                                                       26000018
+*EXTERNAL ROUTINES-NONE                                                 27000018
+*EXITS- ILBOSTP0 --  BY BCR X,14                                        28000018
+*     -ILBOSTP1,TO INVOKER OF MAIN PROGRAM                              29000018
+*                                                                       30000018
+*WORK AREAS-NONE                                                        31000018
+*                                                                       32000018
+*ATTRIBUTES-ONE SUBROUTINE FOR EACH FAMILY OF PROGRAMS,I.E.,MAIN AND    33000018
+*           ITS SUBS                                                    34000018
+ILBOSTP0 START 0                                                        35000018
+         ENTRY ILBOSTP1                                                 36000018
+R13    EQU   13                                                         37000018
+R14    EQU   14                                                         38000018
+R15    EQU   15                                                         39000018
+       USING *,R15                                                      40000018
+       SR    0,0                                                        41000018
+       TM    FRSTSW,X'01'          IS IT FIRST TIME                     42000018
+       BCR   1,R14                 NO  RETURN                           43000018
+       LA    0,1                                                        44000018
+       OI    FRSTSW,X'01'          YES-SET TO NOT FIRST                 45000018
+       ST    R13,SAVE13            SAVE  R13                            46000018
+         BCR   15,R14                                                   47000018
+       USING *,R15                                                      48000018
+ILBOSTP1 NI  FRSTSW,X'00'          SET FIRST TIME  SW  TO FIRST TIME    49000018
+       L     14,SAVE13             RESTORE R13 OF INVOKER               50000018
+         LH    15,92(13)        RETURN-CODE                             51000018
+       L     13,004(0,14)          RESTORE REGISTERS OF INVOKER         52000018
+         L     14,12(13)     EXCEPT R15 WHICH HAS RETURN-CODE           53000018
+         LM    0,12,20(13)                                              54000018
+       BCR   15,14           RETURN TO INVOKER                          55000018
+SAVE13 DS    F                                                          56000018
+FRSTSW DC    X'00'   =0 FIRST TIME  NOT  =0  NOT FIRST TIME             57000018
+       END                                                              58000018
