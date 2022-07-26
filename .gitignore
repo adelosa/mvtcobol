@@ -1,3 +1,5 @@
 .hlasmplugin
 .idea
 /.idea/
+*.PRN
+*.ERR
